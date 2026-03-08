@@ -1,22 +1,35 @@
+import { useState } from 'react';
 import { decisions } from '@/data/mockData';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
-import { Archive, Lock } from 'lucide-react';
+import { RoleSwitcher } from '@/components/RoleSwitcher';
+import { filterDecisionsByRole } from '@/lib/roleHierarchy';
+import { UserRole } from '@/types/decision';
+import { Archive, Lock, Eye } from 'lucide-react';
 
 export default function DecisionRecordsPage() {
-  const finalized = decisions.filter(d => ['Approved', 'Executed'].includes(d.status));
+  const [viewRole, setViewRole] = useState<UserRole>('CEO');
+  const allFinalized = decisions.filter(d => ['Approved', 'Executed'].includes(d.status));
+  const finalized = filterDecisionsByRole(allFinalized, viewRole);
 
   return (
     <div>
       <div className="page-header">
         <h1 className="page-title">Decision Records</h1>
-        <p className="page-description">Immutable finalized decision records. These records are locked and cannot be modified.</p>
+        <p className="page-description">Immutable finalized decision records. Higher roles see records from all levels below.</p>
+      </div>
+
+      <RoleSwitcher currentRole={viewRole} onChange={setViewRole} />
+
+      <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
+        <Eye className="h-3.5 w-3.5" />
+        <span>Showing <strong className="text-foreground">{finalized.length}</strong> records visible to <strong className="text-foreground">{viewRole}</strong> level</span>
       </div>
 
       <div className="space-y-4">
         {finalized.length === 0 ? (
           <div className="enterprise-card p-12 text-center">
             <Archive className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">No finalized decision records yet.</p>
+            <p className="text-muted-foreground">No finalized decision records visible at this authority level.</p>
           </div>
         ) : (
           finalized.map((d) => (
@@ -26,6 +39,14 @@ export default function DecisionRecordsPage() {
                   <div className="flex items-center gap-2">
                     <Lock className="h-4 w-4 text-muted-foreground" />
                     <h3 className="font-semibold text-foreground">{d.title}</h3>
+                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
+                      d.createdBy.role === 'Board' ? 'bg-destructive/10 text-destructive' :
+                      d.createdBy.role === 'CEO' ? 'bg-primary/10 text-primary' :
+                      d.createdBy.role === 'Executive' ? 'bg-warning/10 text-warning' :
+                      'bg-muted text-muted-foreground'
+                    }`}>
+                      {d.createdBy.role}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">Record locked · {d.createdAt.toLocaleDateString()}</p>
                 </div>
@@ -47,11 +68,10 @@ export default function DecisionRecordsPage() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Created By</p>
-                  <p className="text-foreground">{d.createdBy.name}</p>
+                  <p className="text-foreground">{d.createdBy.name} ({d.createdBy.role})</p>
                 </div>
               </div>
 
-              {/* Pros/Cons Snapshot */}
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <p className="text-xs font-medium text-success mb-1">Pros</p>
