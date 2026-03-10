@@ -91,6 +91,7 @@ export interface AgendaItem {
   duration: number; // minutes
   presenter?: User;
   description?: string;
+  linkedDecisionId?: string;
 }
 
 export interface Meeting {

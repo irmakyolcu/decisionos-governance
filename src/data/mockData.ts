@@ -163,7 +163,7 @@ export const meetings: Meeting[] = [
     chairperson: users[0],
     attendees: [users[0], users[1], users[2]],
     agenda: [
-      { id: 'ag-5', title: 'Cloud Migration Update', duration: 30, presenter: users[2] },
+      { id: 'ag-5', title: 'Cloud Migration Update', duration: 30, presenter: users[2], linkedDecisionId: 'dec-1' },
       { id: 'ag-6', title: 'Budget Reallocation', duration: 30, presenter: users[1] },
     ],
     decisions: [decisions[0]],
