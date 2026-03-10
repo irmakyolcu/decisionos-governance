@@ -145,8 +145,8 @@ export const meetings: Meeting[] = [
     attendees: [users[0], users[1], users[2], users[6]],
     agenda: [
       { id: 'ag-1', title: 'Q4 Financial Review', duration: 30, presenter: users[1] },
-      { id: 'ag-2', title: 'Strategic Partnership Proposals', duration: 45, presenter: users[0] },
-      { id: 'ag-3', title: 'Infrastructure Investment Decision', duration: 45, presenter: users[2] },
+      { id: 'ag-2', title: 'Strategic Partnership Proposals', duration: 45, presenter: users[0], linkedDecisionId: 'dec-2' },
+      { id: 'ag-3', title: 'Infrastructure Investment Decision', duration: 45, presenter: users[2], linkedDecisionId: 'dec-1' },
       { id: 'ag-4', title: 'Risk Assessment Update', duration: 30 },
     ],
     decisions: [decisions[1]],
@@ -163,7 +163,7 @@ export const meetings: Meeting[] = [
     chairperson: users[0],
     attendees: [users[0], users[1], users[2]],
     agenda: [
-      { id: 'ag-5', title: 'Cloud Migration Update', duration: 30, presenter: users[2] },
+      { id: 'ag-5', title: 'Cloud Migration Update', duration: 30, presenter: users[2], linkedDecisionId: 'dec-1' },
       { id: 'ag-6', title: 'Budget Reallocation', duration: 30, presenter: users[1] },
     ],
     decisions: [decisions[0]],

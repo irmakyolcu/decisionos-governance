@@ -1,10 +1,16 @@
-import { meetings } from '@/data/mockData';
+import { meetings, decisions } from '@/data/mockData';
 import { StatusBadge } from '@/components/StatusBadge';
-import { Calendar, MapPin, Users, Clock } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, GitBranch, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { Decision } from '@/types/decision';
 
 export default function MeetingsPage() {
   const [selectedMeeting, setSelectedMeeting] = useState(meetings[0]);
+
+  const getLinkedDecision = (decisionId?: string): Decision | undefined => {
+    if (!decisionId) return undefined;
+    return decisions.find(d => d.id === decisionId);
+  };
 
   return (
     <div>
@@ -57,23 +63,56 @@ export default function MeetingsPage() {
               </div>
             </div>
 
-            {/* Agenda */}
+            {/* Agenda with Linked Decisions */}
             <div className="enterprise-card">
               <div className="p-4 border-b border-border">
                 <h3 className="font-semibold text-foreground text-sm">Agenda Items</h3>
               </div>
               <div className="divide-y divide-border/50">
-                {selectedMeeting.agenda.map((item, i) => (
-                  <div key={item.id} className="p-4">
-                    <div className="flex items-center gap-3">
-                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center flex-shrink-0">{i + 1}</span>
-                      <div>
-                        <p className="font-medium text-sm text-foreground">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">{item.duration}min{item.presenter && ` · ${item.presenter.name}`}</p>
+                {selectedMeeting.agenda.map((item, i) => {
+                  const linked = getLinkedDecision(item.linkedDecisionId);
+                  return (
+                    <div key={item.id} className="p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm text-foreground">{item.title}</p>
+                          <p className="text-xs text-muted-foreground">{item.duration}min{item.presenter && ` · ${item.presenter.name}`}</p>
+                        </div>
                       </div>
+
+                      {/* Linked Decision Card */}
+                      {linked && (
+                        <div className="ml-9 mt-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <GitBranch className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-xs font-semibold text-primary uppercase tracking-wide">Bağlı Karar</span>
+                          </div>
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-foreground">{linked.title}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{linked.description}</p>
+                              <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                                <span>Bütçe: €{linked.budget.toLocaleString()}</span>
+                                <span>Risk: {linked.riskLevel}</span>
+                                <span>Oluşturan: {linked.createdBy.name}</span>
+                              </div>
+                            </div>
+                            <div className="flex-shrink-0 flex items-center gap-2">
+                              <StatusBadge status={linked.status} />
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          </div>
+                          {linked.aiEvaluation && (
+                            <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded p-2">
+                              AI: {linked.aiEvaluation.summary.substring(0, 100)}…
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
