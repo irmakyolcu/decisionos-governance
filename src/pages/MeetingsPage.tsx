@@ -117,6 +117,9 @@ export default function MeetingsPage() {
               </div>
             </div>
 
+            {/* Meeting Recordings */}
+            <MeetingRecordings meetingId={selectedMeeting.id} />
+
             {/* Decisions Taken */}
             <div className="enterprise-card">
               <div className="p-4 border-b border-border">
