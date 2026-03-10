@@ -3,6 +3,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { Calendar, MapPin, Users, Clock, GitBranch, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Decision } from '@/types/decision';
+import { MeetingRecordings } from '@/components/MeetingRecordings';
 
 export default function MeetingsPage() {
   const [selectedMeeting, setSelectedMeeting] = useState(meetings[0]);
@@ -115,6 +116,9 @@ export default function MeetingsPage() {
                 })}
               </div>
             </div>
+
+            {/* Meeting Recordings */}
+            <MeetingRecordings meetingId={selectedMeeting.id} />
 
             {/* Decisions Taken */}
             <div className="enterprise-card">
