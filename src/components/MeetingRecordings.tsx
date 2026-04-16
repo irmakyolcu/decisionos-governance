@@ -108,9 +108,27 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
     fetchRecordings();
   };
 
-  const getPublicUrl = (filePath: string) => {
-    const { data } = supabase.storage.from('meeting-recordings').getPublicUrl(filePath);
-    return data.publicUrl;
+  const getSignedUrl = async (filePath: string) => {
+    const { data, error } = await supabase.storage
+      .from('meeting-recordings')
+      .createSignedUrl(filePath, 3600); // 1 hour
+    if (error || !data?.signedUrl) return '';
+    return data.signedUrl;
+  };
+
+  const handlePlay = async (filePath: string) => {
+    const url = await getSignedUrl(filePath);
+    if (url) window.open(url, '_blank');
+  };
+
+  const handleDownload = async (filePath: string, fileName: string) => {
+    const url = await getSignedUrl(filePath);
+    if (url) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+    }
   };
 
   const formatSize = (bytes: number) => {
@@ -174,21 +192,17 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8"
-                  asChild
+                  onClick={() => handlePlay(rec.file_path)}
                 >
-                  <a href={getPublicUrl(rec.file_path)} target="_blank" rel="noopener noreferrer">
-                    <Play className="h-3.5 w-3.5" />
-                  </a>
+                  <Play className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8"
-                  asChild
+                  onClick={() => handleDownload(rec.file_path, rec.file_name)}
                 >
-                  <a href={getPublicUrl(rec.file_path)} download={rec.file_name}>
-                    <Download className="h-3.5 w-3.5" />
-                  </a>
+                  <Download className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   size="icon"
