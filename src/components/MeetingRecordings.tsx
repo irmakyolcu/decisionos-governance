@@ -79,6 +79,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
         file_path: filePath,
         file_size: file.size,
         mime_type: file.type || 'audio/mpeg',
+        uploaded_by: user?.id ?? null,
       });
 
     if (dbError) {
