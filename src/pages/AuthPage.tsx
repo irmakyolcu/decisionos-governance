@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Lock, LogIn, UserPlus } from 'lucide-react';
+import { Mail, Lock, LogIn, UserPlus, Building2 } from 'lucide-react';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -27,12 +28,15 @@ export default function AuthPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: { company_name: companyName },
+        },
       });
       if (error) {
         toast({ title: 'Kayıt hatası', description: error.message, variant: 'destructive' });
       } else {
-        toast({ title: 'Kayıt başarılı', description: 'Lütfen e-posta adresinizi doğrulayın.' });
+        toast({ title: 'Kayıt başarılı', description: 'Yönlendiriliyorsunuz...' });
       }
     }
     setLoading(false);
