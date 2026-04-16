@@ -1,10 +1,11 @@
-import { Search, Bell, User } from 'lucide-react';
-import { currentUser } from '@/data/mockData';
+import { Search, Bell, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function TopBar() {
   const [search, setSearch] = useState('');
+  const { user, signOut } = useAuth();
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6 flex-shrink-0">
@@ -25,16 +26,22 @@ export function TopBar() {
           <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
         </button>
 
-        <Badge variant="outline" className="text-xs font-medium bg-accent text-accent-foreground border-primary/20">
-          {currentUser.role}
-        </Badge>
-
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
             <User className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-sm font-medium text-foreground hidden lg:block">{currentUser.name}</span>
+          <span className="text-sm font-medium text-foreground hidden lg:block">
+            {user?.user_metadata?.full_name || user?.email || 'Kullanıcı'}
+          </span>
         </div>
+
+        <button
+          onClick={signOut}
+          className="p-2 rounded-md hover:bg-muted transition-colors"
+          title="Çıkış Yap"
+        >
+          <LogOut className="h-4 w-4 text-muted-foreground" />
+        </button>
       </div>
     </header>
   );

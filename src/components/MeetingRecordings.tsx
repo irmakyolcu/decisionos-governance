@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Upload, FileAudio, Trash2, Loader2, Play, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Recording {
   id: string;
@@ -25,6 +26,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchRecordings();
@@ -77,6 +79,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
         file_path: filePath,
         file_size: file.size,
         mime_type: file.type || 'audio/mpeg',
+        uploaded_by: user?.id ?? null,
       });
 
     if (dbError) {
