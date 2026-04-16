@@ -108,9 +108,27 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
     fetchRecordings();
   };
 
-  const getPublicUrl = (filePath: string) => {
-    const { data } = supabase.storage.from('meeting-recordings').getPublicUrl(filePath);
-    return data.publicUrl;
+  const getSignedUrl = async (filePath: string) => {
+    const { data, error } = await supabase.storage
+      .from('meeting-recordings')
+      .createSignedUrl(filePath, 3600); // 1 hour
+    if (error || !data?.signedUrl) return '';
+    return data.signedUrl;
+  };
+
+  const handlePlay = async (filePath: string) => {
+    const url = await getSignedUrl(filePath);
+    if (url) window.open(url, '_blank');
+  };
+
+  const handleDownload = async (filePath: string, fileName: string) => {
+    const url = await getSignedUrl(filePath);
+    if (url) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+    }
   };
 
   const formatSize = (bytes: number) => {
