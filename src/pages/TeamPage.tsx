@@ -127,10 +127,10 @@ export default function TeamPage() {
     fetchInvites();
   };
 
-  const updateMemberRole = async (memberId: string, newRole: string) => {
+  const updateMemberRole = async (memberId: string, newRole: 'admin' | 'approver' | 'viewer') => {
     await supabase
       .from('workspace_members')
-      .update({ role: newRole })
+      .update({ role: newRole as any })
       .eq('id', memberId);
     fetchMembers();
     toast({ title: 'Rol güncellendi' });
