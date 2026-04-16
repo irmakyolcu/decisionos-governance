@@ -1,6 +1,6 @@
 import {
   Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
-  Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight
+  Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -20,6 +20,7 @@ const navItems = [
   { title: 'AI Evaluation', url: '/ai-evaluation', icon: Brain },
   { title: 'Decision Analytics', url: '/analytics', icon: BarChart3 },
   { title: 'Authority & Budget', url: '/authority', icon: Shield },
+  { title: 'Team', url: '/team', icon: Users },
   { title: 'Settings', url: '/settings', icon: Settings },
 ];
 
