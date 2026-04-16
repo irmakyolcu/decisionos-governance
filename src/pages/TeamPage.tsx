@@ -258,7 +258,7 @@ export default function TeamPage() {
                   <div className="flex items-center gap-1">
                     <Select
                       value={m.role}
-                      onValueChange={(v) => updateMemberRole(m.id, v)}
+                      onValueChange={(v: 'admin' | 'approver' | 'viewer') => updateMemberRole(m.id, v)}
                     >
                       <SelectTrigger className="w-[120px] h-8 text-xs">
                         <SelectValue />
