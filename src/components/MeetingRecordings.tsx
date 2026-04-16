@@ -26,6 +26,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchRecordings();
