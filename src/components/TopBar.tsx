@@ -75,7 +75,7 @@ export function TopBar() {
               <span className="text-xs">{roleBadge.label}</span>
             </Badge>
           )}
-        </div>
+        </Link>
 
         <button
           onClick={signOut}
