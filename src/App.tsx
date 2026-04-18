@@ -57,6 +57,7 @@ function ProtectedRoutes() {
         <Route path="/approvals" element={<ApprovalsPage />} />
         <Route path="/meetings" element={<MeetingsPage />} />
         <Route path="/decisions" element={<DecisionReviewPage />} />
+        <Route path="/decisions/list" element={<DecisionsPage />} />
         <Route path="/decision-records" element={<DecisionRecordsPage />} />
         <Route path="/ai-evaluation" element={<AIEvaluationPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
