@@ -9,14 +9,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DecisionReviewPage() {
-  const { decisions, loading, addComment, addProCon, approveDecision, updateStatus } = useDecisions();
+  const { decisions, loading, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [newPro, setNewPro] = useState('');
   const [newCon, setNewCon] = useState('');
+  const [reevaluating, setReevaluating] = useState(false);
   const { can, isViewer } = usePermissions();
   const canApproveAction = can('approveDecision');
   const canComment = can('comment');
+  const canCreateProposal = can('createProposal');
   const { toast } = useToast();
 
   useEffect(() => {
