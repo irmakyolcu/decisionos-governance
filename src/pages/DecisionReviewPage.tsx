@@ -1,14 +1,20 @@
 import { decisions } from '@/data/mockData';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
-import { ThumbsUp, ThumbsDown, MessageSquare, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Decision } from '@/types/decision';
+import { usePermissions } from '@/lib/permissions';
+import { ReadOnlyNotice } from '@/components/PermissionGate';
 
 export default function DecisionReviewPage() {
   const [selected, setSelected] = useState<Decision>(decisions[0]);
   const [newComment, setNewComment] = useState('');
+  const { can, isViewer } = usePermissions();
+  const canApproveAction = can('approveDecision');
+  const canComment = can('comment');
 
-  const canApprove = selected.pros.length > 0 && selected.cons.length > 0;
+  const hasProsAndCons = selected.pros.length > 0 && selected.cons.length > 0;
+  const canApprove = hasProsAndCons && canApproveAction;
 
   return (
     <div>
@@ -89,19 +95,23 @@ export default function DecisionReviewPage() {
 
           {/* Approval Gate */}
           <div className="enterprise-card p-6">
-            {!canApprove && (
+            {!hasProsAndCons && (
               <div className="flex items-center gap-2 text-warning bg-warning/10 p-3 rounded-lg mb-4 text-sm">
                 <AlertTriangle className="h-4 w-4" />
                 At least one Pro and one Con must be added before approval.
               </div>
             )}
-            <div className="flex gap-3">
-              <button disabled={!canApprove} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${canApprove ? 'gradient-primary text-primary-foreground hover:opacity-90' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}>
-                <CheckCircle className="h-4 w-4 inline mr-1" />Approve
-              </button>
-              <button className="px-4 py-2 rounded-lg text-sm font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">Reject</button>
-              <button className="px-4 py-2 rounded-lg text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/70 transition-colors">Send Back</button>
-            </div>
+            {canApproveAction ? (
+              <div className="flex gap-3">
+                <button disabled={!canApprove} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${canApprove ? 'gradient-primary text-primary-foreground hover:opacity-90' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}>
+                  <CheckCircle className="h-4 w-4 inline mr-1" />Approve
+                </button>
+                <button className="px-4 py-2 rounded-lg text-sm font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">Reject</button>
+                <button className="px-4 py-2 rounded-lg text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/70 transition-colors">Send Back</button>
+              </div>
+            ) : (
+              <ReadOnlyNotice message="Viewer rolünde kararları onaylayamaz veya reddedemezsiniz." />
+            )}
           </div>
 
           {/* Comments */}
@@ -123,11 +133,20 @@ export default function DecisionReviewPage() {
               ))}
             </div>
             <div className="p-4 border-t border-border">
-              <div className="flex gap-2">
-                <input value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Add a comment…" className="flex-1 text-sm bg-muted rounded-lg px-3 py-2 text-foreground placeholder:text-muted-foreground outline-none" />
-                <button className="px-4 py-2 rounded-lg text-sm font-medium gradient-primary text-primary-foreground">Post</button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">Comments are immutable and cannot be deleted.</p>
+              {canComment ? (
+                <>
+                  <div className="flex gap-2">
+                    <input value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="Add a comment…" className="flex-1 text-sm bg-muted rounded-lg px-3 py-2 text-foreground placeholder:text-muted-foreground outline-none" />
+                    <button className="px-4 py-2 rounded-lg text-sm font-medium gradient-primary text-primary-foreground">Post</button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Comments are immutable and cannot be deleted.</p>
+                </>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Lock className="h-3.5 w-3.5" />
+                  Yorum yapabilmek için Approver veya Admin yetkisi gerekir.
+                </div>
+              )}
             </div>
           </div>
         </div>
