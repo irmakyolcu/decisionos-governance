@@ -151,15 +151,38 @@ export function useDecisions() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { error } = await supabase.from('decisions').insert({
-      workspace_id: workspace.id,
-      title: input.title,
-      description: input.description,
-      problem_statement: input.problemStatement ?? '',
-      budget: input.budget,
-      risk_level: input.riskLevel,
-      status: input.status ?? 'Draft',
-      created_by: user.id,
+    const { data: inserted, error } = await supabase
+      .from('decisions')
+      .insert({
+        workspace_id: workspace.id,
+        title: input.title,
+        description: input.description,
+        problem_statement: input.problemStatement ?? '',
+        budget: input.budget,
+        risk_level: input.riskLevel,
+        status: input.status ?? 'Draft',
+        created_by: user.id,
+      })
+      .select('id')
+      .single();
+    if (error) throw error;
+
+    // Fire-and-forget AI evaluation (don't block UI on AI latency)
+    if (inserted?.id) {
+      supabase.functions
+        .invoke('evaluate-decision', { body: { decisionId: inserted.id } })
+        .then(({ error: fnErr }) => {
+          if (fnErr) console.error('AI evaluation failed:', fnErr);
+          fetchDecisions();
+        });
+    }
+
+    await fetchDecisions();
+  };
+
+  const evaluateDecision = async (decisionId: string) => {
+    const { error } = await supabase.functions.invoke('evaluate-decision', {
+      body: { decisionId },
     });
     if (error) throw error;
     await fetchDecisions();
