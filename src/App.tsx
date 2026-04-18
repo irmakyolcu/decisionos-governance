@@ -18,6 +18,7 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import AuthorityPage from "./pages/AuthorityPage";
 import DecisionReviewPage from "./pages/DecisionReviewPage";
 import SettingsPage from "./pages/SettingsPage";
+import ProfilePage from "./pages/ProfilePage";
 import TeamPage from "./pages/TeamPage";
 import AuthPage from "./pages/AuthPage";
 import OnboardingPage from "./pages/OnboardingPage";
@@ -61,6 +62,7 @@ function ProtectedRoutes() {
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/authority" element={<AuthorityPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
