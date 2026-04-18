@@ -66,12 +66,35 @@ export default function DecisionReviewPage() {
     try { await updateStatus(selected.id, 'Rejected'); toast({ title: 'Karar reddedildi' }); }
     catch (e: any) { toast({ title: 'Hata', description: e.message, variant: 'destructive' }); }
   };
+  const handleReevaluate = async () => {
+    setReevaluating(true);
+    try {
+      await evaluateDecision(selected.id);
+      toast({ title: 'AI değerlendirmesi güncellendi', description: 'Yeni metrikler birkaç saniye içinde yansıyacak.' });
+    } catch (e: any) {
+      toast({ title: 'Yeniden hesaplanamadı', description: e.message, variant: 'destructive' });
+    } finally {
+      setReevaluating(false);
+    }
+  };
 
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Decision Review</h1>
-        <p className="page-description">Analyze proposals before approval. Pros and Cons are required.</p>
+      <div className="page-header flex items-start justify-between gap-4">
+        <div>
+          <h1 className="page-title">Decision Review</h1>
+          <p className="page-description">Analyze proposals before approval. Pros and Cons are required.</p>
+        </div>
+        {canCreateProposal && (
+          <button
+            onClick={handleReevaluate}
+            disabled={reevaluating}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-shrink-0"
+          >
+            {reevaluating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            AI değerlendirmesini yeniden hesapla
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
