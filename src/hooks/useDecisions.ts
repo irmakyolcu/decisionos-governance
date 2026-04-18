@@ -240,5 +240,6 @@ export function useDecisions() {
     addProCon,
     approveDecision,
     updateStatus,
+    evaluateDecision,
   };
 }
