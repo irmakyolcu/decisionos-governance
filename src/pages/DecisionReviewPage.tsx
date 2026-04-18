@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDecisions } from '@/hooks/useDecisions';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
-import { ThumbsUp, ThumbsDown, MessageSquare, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, AlertTriangle, CheckCircle, Lock, Sparkles, Loader2 } from 'lucide-react';
 import { Decision } from '@/types/decision';
 import { usePermissions } from '@/lib/permissions';
 import { ReadOnlyNotice } from '@/components/PermissionGate';
@@ -9,14 +9,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DecisionReviewPage() {
-  const { decisions, loading, addComment, addProCon, approveDecision, updateStatus } = useDecisions();
+  const { decisions, loading, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [newPro, setNewPro] = useState('');
   const [newCon, setNewCon] = useState('');
+  const [reevaluating, setReevaluating] = useState(false);
   const { can, isViewer } = usePermissions();
   const canApproveAction = can('approveDecision');
   const canComment = can('comment');
+  const canCreateProposal = can('createProposal');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -64,12 +66,35 @@ export default function DecisionReviewPage() {
     try { await updateStatus(selected.id, 'Rejected'); toast({ title: 'Karar reddedildi' }); }
     catch (e: any) { toast({ title: 'Hata', description: e.message, variant: 'destructive' }); }
   };
+  const handleReevaluate = async () => {
+    setReevaluating(true);
+    try {
+      await evaluateDecision(selected.id);
+      toast({ title: 'AI değerlendirmesi güncellendi', description: 'Yeni metrikler birkaç saniye içinde yansıyacak.' });
+    } catch (e: any) {
+      toast({ title: 'Yeniden hesaplanamadı', description: e.message, variant: 'destructive' });
+    } finally {
+      setReevaluating(false);
+    }
+  };
 
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Decision Review</h1>
-        <p className="page-description">Analyze proposals before approval. Pros and Cons are required.</p>
+      <div className="page-header flex items-start justify-between gap-4">
+        <div>
+          <h1 className="page-title">Decision Review</h1>
+          <p className="page-description">Analyze proposals before approval. Pros and Cons are required.</p>
+        </div>
+        {canCreateProposal && (
+          <button
+            onClick={handleReevaluate}
+            disabled={reevaluating}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-shrink-0"
+          >
+            {reevaluating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            AI değerlendirmesini yeniden hesapla
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
