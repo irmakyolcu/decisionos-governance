@@ -16,4 +16,5 @@ Post-approval records are locked/immutable. Comments are append-only.
 - [Global Search](mem://features/global-search) — Search capabilities and strict role-based filtering
 - [Analytics Dashboard](mem://features/analytics) — Outcome tracking categories and dashboard metrics
 - [Meeting Records](mem://features/meetings) — Exec/Board sessions, agenda linking, and file uploads
+- [RBAC Permissions](mem://features/permissions) — usePermissions hook, PermissionGate, action gating per workspace role
 - [Multi-Tenant](mem://features/multi-tenant) — Workspace isolation, roles, invite system, onboarding flow
