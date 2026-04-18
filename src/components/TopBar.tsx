@@ -1,11 +1,20 @@
-import { Search, Bell, User, LogOut } from 'lucide-react';
+import { Search, Bell, User, LogOut, Shield, CheckCircle, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
+
+const ROLE_BADGE = {
+  admin: { label: 'Admin', icon: Shield, className: 'bg-destructive/10 text-destructive border-destructive/20' },
+  approver: { label: 'Approver', icon: CheckCircle, className: 'bg-warning/10 text-warning border-warning/20' },
+  viewer: { label: 'Viewer', icon: Eye, className: 'bg-info/10 text-info border-info/20' },
+} as const;
 
 export function TopBar() {
   const [search, setSearch] = useState('');
   const { user, signOut } = useAuth();
+  const { role, workspace } = useWorkspace();
+  const roleBadge = role ? ROLE_BADGE[role] : null;
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6 flex-shrink-0">
@@ -30,9 +39,20 @@ export function TopBar() {
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
             <User className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-sm font-medium text-foreground hidden lg:block">
-            {user?.user_metadata?.full_name || user?.email || 'Kullanıcı'}
-          </span>
+          <div className="hidden lg:flex flex-col leading-tight">
+            <span className="text-sm font-medium text-foreground">
+              {user?.user_metadata?.full_name || user?.email || 'Kullanıcı'}
+            </span>
+            {workspace && (
+              <span className="text-[10px] text-muted-foreground truncate max-w-[160px]">{workspace.name}</span>
+            )}
+          </div>
+          {roleBadge && (
+            <Badge variant="outline" className={`gap-1 ${roleBadge.className}`}>
+              <roleBadge.icon className="h-3 w-3" />
+              <span className="text-xs">{roleBadge.label}</span>
+            </Badge>
+          )}
         </div>
 
         <button

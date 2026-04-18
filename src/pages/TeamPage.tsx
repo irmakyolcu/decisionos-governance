@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Mail, Shield, Eye, CheckCircle, Trash2, Copy, Users } from 'lucide-react';
+import { UserPlus, Mail, Shield, Eye, CheckCircle, Trash2, Copy, Users, Lock } from 'lucide-react';
+import { ReadOnlyNotice } from '@/components/PermissionGate';
 
 interface Member {
   id: string;
@@ -154,6 +155,16 @@ export default function TeamPage() {
           {workspace?.name} workspace üyelerini yönetin.
         </p>
       </div>
+
+      {!isAdmin && (
+        <ReadOnlyNotice
+          message={
+            role === 'approver'
+              ? 'Approver rolündesiniz: takım üyelerini görüntüleyebilir ancak davet edemez veya rolleri değiştiremezsiniz.'
+              : 'Viewer rolündesiniz: takım üyelerini sadece görüntüleyebilirsiniz.'
+          }
+        />
+      )}
 
       {/* Invite Form (Admin only) */}
       {isAdmin && (

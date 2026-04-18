@@ -3,10 +3,14 @@ import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
 import { Shield, AlertTriangle, CheckCircle, XCircle, RotateCcw, Edit } from 'lucide-react';
 import { useState } from 'react';
 import { Decision } from '@/types/decision';
+import { usePermissions } from '@/lib/permissions';
+import { ReadOnlyNotice } from '@/components/PermissionGate';
 
 export default function ApprovalsPage() {
   const [selected, setSelected] = useState<Decision | null>(null);
   const pendingDecisions = decisions.filter(d => ['Under Review', 'Escalated', 'Pending'].includes(d.status));
+  const { can, isViewer } = usePermissions();
+  const canApprove = can('approveDecision');
 
   const ceoLimit = authorityLimits.find(a => a.role === 'CEO')!;
   const exceedsAuthority = (d: Decision) => d.budget > ceoLimit.maxBudget;
@@ -17,6 +21,12 @@ export default function ApprovalsPage() {
         <h1 className="page-title">CEO Approval Gate</h1>
         <p className="page-description">No decision can be executed without CEO approval. Review and act on pending decisions.</p>
       </div>
+
+      {isViewer && (
+        <div className="mb-4">
+          <ReadOnlyNotice message="Viewer rolündesiniz: kararları görüntüleyebilir ancak onaylayamazsınız." />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="enterprise-card">
@@ -89,12 +99,16 @@ export default function ApprovalsPage() {
             {!exceedsAuthority(selected) && (
               <div className="enterprise-card p-6">
                 <p className="text-sm text-muted-foreground mb-4">Execution remains locked until CEO approval.</p>
-                <div className="flex gap-3 flex-wrap">
-                  <button className="px-4 py-2 rounded-lg text-sm font-medium gradient-primary text-primary-foreground hover:opacity-90"><CheckCircle className="h-4 w-4 inline mr-1" /> Approve</button>
-                  <button className="px-4 py-2 rounded-lg text-sm font-medium bg-warning/10 text-warning hover:bg-warning/20"><Edit className="h-4 w-4 inline mr-1" /> Approve with Modification</button>
-                  <button className="px-4 py-2 rounded-lg text-sm font-medium bg-destructive/10 text-destructive hover:bg-destructive/20"><XCircle className="h-4 w-4 inline mr-1" /> Reject</button>
-                  <button className="px-4 py-2 rounded-lg text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/70"><RotateCcw className="h-4 w-4 inline mr-1" /> Send Back</button>
-                </div>
+                {canApprove ? (
+                  <div className="flex gap-3 flex-wrap">
+                    <button className="px-4 py-2 rounded-lg text-sm font-medium gradient-primary text-primary-foreground hover:opacity-90"><CheckCircle className="h-4 w-4 inline mr-1" /> Approve</button>
+                    <button className="px-4 py-2 rounded-lg text-sm font-medium bg-warning/10 text-warning hover:bg-warning/20"><Edit className="h-4 w-4 inline mr-1" /> Approve with Modification</button>
+                    <button className="px-4 py-2 rounded-lg text-sm font-medium bg-destructive/10 text-destructive hover:bg-destructive/20"><XCircle className="h-4 w-4 inline mr-1" /> Reject</button>
+                    <button className="px-4 py-2 rounded-lg text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/70"><RotateCcw className="h-4 w-4 inline mr-1" /> Send Back</button>
+                  </div>
+                ) : (
+                  <ReadOnlyNotice message="Bu kararı onaylama yetkiniz yok. Sadece Admin ve Approver onaylayabilir." />
+                )}
               </div>
             )}
           </div>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Upload, FileAudio, Trash2, Loader2, Play, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePermissions } from '@/lib/permissions';
 
 interface Recording {
   id: string;
@@ -27,6 +28,9 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const { can } = usePermissions();
+  const canUpload = can('uploadRecording');
+  const canDelete = can('deleteRecording');
 
   useEffect(() => {
     fetchRecordings();
@@ -141,28 +145,30 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
     <div className="enterprise-card">
       <div className="p-4 border-b border-border flex items-center justify-between">
         <h3 className="font-semibold text-foreground text-sm">Toplantı Kayıtları</h3>
-        <div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="audio/*,video/*"
-            className="hidden"
-            onChange={handleUpload}
-          />
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
-            <span className="ml-1">{uploading ? 'Yükleniyor…' : 'Kayıt Yükle'}</span>
-          </Button>
-        </div>
+        {canUpload && (
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="audio/*,video/*"
+              className="hidden"
+              onChange={handleUpload}
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              <span className="ml-1">{uploading ? 'Yükleniyor…' : 'Kayıt Yükle'}</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -204,14 +210,16 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
                 >
                   <Download className="h-3.5 w-3.5" />
                 </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
-                  onClick={() => handleDelete(rec)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                {canDelete && (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    onClick={() => handleDelete(rec)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
