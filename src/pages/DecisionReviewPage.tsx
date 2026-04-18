@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDecisions } from '@/hooks/useDecisions';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
-import { ThumbsUp, ThumbsDown, MessageSquare, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, AlertTriangle, CheckCircle, Lock, Sparkles, Loader2 } from 'lucide-react';
 import { Decision } from '@/types/decision';
 import { usePermissions } from '@/lib/permissions';
 import { ReadOnlyNotice } from '@/components/PermissionGate';
