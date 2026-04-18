@@ -1,9 +1,37 @@
-import { decisions } from '@/data/mockData';
-import { Brain, TrendingUp, TrendingDown, Minus, DollarSign, Clock, AlertTriangle, Target } from 'lucide-react';
+import { useDecisions } from '@/hooks/useDecisions';
+import { Brain, TrendingUp, DollarSign, Clock, AlertTriangle, Target } from 'lucide-react';
 import { MetricCard } from '@/components/MetricCard';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect } from 'react';
 
 export default function AIEvaluationPage() {
-  const decision = decisions[0]; // The one with AI evaluation
+  const { decisions, loading } = useDecisions();
+  const evaluated = decisions.filter(d => d.aiEvaluation);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedId && evaluated.length > 0) setSelectedId(evaluated[0].id);
+  }, [evaluated, selectedId]);
+
+  const decision = evaluated.find(d => d.id === selectedId) ?? evaluated[0];
+
+  if (loading) return <div className="p-6"><Skeleton className="h-96 w-full" /></div>;
+
+  if (!decision) {
+    return (
+      <div>
+        <div className="page-header">
+          <h1 className="page-title">AI Evaluation</h1>
+          <p className="page-description">AI-powered decision analysis.</p>
+        </div>
+        <div className="enterprise-card p-12 text-center">
+          <Brain className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">Henüz AI değerlendirmesi olan karar yok.</p>
+        </div>
+      </div>
+    );
+  }
+
   const ai = decision.aiEvaluation!;
 
   return (
@@ -13,7 +41,16 @@ export default function AIEvaluationPage() {
         <p className="page-description">AI-powered decision analysis. AI assists but does not make final decisions.</p>
       </div>
 
-      {/* Decision being evaluated */}
+      {evaluated.length > 1 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {evaluated.map(d => (
+            <button key={d.id} onClick={() => setSelectedId(d.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${decision.id === d.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/70'}`}>
+              {d.title}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="enterprise-card p-6 mb-6">
         <div className="flex items-center gap-3 mb-2">
           <Brain className="h-5 w-5 text-primary" />
@@ -22,7 +59,6 @@ export default function AIEvaluationPage() {
         <p className="text-sm text-muted-foreground">{decision.description}</p>
       </div>
 
-      {/* Change Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <MetricCard title="Decision Change" value={`${ai.changePercentage}%`} subtitle="vs baseline" icon={<TrendingUp className="h-5 w-5 text-primary" />} />
         <MetricCard title="Budget Change" value={`${ai.budgetChange}%`} icon={<DollarSign className="h-5 w-5 text-success" />} trend={{ value: Math.abs(ai.budgetChange), positive: ai.budgetChange < 0 }} />
@@ -30,7 +66,6 @@ export default function AIEvaluationPage() {
         <MetricCard title="Risk Change" value={`${ai.riskChange} pts`} icon={<AlertTriangle className="h-5 w-5 text-success" />} trend={{ value: Math.abs(ai.riskChange), positive: ai.riskChange < 0 }} />
       </div>
 
-      {/* Impact Breakdown */}
       <div className="enterprise-card mb-6 overflow-hidden">
         <div className="p-4 border-b border-border">
           <h3 className="font-semibold text-foreground text-sm">Impact Breakdown</h3>
@@ -55,7 +90,6 @@ export default function AIEvaluationPage() {
         </table>
       </div>
 
-      {/* AI Impact Calculator */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="enterprise-card p-6">
           <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
@@ -81,7 +115,6 @@ export default function AIEvaluationPage() {
           </div>
         </div>
 
-        {/* AI Summary */}
         <div className="enterprise-card p-6">
           <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <Brain className="h-4 w-4 text-primary" /> AI Analysis Summary

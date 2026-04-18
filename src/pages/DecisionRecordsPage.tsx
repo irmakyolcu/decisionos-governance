@@ -1,15 +1,19 @@
-import { useState } from 'react';
-import { decisions } from '@/data/mockData';
+import { useState, useMemo } from 'react';
+import { useDecisions } from '@/hooks/useDecisions';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { filterDecisionsByRole } from '@/lib/roleHierarchy';
 import { UserRole } from '@/types/decision';
 import { Archive, Lock, Eye } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DecisionRecordsPage() {
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
-  const allFinalized = decisions.filter(d => ['Approved', 'Executed'].includes(d.status));
-  const finalized = filterDecisionsByRole(allFinalized, viewRole);
+  const { decisions, loading } = useDecisions();
+  const finalized = useMemo(() => {
+    const all = decisions.filter(d => ['Approved', 'Executed'].includes(d.status));
+    return filterDecisionsByRole(all, viewRole);
+  }, [decisions, viewRole]);
 
   return (
     <div>
@@ -26,7 +30,9 @@ export default function DecisionRecordsPage() {
       </div>
 
       <div className="space-y-4">
-        {finalized.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-40 w-full" />)
+        ) : finalized.length === 0 ? (
           <div className="enterprise-card p-12 text-center">
             <Archive className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground">No finalized decision records visible at this authority level.</p>
