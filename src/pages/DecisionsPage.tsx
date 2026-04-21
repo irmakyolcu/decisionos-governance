@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 export default function DecisionsPage() {
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
-  const { decisions, loading, evaluatingIds } = useDecisions();
+  const { decisions, loading, evaluatingStates } = useDecisions();
   const visible = useMemo(() => filterDecisionsByRole(decisions, viewRole), [decisions, viewRole]);
 
   return (
@@ -73,10 +73,10 @@ export default function DecisionsPage() {
                     <td>
                       <div className="flex items-center gap-2">
                         <RiskBadge level={d.riskLevel} />
-                        {evaluatingIds.has(d.id) && (
+                        {evaluatingStates.has(d.id) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary animate-pulse">
                             <Loader2 className="h-3 w-3 animate-spin" />
-                            AI analiz ediyor…
+                            AI analiz ediyor… · başladı {evaluatingStates.get(d.id)!.startedAt.toLocaleTimeString()}
                           </span>
                         )}
                       </div>

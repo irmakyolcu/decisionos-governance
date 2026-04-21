@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DecisionReviewPage() {
-  const { decisions, loading, evaluatingIds, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
+  const { decisions, loading, evaluatingStates, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [newPro, setNewPro] = useState('');
@@ -107,10 +107,10 @@ export default function DecisionReviewPage() {
                 <div className="flex gap-2 mt-1 items-center flex-wrap">
                   <StatusBadge status={d.status} />
                   <RiskBadge level={d.riskLevel} />
-                  {evaluatingIds.has(d.id) && (
+                  {evaluatingStates.has(d.id) && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary animate-pulse">
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      AI analiz ediyor…
+                      AI analiz ediyor… · başladı {evaluatingStates.get(d.id)!.startedAt.toLocaleTimeString()}
                     </span>
                   )}
                 </div>
@@ -121,11 +121,11 @@ export default function DecisionReviewPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="enterprise-card p-6">
-            {evaluatingIds.has(selected.id) && (
+            {evaluatingStates.has(selected.id) && (
               <div className="flex items-center gap-2 text-primary bg-primary/10 p-3 rounded-lg mb-4 text-sm animate-pulse">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <Sparkles className="h-4 w-4" />
-                AI bu kararı yeniden analiz ediyor… Metrikler güncellenecek.
+                <span>AI bu kararı yeniden analiz ediyor… <span className="font-mono text-xs opacity-80">başladı: {evaluatingStates.get(selected.id)!.startedAt.toLocaleTimeString()}</span></span>
               </div>
             )}
             <div className="flex items-start justify-between mb-4">
