@@ -107,12 +107,18 @@ export default function DecisionReviewPage() {
                 <div className="flex gap-2 mt-1 items-center flex-wrap">
                   <StatusBadge status={d.status} />
                   <RiskBadge level={d.riskLevel} />
-                  {evaluatingStates.has(d.id) && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary animate-pulse">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      AI analiz ediyor… · başladı {evaluatingStates.get(d.id)!.startedAt.toLocaleTimeString()}
-                    </span>
-                  )}
+                  {evaluatingStates.has(d.id) && (() => {
+                    const s = evaluatingStates.get(d.id)!;
+                    const done = !!s.finishedAt;
+                    return (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${done ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary animate-pulse'}`}>
+                        {done ? <Sparkles className="h-3 w-3" /> : <Loader2 className="h-3 w-3 animate-spin" />}
+                        {done
+                          ? `${s.startedAt.toLocaleTimeString()} → ${s.finishedAt!.toLocaleTimeString()}`
+                          : `AI analiz ediyor… · ${s.startedAt.toLocaleTimeString()}`}
+                      </span>
+                    );
+                  })()}
                 </div>
               </button>
             ))}
@@ -121,13 +127,20 @@ export default function DecisionReviewPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="enterprise-card p-6">
-            {evaluatingStates.has(selected.id) && (
-              <div className="flex items-center gap-2 text-primary bg-primary/10 p-3 rounded-lg mb-4 text-sm animate-pulse">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <Sparkles className="h-4 w-4" />
-                <span>AI bu kararı yeniden analiz ediyor… <span className="font-mono text-xs opacity-80">başladı: {evaluatingStates.get(selected.id)!.startedAt.toLocaleTimeString()}</span></span>
-              </div>
-            )}
+            {evaluatingStates.has(selected.id) && (() => {
+              const s = evaluatingStates.get(selected.id)!;
+              const done = !!s.finishedAt;
+              return (
+                <div className={`flex items-center gap-2 p-3 rounded-lg mb-4 text-sm ${done ? 'text-success bg-success/10' : 'text-primary bg-primary/10 animate-pulse'}`}>
+                  {done ? <Sparkles className="h-4 w-4" /> : <Loader2 className="h-4 w-4 animate-spin" />}
+                  <span>
+                    {done
+                      ? <>AI değerlendirmesi tamamlandı. <span className="font-mono text-xs opacity-80">başladı: {s.startedAt.toLocaleTimeString()} · bitti: {s.finishedAt!.toLocaleTimeString()}</span></>
+                      : <>AI bu kararı yeniden analiz ediyor… <span className="font-mono text-xs opacity-80">başladı: {s.startedAt.toLocaleTimeString()}</span></>}
+                  </span>
+                </div>
+              );
+            })()}
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">{selected.title}</h2>
               <StatusBadge status={selected.status} />

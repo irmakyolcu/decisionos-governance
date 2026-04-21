@@ -13,7 +13,10 @@ interface ProfileLite {
 
 interface EvaluatingState {
   startedAt: Date;
+  finishedAt?: Date;
 }
+
+const FINISHED_DISPLAY_MS = 30_000;
 
 const toUserRole = (r: string): UserRole => {
   if (['Employee', 'Manager', 'Executive', 'CEO', 'Board'].includes(r)) return r as UserRole;
@@ -174,20 +177,29 @@ export function useDecisions() {
 
     // Fire-and-forget AI evaluation (don't block UI on AI latency)
     if (inserted?.id) {
+      const id = inserted.id;
       setEvaluatingStates(prev => {
         const next = new Map(prev);
-        next.set(inserted.id, { startedAt: new Date() });
+        next.set(id, { startedAt: new Date() });
         return next;
       });
       supabase.functions
-        .invoke('evaluate-decision', { body: { decisionId: inserted.id } })
+        .invoke('evaluate-decision', { body: { decisionId: id } })
         .then(({ error: fnErr }) => {
           if (fnErr) console.error('AI evaluation failed:', fnErr);
           setEvaluatingStates(prev => {
             const next = new Map(prev);
-            next.delete(inserted.id);
+            const existing = next.get(id);
+            if (existing) next.set(id, { ...existing, finishedAt: new Date() });
             return next;
           });
+          setTimeout(() => {
+            setEvaluatingStates(prev => {
+              const next = new Map(prev);
+              next.delete(id);
+              return next;
+            });
+          }, FINISHED_DISPLAY_MS);
           fetchDecisions();
         });
     }
@@ -206,9 +218,17 @@ export function useDecisions() {
     });
     setEvaluatingStates(prev => {
       const next = new Map(prev);
-      next.delete(decisionId);
+      const existing = next.get(decisionId);
+      if (existing) next.set(decisionId, { ...existing, finishedAt: new Date() });
       return next;
     });
+    setTimeout(() => {
+      setEvaluatingStates(prev => {
+        const next = new Map(prev);
+        next.delete(decisionId);
+        return next;
+      });
+    }, FINISHED_DISPLAY_MS);
     if (error) throw error;
     await fetchDecisions();
   };
