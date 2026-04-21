@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DecisionReviewPage() {
-  const { decisions, loading, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
+  const { decisions, loading, evaluatingIds, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [newPro, setNewPro] = useState('');
@@ -104,7 +104,16 @@ export default function DecisionReviewPage() {
             {decisions.map((d) => (
               <button key={d.id} onClick={() => setSelectedId(d.id)} className={`w-full text-left p-4 hover:bg-muted/30 transition-colors ${selected.id === d.id ? 'bg-accent' : ''}`}>
                 <p className="font-medium text-sm text-foreground">{d.title}</p>
-                <div className="flex gap-2 mt-1"><StatusBadge status={d.status} /><RiskBadge level={d.riskLevel} /></div>
+                <div className="flex gap-2 mt-1 items-center flex-wrap">
+                  <StatusBadge status={d.status} />
+                  <RiskBadge level={d.riskLevel} />
+                  {evaluatingIds.has(d.id) && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary animate-pulse">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      AI analiz ediyor…
+                    </span>
+                  )}
+                </div>
               </button>
             ))}
           </div>
@@ -112,6 +121,13 @@ export default function DecisionReviewPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="enterprise-card p-6">
+            {evaluatingIds.has(selected.id) && (
+              <div className="flex items-center gap-2 text-primary bg-primary/10 p-3 rounded-lg mb-4 text-sm animate-pulse">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <Sparkles className="h-4 w-4" />
+                AI bu kararı yeniden analiz ediyor… Metrikler güncellenecek.
+              </div>
+            )}
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">{selected.title}</h2>
               <StatusBadge status={selected.status} />
