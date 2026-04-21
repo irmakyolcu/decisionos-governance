@@ -127,13 +127,20 @@ export default function DecisionReviewPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="enterprise-card p-6">
-            {evaluatingStates.has(selected.id) && (
-              <div className="flex items-center gap-2 text-primary bg-primary/10 p-3 rounded-lg mb-4 text-sm animate-pulse">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <Sparkles className="h-4 w-4" />
-                <span>AI bu kararı yeniden analiz ediyor… <span className="font-mono text-xs opacity-80">başladı: {evaluatingStates.get(selected.id)!.startedAt.toLocaleTimeString()}</span></span>
-              </div>
-            )}
+            {evaluatingStates.has(selected.id) && (() => {
+              const s = evaluatingStates.get(selected.id)!;
+              const done = !!s.finishedAt;
+              return (
+                <div className={`flex items-center gap-2 p-3 rounded-lg mb-4 text-sm ${done ? 'text-success bg-success/10' : 'text-primary bg-primary/10 animate-pulse'}`}>
+                  {done ? <Sparkles className="h-4 w-4" /> : <Loader2 className="h-4 w-4 animate-spin" />}
+                  <span>
+                    {done
+                      ? <>AI değerlendirmesi tamamlandı. <span className="font-mono text-xs opacity-80">başladı: {s.startedAt.toLocaleTimeString()} · bitti: {s.finishedAt!.toLocaleTimeString()}</span></>
+                      : <>AI bu kararı yeniden analiz ediyor… <span className="font-mono text-xs opacity-80">başladı: {s.startedAt.toLocaleTimeString()}</span></>}
+                  </span>
+                </div>
+              );
+            })()}
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">{selected.title}</h2>
               <StatusBadge status={selected.status} />
