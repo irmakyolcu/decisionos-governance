@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DecisionReviewPage() {
-  const { decisions, loading, evaluatingIds, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
+  const { decisions, loading, evaluatingStates, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
   const [newPro, setNewPro] = useState('');
