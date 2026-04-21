@@ -121,11 +121,11 @@ export default function DecisionReviewPage() {
 
         <div className="lg:col-span-2 space-y-6">
           <div className="enterprise-card p-6">
-            {evaluatingIds.has(selected.id) && (
+            {evaluatingStates.has(selected.id) && (
               <div className="flex items-center gap-2 text-primary bg-primary/10 p-3 rounded-lg mb-4 text-sm animate-pulse">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <Sparkles className="h-4 w-4" />
-                AI bu kararı yeniden analiz ediyor… Metrikler güncellenecek.
+                <span>AI bu kararı yeniden analiz ediyor… <span className="font-mono text-xs opacity-80">başladı: {evaluatingStates.get(selected.id)!.startedAt.toLocaleTimeString()}</span></span>
               </div>
             )}
             <div className="flex items-start justify-between mb-4">
