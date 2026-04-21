@@ -11,6 +11,10 @@ interface ProfileLite {
   avatar_url: string | null;
 }
 
+interface EvaluatingState {
+  startedAt: Date;
+}
+
 const toUserRole = (r: string): UserRole => {
   if (['Employee', 'Manager', 'Executive', 'CEO', 'Board'].includes(r)) return r as UserRole;
   return 'Employee';
@@ -29,7 +33,7 @@ export function useDecisions() {
   const { workspace } = useWorkspace();
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [loading, setLoading] = useState(true);
-  const [evaluatingIds, setEvaluatingIds] = useState<Set<string>>(new Set());
+  const [evaluatingStates, setEvaluatingStates] = useState<Map<string, EvaluatingState>>(new Map());
 
   const fetchDecisions = useCallback(async () => {
     if (!workspace) {
@@ -170,13 +174,17 @@ export function useDecisions() {
 
     // Fire-and-forget AI evaluation (don't block UI on AI latency)
     if (inserted?.id) {
-      setEvaluatingIds(prev => new Set(prev).add(inserted.id));
+      setEvaluatingStates(prev => {
+        const next = new Map(prev);
+        next.set(inserted.id, { startedAt: new Date() });
+        return next;
+      });
       supabase.functions
         .invoke('evaluate-decision', { body: { decisionId: inserted.id } })
         .then(({ error: fnErr }) => {
           if (fnErr) console.error('AI evaluation failed:', fnErr);
-          setEvaluatingIds(prev => {
-            const next = new Set(prev);
+          setEvaluatingStates(prev => {
+            const next = new Map(prev);
             next.delete(inserted.id);
             return next;
           });
@@ -188,12 +196,16 @@ export function useDecisions() {
   };
 
   const evaluateDecision = async (decisionId: string) => {
-    setEvaluatingIds(prev => new Set(prev).add(decisionId));
+    setEvaluatingStates(prev => {
+      const next = new Map(prev);
+      next.set(decisionId, { startedAt: new Date() });
+      return next;
+    });
     const { error } = await supabase.functions.invoke('evaluate-decision', {
       body: { decisionId },
     });
-    setEvaluatingIds(prev => {
-      const next = new Set(prev);
+    setEvaluatingStates(prev => {
+      const next = new Map(prev);
       next.delete(decisionId);
       return next;
     });
@@ -248,7 +260,7 @@ export function useDecisions() {
     decisions,
     loading,
     refetch: fetchDecisions,
-    evaluatingIds,
+    evaluatingStates,
     createDecision,
     addComment,
     addProCon,
