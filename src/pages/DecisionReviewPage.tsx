@@ -107,12 +107,18 @@ export default function DecisionReviewPage() {
                 <div className="flex gap-2 mt-1 items-center flex-wrap">
                   <StatusBadge status={d.status} />
                   <RiskBadge level={d.riskLevel} />
-                  {evaluatingStates.has(d.id) && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary animate-pulse">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      AI analiz ediyor… · başladı {evaluatingStates.get(d.id)!.startedAt.toLocaleTimeString()}
-                    </span>
-                  )}
+                  {evaluatingStates.has(d.id) && (() => {
+                    const s = evaluatingStates.get(d.id)!;
+                    const done = !!s.finishedAt;
+                    return (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${done ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary animate-pulse'}`}>
+                        {done ? <Sparkles className="h-3 w-3" /> : <Loader2 className="h-3 w-3 animate-spin" />}
+                        {done
+                          ? `${s.startedAt.toLocaleTimeString()} → ${s.finishedAt!.toLocaleTimeString()}`
+                          : `AI analiz ediyor… · ${s.startedAt.toLocaleTimeString()}`}
+                      </span>
+                    );
+                  })()}
                 </div>
               </button>
             ))}
