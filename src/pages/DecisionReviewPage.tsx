@@ -107,10 +107,10 @@ export default function DecisionReviewPage() {
                 <div className="flex gap-2 mt-1 items-center flex-wrap">
                   <StatusBadge status={d.status} />
                   <RiskBadge level={d.riskLevel} />
-                  {evaluatingIds.has(d.id) && (
+                  {evaluatingStates.has(d.id) && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary animate-pulse">
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      AI analiz ediyor…
+                      AI analiz ediyor… · başladı {evaluatingStates.get(d.id)!.startedAt.toLocaleTimeString()}
                     </span>
                   )}
                 </div>
