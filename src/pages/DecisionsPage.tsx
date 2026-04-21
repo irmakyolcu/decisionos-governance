@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 export default function DecisionsPage() {
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
-  const { decisions, loading, evaluatingIds } = useDecisions();
+  const { decisions, loading, evaluatingStates } = useDecisions();
   const visible = useMemo(() => filterDecisionsByRole(decisions, viewRole), [decisions, viewRole]);
 
   return (
