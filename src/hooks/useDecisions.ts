@@ -13,7 +13,10 @@ interface ProfileLite {
 
 interface EvaluatingState {
   startedAt: Date;
+  finishedAt?: Date;
 }
+
+const FINISHED_DISPLAY_MS = 30_000;
 
 const toUserRole = (r: string): UserRole => {
   if (['Employee', 'Manager', 'Executive', 'CEO', 'Board'].includes(r)) return r as UserRole;
