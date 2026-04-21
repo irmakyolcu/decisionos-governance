@@ -29,6 +29,7 @@ export function useDecisions() {
   const { workspace } = useWorkspace();
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [loading, setLoading] = useState(true);
+  const [evaluatingIds, setEvaluatingIds] = useState<Set<string>>(new Set());
 
   const fetchDecisions = useCallback(async () => {
     if (!workspace) {
@@ -169,10 +170,16 @@ export function useDecisions() {
 
     // Fire-and-forget AI evaluation (don't block UI on AI latency)
     if (inserted?.id) {
+      setEvaluatingIds(prev => new Set(prev).add(inserted.id));
       supabase.functions
         .invoke('evaluate-decision', { body: { decisionId: inserted.id } })
         .then(({ error: fnErr }) => {
           if (fnErr) console.error('AI evaluation failed:', fnErr);
+          setEvaluatingIds(prev => {
+            const next = new Set(prev);
+            next.delete(inserted.id);
+            return next;
+          });
           fetchDecisions();
         });
     }
@@ -181,8 +188,14 @@ export function useDecisions() {
   };
 
   const evaluateDecision = async (decisionId: string) => {
+    setEvaluatingIds(prev => new Set(prev).add(decisionId));
     const { error } = await supabase.functions.invoke('evaluate-decision', {
       body: { decisionId },
+    });
+    setEvaluatingIds(prev => {
+      const next = new Set(prev);
+      next.delete(decisionId);
+      return next;
     });
     if (error) throw error;
     await fetchDecisions();
@@ -235,6 +248,7 @@ export function useDecisions() {
     decisions,
     loading,
     refetch: fetchDecisions,
+    evaluatingIds,
     createDecision,
     addComment,
     addProCon,
