@@ -4,14 +4,15 @@ import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { filterDecisionsByRole } from '@/lib/roleHierarchy';
 import { UserRole } from '@/types/decision';
-import { GitBranch, Eye } from 'lucide-react';
+import { GitBranch, Eye, Sparkles, Loader2 } from 'lucide-react';
 import { CreateDecisionDialog } from '@/components/CreateDecisionDialog';
 import { PermissionGate } from '@/components/PermissionGate';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export default function DecisionsPage() {
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
-  const { decisions, loading } = useDecisions();
+  const { decisions, loading, evaluatingIds } = useDecisions();
   const visible = useMemo(() => filterDecisionsByRole(decisions, viewRole), [decisions, viewRole]);
 
   return (
@@ -69,7 +70,17 @@ export default function DecisionsPage() {
                       </div>
                     </td>
                     <td className="font-mono text-sm">€{d.budget.toLocaleString()}</td>
-                    <td><RiskBadge level={d.riskLevel} /></td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <RiskBadge level={d.riskLevel} />
+                        {evaluatingIds.has(d.id) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary animate-pulse">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            AI analiz ediyor…
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td><StatusBadge status={d.status} /></td>
                     <td className="text-muted-foreground">{d.createdBy.name}</td>
                     <td>
