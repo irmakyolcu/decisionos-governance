@@ -29,9 +29,7 @@ export default function InvitePage() {
 
   const fetchInvite = async () => {
     const { data, error } = await supabase
-      .from('workspace_invites')
-      .select('*, workspaces(name)')
-      .eq('token', token!)
+      .rpc('get_invite_by_token', { _token: token! })
       .maybeSingle();
 
     if (error || !data) {
@@ -52,9 +50,10 @@ export default function InvitePage() {
       return;
     }
 
-    setInvite(data);
+    setInvite({ ...data, workspaces: { name: data.workspace_name } });
     setStatus('ready');
   };
+
 
   const handleAccept = async () => {
     if (!user || !invite) return;
