@@ -605,6 +605,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_invite_by_token: {
+        Args: { _token: string }
+        Returns: {
+          accepted_at: string
+          email: string
+          expires_at: string
+          id: string
+          role: Database["public"]["Enums"]["workspace_role"]
+          workspace_id: string
+          workspace_name: string
+        }[]
+      }
       get_user_workspace_id: { Args: { _user_id: string }; Returns: string }
       get_workspace_role: {
         Args: { _user_id: string; _workspace_id: string }
