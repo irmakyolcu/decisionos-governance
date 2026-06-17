@@ -80,6 +80,7 @@ function ProtectedRoutes() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/team" element={<TeamPage />} />
+        <Route path="/trust" element={<TrustPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
