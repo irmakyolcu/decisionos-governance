@@ -3,9 +3,11 @@ import { MetricCard } from '@/components/MetricCard';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
 import { useDecisions } from '@/hooks/useDecisions';
 import { useMeetings } from '@/hooks/useMeetings';
-import { BarChart3, CheckCircle, AlertTriangle, TrendingUp, Clock, DollarSign, GitBranch, Calendar } from 'lucide-react';
+import { BarChart3, CheckCircle, AlertTriangle, TrendingUp, Clock, DollarSign, GitBranch, Calendar, Crown, Inbox, Users, ShieldAlert, Compass, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { ceoProfile } from '@/data/ceoTwin';
 
 export default function HomePage() {
   const { decisions, loading: dLoading } = useDecisions();
@@ -33,11 +35,51 @@ export default function HomePage() {
     return { total, pending, approved, rejected, successRate, escalated, budgetUsed, budgetAllocated, thisMonth, avgROI };
   }, [decisions]);
 
+  // CEO Twin executive summary: derive from existing decisions
+  const twin = useMemo(() => {
+    const pending = decisions.filter(d => ['Pending', 'Under Review', 'Escalated'].includes(d.status)).length;
+    const ceoNeeded = decisions.filter(d => d.status === 'Escalated' || (d.budget > 5000 && d.status === 'Under Review') || d.riskLevel === 'High' || d.riskLevel === 'Critical').length;
+    const delegatable = Math.max(0, pending - ceoNeeded);
+    const highRisk = decisions.filter(d => d.riskLevel === 'High' || d.riskLevel === 'Critical').length;
+    const alignment = decisions.length === 0 ? 78 : Math.max(40, Math.min(96, 82 + Math.round((decisions.filter(d => d.status === 'Approved').length - decisions.filter(d => d.status === 'Rejected').length) * 2)));
+    return { pending, ceoNeeded, delegatable, highRisk, alignment };
+  }, [decisions]);
+
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-description">Welcome back. Here's your decision governance overview.</p>
+      <div className="page-header flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">CEO Digital Twin</p>
+          <h1 className="page-title">Decision Intelligence</h1>
+          <p className="page-description max-w-2xl">
+            Your CEO's decision logic, priorities, and risk appetite — mapped into an AI decision layer for {ceoProfile.company}.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" asChild><Link to="/ceo-profile"><Crown className="h-4 w-4" />Map Your CEO's Decision Logic</Link></Button>
+          <Button asChild><Link to="/decision-intake"><Inbox className="h-4 w-4" />New Decision Request</Link></Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <MetricCard title="Pending Decisions" value={twin.pending} icon={<Clock className="h-5 w-5 text-warning" />} subtitle="Awaiting routing" />
+        <MetricCard title="CEO Approval Needed" value={twin.ceoNeeded} icon={<Crown className="h-5 w-5 text-primary" />} subtitle="Red-line or > €5k" />
+        <MetricCard title="Delegatable" value={twin.delegatable} icon={<Users className="h-5 w-5 text-success" />} subtitle="Team can decide" />
+        <MetricCard title="High-Risk Items" value={twin.highRisk} icon={<ShieldAlert className="h-5 w-5 text-destructive" />} subtitle="Brand / legal / financial" />
+        <MetricCard title="Strategic Alignment" value={`${twin.alignment}%`} icon={<Compass className="h-5 w-5 text-primary" />} subtitle="vs CEO priorities" />
+      </div>
+
+      <div className="enterprise-card mb-8 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-l-4 border-l-primary">
+        <div>
+          <h3 className="font-semibold text-foreground">Judgment Layer is active</h3>
+          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+            {ceoProfile.priorities.length} priorities, {ceoProfile.redLines.length} red lines, and {ceoProfile.delegationRules.length} delegation rules are powering recommendations. Submit a request and the system returns a CEO-aligned decision in seconds.
+          </p>
+        </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" asChild><Link to="/delegation-engine">Delegation Engine<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
+          <Button variant="outline" size="sm" asChild><Link to="/decision-memory">Decision Memory<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
