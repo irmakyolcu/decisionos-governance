@@ -30,6 +30,7 @@ import DelegationEnginePage from "./pages/DelegationEnginePage";
 import TrainingDataPage from "./pages/TrainingDataPage";
 import StrategicAlignmentPage from "./pages/StrategicAlignmentPage";
 import TwinOnboardingPage from "./pages/TwinOnboardingPage";
+import TrustPage from "./pages/TrustPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
