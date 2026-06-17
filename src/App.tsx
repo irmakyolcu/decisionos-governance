@@ -28,6 +28,8 @@ import DecisionIntakePage from "./pages/DecisionIntakePage";
 import DecisionMemoryPage from "./pages/DecisionMemoryPage";
 import DelegationEnginePage from "./pages/DelegationEnginePage";
 import TrainingDataPage from "./pages/TrainingDataPage";
+import StrategicAlignmentPage from "./pages/StrategicAlignmentPage";
+import TwinOnboardingPage from "./pages/TwinOnboardingPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,7 +63,9 @@ function ProtectedRoutes() {
         <Route path="/decision-intake" element={<DecisionIntakePage />} />
         <Route path="/decision-memory" element={<DecisionMemoryPage />} />
         <Route path="/delegation-engine" element={<DelegationEnginePage />} />
+        <Route path="/strategic-alignment" element={<StrategicAlignmentPage />} />
         <Route path="/training-data" element={<TrainingDataPage />} />
+        <Route path="/twin-onboarding" element={<TwinOnboardingPage />} />
         <Route path="/decision-spaces" element={<DecisionSpacesPage />} />
         <Route path="/proposals" element={<ProposalsPage />} />
         <Route path="/approvals" element={<ApprovalsPage />} />
