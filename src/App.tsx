@@ -23,6 +23,11 @@ import TeamPage from "./pages/TeamPage";
 import AuthPage from "./pages/AuthPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import InvitePage from "./pages/InvitePage";
+import CEOProfilePage from "./pages/CEOProfilePage";
+import DecisionIntakePage from "./pages/DecisionIntakePage";
+import DecisionMemoryPage from "./pages/DecisionMemoryPage";
+import DelegationEnginePage from "./pages/DelegationEnginePage";
+import TrainingDataPage from "./pages/TrainingDataPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +57,11 @@ function ProtectedRoutes() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/ceo-profile" element={<CEOProfilePage />} />
+        <Route path="/decision-intake" element={<DecisionIntakePage />} />
+        <Route path="/decision-memory" element={<DecisionMemoryPage />} />
+        <Route path="/delegation-engine" element={<DelegationEnginePage />} />
+        <Route path="/training-data" element={<TrainingDataPage />} />
         <Route path="/decision-spaces" element={<DecisionSpacesPage />} />
         <Route path="/proposals" element={<ProposalsPage />} />
         <Route path="/approvals" element={<ApprovalsPage />} />
