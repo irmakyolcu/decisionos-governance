@@ -5,6 +5,9 @@ const statusColors: Record<string, string> = {
   Draft: 'bg-muted text-muted-foreground',
   Pending: 'bg-warning/10 text-warning',
   'Under Review': 'bg-info/10 text-info',
+  'CEO Review Needed': 'bg-primary/10 text-primary',
+  Delegated: 'bg-info/10 text-info',
+  'Waiting for More Context': 'bg-muted text-muted-foreground',
   Approved: 'bg-success/10 text-success',
   Rejected: 'bg-destructive/10 text-destructive',
   Escalated: 'bg-warning/10 text-warning',
@@ -24,7 +27,7 @@ const riskColors: Record<RiskLevel, string> = {
 
 export function StatusBadge({ status }: { status: DecisionStatus | OutcomeStatus | string }) {
   return (
-    <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', statusColors[status] || 'bg-muted text-muted-foreground')}>
+    <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap', statusColors[status] || 'bg-muted text-muted-foreground')}>
       {status}
     </span>
   );

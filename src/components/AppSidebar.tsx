@@ -1,7 +1,7 @@
 import {
   Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
   Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
-  Crown, Inbox, BookOpen, Network, Database,
+  Crown, Inbox, BookOpen, Network, Database, Compass,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -12,17 +12,15 @@ import {
 
 const navGroups: { label: string; items: { title: string; url: string; icon: any }[] }[] = [
   {
-    label: 'Overview',
-    items: [{ title: 'Home', url: '/', icon: Home }],
-  },
-  {
-    label: 'CEO Digital Twin',
+    label: 'Decision Intelligence',
     items: [
-      { title: 'CEO Decision Profile', url: '/ceo-profile', icon: Crown },
+      { title: 'Dashboard', url: '/', icon: Home },
       { title: 'Decision Intake', url: '/decision-intake', icon: Inbox },
+      { title: 'CEO Decision Profile', url: '/ceo-profile', icon: Crown },
       { title: 'Decision Memory', url: '/decision-memory', icon: BookOpen },
       { title: 'Delegation Engine', url: '/delegation-engine', icon: Network },
-      { title: 'Training Data', url: '/training-data', icon: Database },
+      { title: 'Strategic Alignment', url: '/strategic-alignment', icon: Compass },
+      { title: 'Settings', url: '/settings', icon: Settings },
     ],
   },
   {
@@ -37,13 +35,13 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'AI Evaluation', url: '/ai-evaluation', icon: Brain },
       { title: 'Decision Analytics', url: '/analytics', icon: BarChart3 },
       { title: 'Authority & Budget', url: '/authority', icon: Shield },
+      { title: 'Training Data', url: '/training-data', icon: Database },
     ],
   },
   {
     label: 'Workspace',
     items: [
       { title: 'Team', url: '/team', icon: Users },
-      { title: 'Settings', url: '/settings', icon: Settings },
     ],
   },
 ];
@@ -62,7 +60,7 @@ export function AppSidebar() {
           {!collapsed && (
             <div>
               <h2 className="text-sm font-bold text-sidebar-accent-foreground tracking-wide">DecisionOS</h2>
-              <p className="text-[10px] text-sidebar-muted">Governance Platform</p>
+              <p className="text-[10px] text-sidebar-muted">CEO Digital Twin</p>
             </div>
           )}
         </div>
