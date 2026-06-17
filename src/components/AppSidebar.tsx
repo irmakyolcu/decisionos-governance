@@ -1,6 +1,7 @@
 import {
   Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
-  Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users
+  Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
+  Crown, Inbox, BookOpen, Network, Database,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -9,19 +10,42 @@ import {
   SidebarHeader, SidebarFooter, useSidebar,
 } from '@/components/ui/sidebar';
 
-const navItems = [
-  { title: 'Home', url: '/', icon: Home },
-  { title: 'Decision Spaces', url: '/decision-spaces', icon: Layers },
-  { title: 'Proposals', url: '/proposals', icon: FileText },
-  { title: 'Approvals', url: '/approvals', icon: CheckCircle },
-  { title: 'Meetings', url: '/meetings', icon: Calendar },
-  { title: 'Decisions', url: '/decisions', icon: GitBranch },
-  { title: 'Decision Records', url: '/decision-records', icon: Archive },
-  { title: 'AI Evaluation', url: '/ai-evaluation', icon: Brain },
-  { title: 'Decision Analytics', url: '/analytics', icon: BarChart3 },
-  { title: 'Authority & Budget', url: '/authority', icon: Shield },
-  { title: 'Team', url: '/team', icon: Users },
-  { title: 'Settings', url: '/settings', icon: Settings },
+const navGroups: { label: string; items: { title: string; url: string; icon: any }[] }[] = [
+  {
+    label: 'Overview',
+    items: [{ title: 'Home', url: '/', icon: Home }],
+  },
+  {
+    label: 'CEO Digital Twin',
+    items: [
+      { title: 'CEO Decision Profile', url: '/ceo-profile', icon: Crown },
+      { title: 'Decision Intake', url: '/decision-intake', icon: Inbox },
+      { title: 'Decision Memory', url: '/decision-memory', icon: BookOpen },
+      { title: 'Delegation Engine', url: '/delegation-engine', icon: Network },
+      { title: 'Training Data', url: '/training-data', icon: Database },
+    ],
+  },
+  {
+    label: 'Governance',
+    items: [
+      { title: 'Decision Spaces', url: '/decision-spaces', icon: Layers },
+      { title: 'Proposals', url: '/proposals', icon: FileText },
+      { title: 'Approvals', url: '/approvals', icon: CheckCircle },
+      { title: 'Meetings', url: '/meetings', icon: Calendar },
+      { title: 'Decisions', url: '/decisions', icon: GitBranch },
+      { title: 'Decision Records', url: '/decision-records', icon: Archive },
+      { title: 'AI Evaluation', url: '/ai-evaluation', icon: Brain },
+      { title: 'Decision Analytics', url: '/analytics', icon: BarChart3 },
+      { title: 'Authority & Budget', url: '/authority', icon: Shield },
+    ],
+  },
+  {
+    label: 'Workspace',
+    items: [
+      { title: 'Team', url: '/team', icon: Users },
+      { title: 'Settings', url: '/settings', icon: Settings },
+    ],
+  },
 ];
 
 export function AppSidebar() {
