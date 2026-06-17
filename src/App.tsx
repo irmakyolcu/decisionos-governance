@@ -112,6 +112,7 @@ const App = () => (
             <Routes>
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/invite" element={<InviteRoute />} />
+              <Route path="/trust" element={<TrustPage />} />
               <Route path="/*" element={<ProtectedRoutes />} />
             </Routes>
           </WorkspaceProvider>
