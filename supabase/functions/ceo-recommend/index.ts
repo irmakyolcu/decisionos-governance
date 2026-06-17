@@ -1,4 +1,6 @@
 // CEO Digital Twin — generate a structured decision recommendation grounded in the CEO profile.
+import { createClient } from "npm:@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
