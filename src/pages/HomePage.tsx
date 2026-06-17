@@ -3,9 +3,11 @@ import { MetricCard } from '@/components/MetricCard';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
 import { useDecisions } from '@/hooks/useDecisions';
 import { useMeetings } from '@/hooks/useMeetings';
-import { BarChart3, CheckCircle, AlertTriangle, TrendingUp, Clock, DollarSign, GitBranch, Calendar } from 'lucide-react';
+import { BarChart3, CheckCircle, AlertTriangle, TrendingUp, Clock, DollarSign, GitBranch, Calendar, Crown, Inbox, Users, ShieldAlert, Compass, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { ceoProfile } from '@/data/ceoTwin';
 
 export default function HomePage() {
   const { decisions, loading: dLoading } = useDecisions();
