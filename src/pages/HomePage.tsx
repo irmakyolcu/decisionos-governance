@@ -49,36 +49,36 @@ export default function HomePage() {
     <div>
       <div className="page-header flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">CEO Digital Twin</p>
-          <h1 className="page-title">Decision Intelligence</h1>
+          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">CEO Digital Twin · {ceoProfile.company}</p>
+          <h1 className="page-title">Preserve founder judgment as the company scales</h1>
           <p className="page-description max-w-2xl">
-            Your CEO's decision logic, priorities, and risk appetite — mapped into an AI decision layer for {ceoProfile.company}.
+            Reduce CEO bottlenecks. Turn past decisions into reusable operating logic, so teams move without waiting and only what truly needs executive judgment gets escalated.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" asChild><Link to="/ceo-profile"><Crown className="h-4 w-4" />Map Your CEO's Decision Logic</Link></Button>
-          <Button asChild><Link to="/decision-intake"><Inbox className="h-4 w-4" />New Decision Request</Link></Button>
+          <Button variant="outline" asChild><Link to="/ceo-profile"><Crown className="h-4 w-4" />Map CEO Decision Logic</Link></Button>
+          <Button asChild><Link to="/decision-intake"><Inbox className="h-4 w-4" />Submit Decision Request</Link></Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <MetricCard title="Pending Decisions" value={twin.pending} icon={<Clock className="h-5 w-5 text-warning" />} subtitle="Awaiting routing" />
-        <MetricCard title="CEO Approval Needed" value={twin.ceoNeeded} icon={<Crown className="h-5 w-5 text-primary" />} subtitle="Red-line or > €5k" />
-        <MetricCard title="Delegatable" value={twin.delegatable} icon={<Users className="h-5 w-5 text-success" />} subtitle="Team can decide" />
-        <MetricCard title="High-Risk Items" value={twin.highRisk} icon={<ShieldAlert className="h-5 w-5 text-destructive" />} subtitle="Brand / legal / financial" />
-        <MetricCard title="Strategic Alignment" value={`${twin.alignment}%`} icon={<Compass className="h-5 w-5 text-primary" />} subtitle="vs CEO priorities" />
+        <MetricCard title="Pending" value={twin.pending} icon={<Clock className="h-5 w-5 text-warning" />} subtitle="Awaiting routing" />
+        <MetricCard title="CEO Review Needed" value={twin.ceoNeeded} icon={<Crown className="h-5 w-5 text-primary" />} subtitle="Red line or > €5k" />
+        <MetricCard title="Delegated to Team" value={twin.delegatable} icon={<Users className="h-5 w-5 text-success" />} subtitle="Team can decide" />
+        <MetricCard title="High-Risk Items" value={twin.highRisk} icon={<ShieldAlert className="h-5 w-5 text-destructive" />} subtitle="Brand · legal · financial" />
+        <MetricCard title="Strategic Alignment" value={`${twin.alignment}%`} icon={<Compass className="h-5 w-5 text-primary" />} subtitle="Portfolio vs CEO" />
       </div>
 
       <div className="enterprise-card mb-8 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-l-4 border-l-primary">
         <div>
           <h3 className="font-semibold text-foreground">Judgment Layer is active</h3>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            {ceoProfile.priorities.length} priorities, {ceoProfile.redLines.length} red lines, and {ceoProfile.delegationRules.length} delegation rules are powering recommendations. Submit a request and the system returns a CEO-aligned decision in seconds.
+            {ceoProfile.priorities.length} priorities, {ceoProfile.redLines.length} red lines, and {ceoProfile.delegationRules.length} delegation rules now power every recommendation. The team gets a CEO-aligned answer in seconds — the CEO only sees what truly needs them.
           </p>
         </div>
         <div className="flex gap-2 flex-shrink-0">
-          <Button variant="outline" size="sm" asChild><Link to="/delegation-engine">Delegation Engine<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
-          <Button variant="outline" size="sm" asChild><Link to="/decision-memory">Decision Memory<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
+          <Button variant="outline" size="sm" asChild><Link to="/twin-onboarding">Setup Wizard<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
+          <Button variant="outline" size="sm" asChild><Link to="/strategic-alignment">Strategic Alignment<ArrowRight className="h-3.5 w-3.5" /></Link></Button>
         </div>
       </div>
 

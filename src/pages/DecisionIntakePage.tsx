@@ -7,11 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { AlignmentScore } from '@/components/AlignmentScore';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ceoProfile, memoryDecisions } from '@/data/ceoTwin';
 import type { AIRecommendation, DecisionCategory, DecisionIntake, RiskBand, Urgency } from '@/types/ceoTwin';
-import { Sparkles, ShieldAlert, ShieldCheck, Compass, MessageSquare, ArrowRight, Copy } from 'lucide-react';
+import { Sparkles, ShieldCheck, Compass, MessageSquare, ArrowRight, Copy, ChevronDown, Brain } from 'lucide-react';
 
 const CATS: DecisionCategory[] = ['Strategy','Partnership','Hiring','Finance','Product','Legal','Sales','Investor Relations'];
 const RISKS: RiskBand[] = ['Low','Medium','High'];
@@ -90,8 +92,9 @@ export default function DecisionIntakePage() {
   return (
     <div className="space-y-6">
       <div className="page-header">
-        <h1 className="page-title">Decision Intake</h1>
-        <p className="page-description">Submit a decision request. The Judgment Layer returns a CEO-aligned recommendation, delegation level, and stakeholder message.</p>
+        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Decision Intake</p>
+        <h1 className="page-title">Help teams move without waiting for the CEO</h1>
+        <p className="page-description">Submit a request. The Judgment Layer returns a CEO-aligned action, a strategic alignment score, the right delegation level, and a stakeholder message — in seconds.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -191,6 +194,7 @@ export default function DecisionIntakePage() {
 }
 
 function RecommendationCard({ intake, r, onCopy }: { intake: DecisionIntake; r: AIRecommendation; onCopy: () => void }) {
+  const [whyOpen, setWhyOpen] = useState(false);
   return (
     <Card>
       <CardHeader>
@@ -203,32 +207,47 @@ function RecommendationCard({ intake, r, onCopy }: { intake: DecisionIntake; r: 
         </div>
       </CardHeader>
       <CardContent className="space-y-5">
-        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
-          <p className="text-xs uppercase tracking-wider text-primary font-medium">Recommended action</p>
-          <p className="text-sm text-foreground mt-1 leading-relaxed">{r.recommendedAction}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+          <div className="md:col-span-2 rounded-lg border border-primary/30 bg-primary/5 p-4">
+            <p className="text-xs uppercase tracking-wider text-primary font-medium">Recommended action</p>
+            <p className="text-sm text-foreground mt-1 leading-relaxed">{r.recommendedAction}</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3 flex items-center justify-center">
+            <AlignmentScore score={r.strategicAlignmentScore} size="md" label="Alignment with CEO" />
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <Stat label="Risk level" value={r.riskLevel} cls={riskClass(r.riskLevel)} />
           <Stat label="CEO approval" value={r.ceoApprovalRequired ? 'Required' : 'Not required'}
             cls={r.ceoApprovalRequired ? 'bg-destructive/10 text-destructive border-destructive/30' : 'bg-success/10 text-success border-success/30'} />
-          <Stat label="Alignment" value={`${r.strategicAlignmentScore}/100`} cls="bg-primary/10 text-primary border-primary/30" />
           <Stat label="Category" value={intake.category} cls="bg-muted text-foreground border-border" />
         </div>
 
-        <Section icon={<Compass className="h-4 w-4" />} title="Reasoning">
-          <p className="text-sm text-foreground leading-relaxed">{r.reasoning}</p>
-        </Section>
-
-        {r.similarPastDecisions.length > 0 && (
-          <Section icon={<ShieldCheck className="h-4 w-4" />} title="Similar past decisions">
-            <ul className="space-y-1">
-              {r.similarPastDecisions.map((s) => (
-                <li key={s} className="text-sm text-foreground flex gap-2"><span className="text-muted-foreground">•</span>{s}</li>
-              ))}
-            </ul>
-          </Section>
-        )}
+        <Collapsible open={whyOpen} onOpenChange={setWhyOpen}>
+          <CollapsibleTrigger className="w-full flex items-center justify-between rounded-md border border-border bg-muted/30 hover:bg-muted/50 transition-colors px-3 py-2.5 text-left">
+            <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Brain className="h-4 w-4 text-primary" />Why this recommendation?
+            </span>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${whyOpen ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-3 space-y-4">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1.5 flex items-center gap-2"><Compass className="h-3.5 w-3.5" />Reasoning grounded in CEO logic</p>
+              <p className="text-sm text-foreground leading-relaxed">{r.reasoning}</p>
+            </div>
+            {r.similarPastDecisions.length > 0 && (
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1.5 flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" />Past decisions that informed this</p>
+                <ul className="space-y-1">
+                  {r.similarPastDecisions.map((s) => (
+                    <li key={s} className="text-sm text-foreground flex gap-2"><span className="text-muted-foreground">•</span>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
 
         <Section icon={<ArrowRight className="h-4 w-4" />} title="Suggested next step">
           <p className="text-sm text-foreground">{r.suggestedNextStep}</p>
