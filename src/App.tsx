@@ -30,6 +30,7 @@ import DelegationEnginePage from "./pages/DelegationEnginePage";
 import TrainingDataPage from "./pages/TrainingDataPage";
 import StrategicAlignmentPage from "./pages/StrategicAlignmentPage";
 import TwinOnboardingPage from "./pages/TwinOnboardingPage";
+import TrustPage from "./pages/TrustPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -79,6 +80,7 @@ function ProtectedRoutes() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/team" element={<TeamPage />} />
+        <Route path="/trust" element={<TrustPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
@@ -110,6 +112,7 @@ const App = () => (
             <Routes>
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/invite" element={<InviteRoute />} />
+              <Route path="/trust" element={<TrustPage />} />
               <Route path="/*" element={<ProtectedRoutes />} />
             </Routes>
           </WorkspaceProvider>
