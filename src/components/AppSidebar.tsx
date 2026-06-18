@@ -1,7 +1,7 @@
 import {
   Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
   Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
-  Crown, Inbox, BookOpen, Network, Database, Compass,
+  Crown, Inbox, BookOpen, Network, Database, Compass, Mic,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -20,6 +20,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Decision Memory', url: '/decision-memory', icon: BookOpen },
       { title: 'Delegation Engine', url: '/delegation-engine', icon: Network },
       { title: 'Strategic Alignment', url: '/strategic-alignment', icon: Compass },
+      { title: 'Voice Assistant', url: '/voice-assistant', icon: Mic },
       { title: 'Settings', url: '/settings', icon: Settings },
     ],
   },
