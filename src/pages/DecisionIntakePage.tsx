@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlignmentScore } from '@/components/AlignmentScore';
+import { VoiceInputButton } from '@/components/VoiceInputButton';
+import { VoicePlayButton } from '@/components/VoicePlayButton';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ceoProfile, memoryDecisions } from '@/data/ceoTwin';
@@ -109,8 +111,13 @@ export default function DecisionIntakePage() {
                 <Input id="title" value={form.title} onChange={(e) => update('title', e.target.value)} placeholder="e.g. Partnership offer from new AI accelerator" required />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="context">Context *</Label>
-                <Textarea id="context" rows={3} value={form.context} onChange={(e) => update('context', e.target.value)} placeholder="Background, what's being asked, who's involved" required />
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="context">Context *</Label>
+                  <VoiceInputButton
+                    onTranscript={(t) => update('context', (form.context ? form.context + ' ' : '') + t)}
+                  />
+                </div>
+                <Textarea id="context" rows={3} value={form.context} onChange={(e) => update('context', e.target.value)} placeholder="Background, what's being asked, who's involved — or tap Speak to dictate" required />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="options">Options considered</Label>
@@ -203,7 +210,10 @@ function RecommendationCard({ intake, r, onCopy }: { intake: DecisionIntake; r: 
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Decision</p>
             <CardTitle className="text-lg mt-1">{intake.title}</CardTitle>
           </div>
-          <Badge variant="outline" className={delegationClass(r.delegationLevel)}>{r.delegationLevel}</Badge>
+          <div className="flex items-center gap-2">
+            <VoicePlayButton text={`Recommended action. ${r.recommendedAction} Reasoning. ${r.reasoning}`} label="Listen" />
+            <Badge variant="outline" className={delegationClass(r.delegationLevel)}>{r.delegationLevel}</Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-5">

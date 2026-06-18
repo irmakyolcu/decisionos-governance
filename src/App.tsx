@@ -31,6 +31,7 @@ import TrainingDataPage from "./pages/TrainingDataPage";
 import StrategicAlignmentPage from "./pages/StrategicAlignmentPage";
 import TwinOnboardingPage from "./pages/TwinOnboardingPage";
 import TrustPage from "./pages/TrustPage";
+import VoiceAssistantPage from "./pages/VoiceAssistantPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,7 @@ function ProtectedRoutes() {
         <Route path="/strategic-alignment" element={<StrategicAlignmentPage />} />
         <Route path="/training-data" element={<TrainingDataPage />} />
         <Route path="/twin-onboarding" element={<TwinOnboardingPage />} />
+        <Route path="/voice-assistant" element={<VoiceAssistantPage />} />
         <Route path="/decision-spaces" element={<DecisionSpacesPage />} />
         <Route path="/proposals" element={<ProposalsPage />} />
         <Route path="/approvals" element={<ApprovalsPage />} />
