@@ -328,6 +328,79 @@ export type Database = {
           },
         ]
       }
+      anomalies: {
+        Row: {
+          action_id: string | null
+          created_at: string
+          decision_id: string | null
+          description: string | null
+          detector: string
+          id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          signal: Json
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          action_id?: string | null
+          created_at?: string
+          decision_id?: string | null
+          description?: string | null
+          detector: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          signal?: Json
+          status?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          action_id?: string | null
+          created_at?: string
+          decision_id?: string | null
+          description?: string | null
+          detector?: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          signal?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anomalies_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "action_proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anomalies_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anomalies_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_events: {
         Row: {
           action_id: string | null
@@ -383,6 +456,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "audit_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_reports: {
+        Row: {
+          created_at: string
+          findings: Json
+          framework: string
+          generated_by: string | null
+          id: string
+          period_end: string
+          period_start: string
+          scope: Json
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          findings?: Json
+          framework: string
+          generated_by?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          scope?: Json
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          findings?: Json
+          framework?: string
+          generated_by?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          scope?: Json
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_reports_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -784,6 +913,51 @@ export type Database = {
           },
         ]
       }
+      decision_roles: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          decision_id: string
+          id: string
+          role: Database["public"]["Enums"]["decision_role_kind"]
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          decision_id: string
+          id?: string
+          role: Database["public"]["Enums"]["decision_role_kind"]
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          decision_id?: string
+          id?: string
+          role?: Database["public"]["Enums"]["decision_role_kind"]
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_roles_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_roles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_scenarios: {
         Row: {
           assumptions: Json | null
@@ -1018,6 +1192,56 @@ export type Database = {
           },
         ]
       }
+      integrations: {
+        Row: {
+          config: Json
+          created_at: string
+          created_by: string | null
+          display_name: string
+          id: string
+          kind: string
+          last_synced_at: string | null
+          provider: string
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          display_name: string
+          id?: string
+          kind?: string
+          last_synced_at?: string | null
+          provider: string
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          display_name?: string
+          id?: string
+          kind?: string
+          last_synced_at?: string | null
+          provider?: string
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integrations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_attendees: {
         Row: {
           meeting_id: string
@@ -1197,6 +1421,53 @@ export type Database = {
           },
           {
             foreignKeyName: "memory_entries_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          link: string | null
+          read_at: string | null
+          severity: string
+          title: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          link?: string | null
+          read_at?: string | null
+          severity?: string
+          title: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          read_at?: string | null
+          severity?: string
+          title?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1771,6 +2042,13 @@ export type Database = {
         | "cancelled"
         | "expired"
       authority_level: "observe" | "prepare" | "act" | "commit"
+      decision_role_kind:
+        | "approver"
+        | "legal"
+        | "compliance"
+        | "observer"
+        | "contributor"
+        | "owner"
       decision_status:
         | "Draft"
         | "Pending"
@@ -1934,6 +2212,14 @@ export const Constants = {
         "expired",
       ],
       authority_level: ["observe", "prepare", "act", "commit"],
+      decision_role_kind: [
+        "approver",
+        "legal",
+        "compliance",
+        "observer",
+        "contributor",
+        "owner",
+      ],
       decision_status: [
         "Draft",
         "Pending",
