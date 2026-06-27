@@ -14,6 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
+      action_approvals: {
+        Row: {
+          action_id: string
+          action_version: number
+          approver_id: string
+          conditions: string | null
+          created_at: string
+          id: string
+          rationale: string | null
+          vote: string
+          workspace_id: string
+        }
+        Insert: {
+          action_id: string
+          action_version: number
+          approver_id: string
+          conditions?: string | null
+          created_at?: string
+          id?: string
+          rationale?: string | null
+          vote: string
+          workspace_id: string
+        }
+        Update: {
+          action_id?: string
+          action_version?: number
+          approver_id?: string
+          conditions?: string | null
+          created_at?: string
+          id?: string
+          rationale?: string | null
+          vote?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_approvals_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "action_proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "action_approvals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      action_proposals: {
+        Row: {
+          action_type: string
+          agent_id: string | null
+          approval_status: Database["public"]["Enums"]["action_status"]
+          authority_level: Database["public"]["Enums"]["authority_level"]
+          content_hash: string | null
+          created_at: string
+          created_by: string
+          decision_id: string | null
+          expires_at: string | null
+          id: string
+          policy_result: Database["public"]["Enums"]["policy_effect"] | null
+          proposed_payload: Json
+          reason: string | null
+          required_approver_count: number
+          required_approver_roles: string[] | null
+          risk_level: string
+          rollback_available: boolean | null
+          supporting_evidence: Json | null
+          target_system: string | null
+          title: string
+          updated_at: string
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          action_type: string
+          agent_id?: string | null
+          approval_status?: Database["public"]["Enums"]["action_status"]
+          authority_level?: Database["public"]["Enums"]["authority_level"]
+          content_hash?: string | null
+          created_at?: string
+          created_by: string
+          decision_id?: string | null
+          expires_at?: string | null
+          id?: string
+          policy_result?: Database["public"]["Enums"]["policy_effect"] | null
+          proposed_payload?: Json
+          reason?: string | null
+          required_approver_count?: number
+          required_approver_roles?: string[] | null
+          risk_level?: string
+          rollback_available?: boolean | null
+          supporting_evidence?: Json | null
+          target_system?: string | null
+          title: string
+          updated_at?: string
+          version?: number
+          workspace_id: string
+        }
+        Update: {
+          action_type?: string
+          agent_id?: string | null
+          approval_status?: Database["public"]["Enums"]["action_status"]
+          authority_level?: Database["public"]["Enums"]["authority_level"]
+          content_hash?: string | null
+          created_at?: string
+          created_by?: string
+          decision_id?: string | null
+          expires_at?: string | null
+          id?: string
+          policy_result?: Database["public"]["Enums"]["policy_effect"] | null
+          proposed_payload?: Json
+          reason?: string | null
+          required_approver_count?: number
+          required_approver_roles?: string[] | null
+          risk_level?: string
+          rollback_available?: boolean | null
+          supporting_evidence?: Json | null
+          target_system?: string | null
+          title?: string
+          updated_at?: string
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_proposals_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "action_proposals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agenda_items: {
         Row: {
           created_at: string
@@ -121,6 +265,137 @@ export type Database = {
           },
         ]
       }
+      audit_events: {
+        Row: {
+          action_id: string | null
+          actor_user_id: string | null
+          after_state: Json | null
+          agent_id: string | null
+          before_state: Json | null
+          created_at: string
+          decision_id: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          model: string | null
+          policy_version: number | null
+          reason: string | null
+          trace_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          action_id?: string | null
+          actor_user_id?: string | null
+          after_state?: Json | null
+          agent_id?: string | null
+          before_state?: Json | null
+          created_at?: string
+          decision_id?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          model?: string | null
+          policy_version?: number | null
+          reason?: string | null
+          trace_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          action_id?: string | null
+          actor_user_id?: string | null
+          after_state?: Json | null
+          agent_id?: string | null
+          before_state?: Json | null
+          created_at?: string
+          decision_id?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          model?: string | null
+          policy_version?: number | null
+          reason?: string | null
+          trace_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_alternatives: {
+        Row: {
+          complexity: string | null
+          confidence: number | null
+          created_at: string
+          decision_id: string
+          description: string | null
+          estimated_cost: number | null
+          expected_value: number | null
+          id: string
+          is_recommended: boolean | null
+          reversibility: string | null
+          risk_level: string | null
+          time_to_impact: string | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          complexity?: string | null
+          confidence?: number | null
+          created_at?: string
+          decision_id: string
+          description?: string | null
+          estimated_cost?: number | null
+          expected_value?: number | null
+          id?: string
+          is_recommended?: boolean | null
+          reversibility?: string | null
+          risk_level?: string | null
+          time_to_impact?: string | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          complexity?: string | null
+          confidence?: number | null
+          created_at?: string
+          decision_id?: string
+          description?: string | null
+          estimated_cost?: number | null
+          expected_value?: number | null
+          id?: string
+          is_recommended?: boolean | null
+          reversibility?: string | null
+          risk_level?: string | null
+          time_to_impact?: string | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_alternatives_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_alternatives_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_approvals: {
         Row: {
           approved_at: string
@@ -146,6 +421,51 @@ export type Database = {
             columns: ["decision_id"]
             isOneToOne: false
             referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_assumptions: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          decision_id: string
+          id: string
+          status: string | null
+          text: string
+          workspace_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          decision_id: string
+          id?: string
+          status?: string | null
+          text: string
+          workspace_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          decision_id?: string
+          id?: string
+          status?: string | null
+          text?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_assumptions_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_assumptions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -178,6 +498,66 @@ export type Database = {
             columns: ["decision_id"]
             isOneToOne: false
             referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_evidence: {
+        Row: {
+          contradicts: string | null
+          created_at: string
+          decision_id: string
+          id: string
+          is_verified: boolean | null
+          owner: string | null
+          reliability: string | null
+          source: string
+          source_date: string | null
+          summary: string | null
+          supports: string | null
+          workspace_id: string
+        }
+        Insert: {
+          contradicts?: string | null
+          created_at?: string
+          decision_id: string
+          id?: string
+          is_verified?: boolean | null
+          owner?: string | null
+          reliability?: string | null
+          source: string
+          source_date?: string | null
+          summary?: string | null
+          supports?: string | null
+          workspace_id: string
+        }
+        Update: {
+          contradicts?: string | null
+          created_at?: string
+          decision_id?: string
+          id?: string
+          is_verified?: boolean | null
+          owner?: string | null
+          reliability?: string | null
+          source?: string
+          source_date?: string | null
+          summary?: string | null
+          supports?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_evidence_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_evidence_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -217,19 +597,180 @@ export type Database = {
           },
         ]
       }
+      decision_recommendations: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          decision_id: string
+          devils_advocate: string | null
+          id: string
+          invalidation_conditions: string | null
+          model: string | null
+          rationale: string | null
+          recommended_alternative_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          decision_id: string
+          devils_advocate?: string | null
+          id?: string
+          invalidation_conditions?: string | null
+          model?: string | null
+          rationale?: string | null
+          recommended_alternative_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          decision_id?: string
+          devils_advocate?: string | null
+          id?: string
+          invalidation_conditions?: string | null
+          model?: string | null
+          rationale?: string | null
+          recommended_alternative_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_recommendations_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_recommendations_recommended_alternative_id_fkey"
+            columns: ["recommended_alternative_id"]
+            isOneToOne: false
+            referencedRelation: "decision_alternatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_recommendations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_scenarios: {
+        Row: {
+          assumptions: Json | null
+          created_at: string
+          decision_id: string
+          financial_impact: number | null
+          id: string
+          probability: number | null
+          scenario: string
+          summary: string | null
+          workspace_id: string
+        }
+        Insert: {
+          assumptions?: Json | null
+          created_at?: string
+          decision_id: string
+          financial_impact?: number | null
+          id?: string
+          probability?: number | null
+          scenario: string
+          summary?: string | null
+          workspace_id: string
+        }
+        Update: {
+          assumptions?: Json | null
+          created_at?: string
+          decision_id?: string
+          financial_impact?: number | null
+          id?: string
+          probability?: number | null
+          scenario?: string
+          summary?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_scenarios_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_scenarios_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_unknowns: {
+        Row: {
+          created_at: string
+          decision_id: string
+          id: string
+          is_blocking: boolean | null
+          resolved: boolean | null
+          text: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision_id: string
+          id?: string
+          is_blocking?: boolean | null
+          resolved?: boolean | null
+          text: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          decision_id?: string
+          id?: string
+          is_blocking?: boolean | null
+          resolved?: boolean | null
+          text?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_unknowns_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_unknowns_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decisions: {
         Row: {
           budget: number
           created_at: string
           created_by: string
+          deadline: string | null
+          decision_type: string | null
           description: string
           id: string
           meeting_id: string | null
           options_considered: Json
           outcome_status: Database["public"]["Enums"]["outcome_status"] | null
           problem_statement: string
+          review_due_at: string | null
           risk_level: Database["public"]["Enums"]["risk_level"]
           status: Database["public"]["Enums"]["decision_status"]
+          strategic_importance: string | null
           success_criteria: Json | null
           title: string
           updated_at: string
@@ -239,14 +780,18 @@ export type Database = {
           budget?: number
           created_at?: string
           created_by: string
+          deadline?: string | null
+          decision_type?: string | null
           description?: string
           id?: string
           meeting_id?: string | null
           options_considered?: Json
           outcome_status?: Database["public"]["Enums"]["outcome_status"] | null
           problem_statement?: string
+          review_due_at?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           status?: Database["public"]["Enums"]["decision_status"]
+          strategic_importance?: string | null
           success_criteria?: Json | null
           title: string
           updated_at?: string
@@ -256,14 +801,18 @@ export type Database = {
           budget?: number
           created_at?: string
           created_by?: string
+          deadline?: string | null
+          decision_type?: string | null
           description?: string
           id?: string
           meeting_id?: string | null
           options_considered?: Json
           outcome_status?: Database["public"]["Enums"]["outcome_status"] | null
           problem_statement?: string
+          review_due_at?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           status?: Database["public"]["Enums"]["decision_status"]
+          strategic_importance?: string | null
           success_criteria?: Json | null
           title?: string
           updated_at?: string
@@ -279,6 +828,63 @@ export type Database = {
           },
           {
             foreignKeyName: "decisions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      execution_records: {
+        Row: {
+          action_id: string
+          action_version: number
+          error_details: string | null
+          executed_at: string
+          executed_payload: Json | null
+          id: string
+          result: string
+          rollback_at: string | null
+          target_system: string | null
+          verification_status: string | null
+          workspace_id: string
+        }
+        Insert: {
+          action_id: string
+          action_version: number
+          error_details?: string | null
+          executed_at?: string
+          executed_payload?: Json | null
+          id?: string
+          result: string
+          rollback_at?: string | null
+          target_system?: string | null
+          verification_status?: string | null
+          workspace_id: string
+        }
+        Update: {
+          action_id?: string
+          action_version?: number
+          error_details?: string | null
+          executed_at?: string
+          executed_payload?: Json | null
+          id?: string
+          result?: string
+          rollback_at?: string | null
+          target_system?: string | null
+          verification_status?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execution_records_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "action_proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_records_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -402,6 +1008,180 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "meetings_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policies: {
+        Row: {
+          applicable_action_types: string[] | null
+          applicable_departments: string[] | null
+          category: string | null
+          created_at: string
+          description: string | null
+          effect: Database["public"]["Enums"]["policy_effect"]
+          effective_at: string | null
+          expires_at: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          priority: number
+          rule_tree: Json
+          status: string
+          updated_at: string
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          applicable_action_types?: string[] | null
+          applicable_departments?: string[] | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          effect?: Database["public"]["Enums"]["policy_effect"]
+          effective_at?: string | null
+          expires_at?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          priority?: number
+          rule_tree?: Json
+          status?: string
+          updated_at?: string
+          version?: number
+          workspace_id: string
+        }
+        Update: {
+          applicable_action_types?: string[] | null
+          applicable_departments?: string[] | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          effect?: Database["public"]["Enums"]["policy_effect"]
+          effective_at?: string | null
+          expires_at?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          priority?: number
+          rule_tree?: Json
+          status?: string
+          updated_at?: string
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policies_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_evaluations: {
+        Row: {
+          action_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          matched: boolean
+          policy_id: string | null
+          policy_version: number | null
+          result: Database["public"]["Enums"]["policy_effect"]
+          workspace_id: string
+        }
+        Insert: {
+          action_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          matched?: boolean
+          policy_id?: string | null
+          policy_version?: number | null
+          result: Database["public"]["Enums"]["policy_effect"]
+          workspace_id: string
+        }
+        Update: {
+          action_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          matched?: boolean
+          policy_id?: string | null
+          policy_version?: number | null
+          result?: Database["public"]["Enums"]["policy_effect"]
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_evaluations_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "action_proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_evaluations_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_evaluations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_versions: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          effect: Database["public"]["Enums"]["policy_effect"]
+          id: string
+          policy_id: string
+          rule_tree: Json
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          effect: Database["public"]["Enums"]["policy_effect"]
+          id?: string
+          policy_id: string
+          rule_tree: Json
+          version: number
+          workspace_id: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          effect?: Database["public"]["Enums"]["policy_effect"]
+          id?: string
+          policy_id?: string
+          rule_tree?: Json
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_versions_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_versions_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -640,6 +1420,20 @@ export type Database = {
       }
     }
     Enums: {
+      action_status:
+        | "draft"
+        | "awaiting_policy"
+        | "awaiting_approval"
+        | "partially_approved"
+        | "approved"
+        | "scheduled"
+        | "executing"
+        | "completed"
+        | "failed"
+        | "rolled_back"
+        | "cancelled"
+        | "expired"
+      authority_level: "observe" | "prepare" | "act" | "commit"
       decision_status:
         | "Draft"
         | "Pending"
@@ -649,6 +1443,14 @@ export type Database = {
         | "Escalated"
         | "Executed"
       outcome_status: "Success" | "Partial Success" | "Failure" | "Pending"
+      policy_effect:
+        | "allow"
+        | "allow_with_logging"
+        | "require_approval"
+        | "require_multi_approval"
+        | "warn"
+        | "block"
+        | "escalate"
       procon_type: "pro" | "con"
       proposal_status: "Submitted" | "Under Review" | "Approved" | "Rejected"
       risk_level: "Low" | "Medium" | "High" | "Critical"
@@ -780,6 +1582,21 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      action_status: [
+        "draft",
+        "awaiting_policy",
+        "awaiting_approval",
+        "partially_approved",
+        "approved",
+        "scheduled",
+        "executing",
+        "completed",
+        "failed",
+        "rolled_back",
+        "cancelled",
+        "expired",
+      ],
+      authority_level: ["observe", "prepare", "act", "commit"],
       decision_status: [
         "Draft",
         "Pending",
@@ -790,6 +1607,15 @@ export const Constants = {
         "Executed",
       ],
       outcome_status: ["Success", "Partial Success", "Failure", "Pending"],
+      policy_effect: [
+        "allow",
+        "allow_with_logging",
+        "require_approval",
+        "require_multi_approval",
+        "warn",
+        "block",
+        "escalate",
+      ],
       procon_type: ["pro", "con"],
       proposal_status: ["Submitted", "Under Review", "Approved", "Rejected"],
       risk_level: ["Low", "Medium", "High", "Critical"],
