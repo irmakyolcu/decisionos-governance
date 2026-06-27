@@ -45,6 +45,7 @@ Produce JSON with shape:
   "scenarios": [{"scenario": "best|base|worst|do_nothing", "summary": str, "financial_impact": number, "probability": 0-1}]
 }
 Include exactly one recommended alternative. Include all four scenarios. Include at least 2 assumptions and 2 unknowns.`;
+    const startedAt = Date.now();
 
     const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -100,6 +101,12 @@ Include exactly one recommended alternative. Include all four scenarios. Include
       decision_id, actor_user_id: user.id, agent_id: 'decision_agent', model,
       reason: 'AI analysis generated alternatives, evidence, scenarios, and recommendation',
     });
+    await admin.from('agent_runs').insert({
+      workspace_id, agent_id: 'decision_agent', decision_id, model,
+      status: 'success', latency_ms: Date.now() - startedAt,
+      tokens_input: aiJson.usage?.prompt_tokens, tokens_output: aiJson.usage?.completion_tokens,
+    });
+
 
     return new Response(JSON.stringify({ ok: true, model }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
