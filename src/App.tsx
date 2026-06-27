@@ -33,6 +33,12 @@ import TwinOnboardingPage from "./pages/TwinOnboardingPage";
 import TrustPage from "./pages/TrustPage";
 import VoiceAssistantPage from "./pages/VoiceAssistantPage";
 import NotFound from "./pages/NotFound";
+import ExecutiveDashboardPage from "./pages/ExecutiveDashboardPage";
+import ApprovalCenterPage from "./pages/ApprovalCenterPage";
+import ExecutionCenterPage from "./pages/ExecutionCenterPage";
+import PoliciesPage from "./pages/PoliciesPage";
+import AuditLedgerPage from "./pages/AuditLedgerPage";
+import DecisionRoomPage from "./pages/DecisionRoomPage";
 
 const queryClient = new QueryClient();
 
@@ -60,7 +66,13 @@ function ProtectedRoutes() {
   return (
     <AppLayout>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<ExecutiveDashboardPage />} />
+        <Route path="/home-legacy" element={<HomePage />} />
+        <Route path="/approvals-center" element={<ApprovalCenterPage />} />
+        <Route path="/execution" element={<ExecutionCenterPage />} />
+        <Route path="/policies" element={<PoliciesPage />} />
+        <Route path="/audit" element={<AuditLedgerPage />} />
+        <Route path="/decisions/:id" element={<DecisionRoomPage />} />
         <Route path="/ceo-profile" element={<CEOProfilePage />} />
         <Route path="/decision-intake" element={<DecisionIntakePage />} />
         <Route path="/decision-memory" element={<DecisionMemoryPage />} />
