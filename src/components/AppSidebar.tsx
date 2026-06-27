@@ -3,6 +3,7 @@ import {
   Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
   Crown, Inbox, BookOpen, Network, Database, Compass, Mic,
   Gavel, Zap, ScrollText, Lock, Sparkles, ClipboardCheck, Activity,
+  AlertTriangle, FileCheck, Plug, UserCog,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -21,6 +22,9 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Policies', url: '/policies', icon: Shield },
       { title: 'Audit Ledger', url: '/audit', icon: Lock },
       { title: 'Agent Performance', url: '/agent-performance', icon: Activity },
+      { title: 'Anomaly Detection', url: '/anomalies', icon: AlertTriangle },
+      { title: 'Compliance Reports', url: '/compliance', icon: FileCheck },
+      { title: 'Decision Roles', url: '/decision-roles', icon: UserCog },
     ],
   },
   {
@@ -56,6 +60,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
     label: 'Workspace',
     items: [
       { title: 'Team', url: '/team', icon: Users },
+      { title: 'Integrations', url: '/integrations', icon: Plug },
       { title: 'Settings', url: '/settings', icon: Settings },
     ],
   },

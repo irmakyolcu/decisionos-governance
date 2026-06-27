@@ -1,4 +1,5 @@
-import { Search, Bell, User, LogOut, Shield, CheckCircle, Eye } from 'lucide-react';
+import { Search, User, LogOut, Shield, CheckCircle, Eye } from 'lucide-react';
+import { NotificationsBell } from '@/components/NotificationsBell';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
@@ -51,10 +52,8 @@ export function TopBar() {
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="relative p-2 rounded-md hover:bg-muted transition-colors">
-          <Bell className="h-4 w-4 text-muted-foreground" />
-          <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
-        </button>
+        <NotificationsBell />
+
 
         <Link to="/profile" className="flex items-center gap-2 hover:bg-muted rounded-md px-2 py-1 transition-colors" title="Profili Düzenle">
           <Avatar className="h-8 w-8">

@@ -43,6 +43,10 @@ import DecisionTwinPage from "./pages/DecisionTwinPage";
 import StructuredMemoryPage from "./pages/StructuredMemoryPage";
 import PostDecisionReviewsPage from "./pages/PostDecisionReviewsPage";
 import AgentPerformancePage from "./pages/AgentPerformancePage";
+import AnomalyDetectionPage from "./pages/AnomalyDetectionPage";
+import ComplianceReportsPage from "./pages/ComplianceReportsPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
+import DecisionRolesPage from "./pages/DecisionRolesPage";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +85,10 @@ function ProtectedRoutes() {
         <Route path="/structured-memory" element={<StructuredMemoryPage />} />
         <Route path="/reviews" element={<PostDecisionReviewsPage />} />
         <Route path="/agent-performance" element={<AgentPerformancePage />} />
+        <Route path="/anomalies" element={<AnomalyDetectionPage />} />
+        <Route path="/compliance" element={<ComplianceReportsPage />} />
+        <Route path="/integrations" element={<IntegrationsPage />} />
+        <Route path="/decision-roles" element={<DecisionRolesPage />} />
         <Route path="/ceo-profile" element={<CEOProfilePage />} />
         <Route path="/decision-intake" element={<DecisionIntakePage />} />
         <Route path="/decision-memory" element={<DecisionMemoryPage />} />
