@@ -209,6 +209,69 @@ export type Database = {
           },
         ]
       }
+      agent_runs: {
+        Row: {
+          agent_id: string
+          created_at: string
+          decision_id: string | null
+          id: string
+          latency_ms: number | null
+          model: string | null
+          notes: string | null
+          status: string
+          tokens_input: number | null
+          tokens_output: number | null
+          was_helpful: boolean | null
+          was_overridden: boolean | null
+          workspace_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          decision_id?: string | null
+          id?: string
+          latency_ms?: number | null
+          model?: string | null
+          notes?: string | null
+          status?: string
+          tokens_input?: number | null
+          tokens_output?: number | null
+          was_helpful?: boolean | null
+          was_overridden?: boolean | null
+          workspace_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          decision_id?: string | null
+          id?: string
+          latency_ms?: number | null
+          model?: string | null
+          notes?: string | null
+          status?: string
+          tokens_input?: number | null
+          tokens_output?: number | null
+          was_helpful?: boolean | null
+          was_overridden?: boolean | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_runs_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_runs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_evaluations: {
         Row: {
           break_even_months: number
@@ -658,6 +721,69 @@ export type Database = {
           },
         ]
       }
+      decision_reviews: {
+        Row: {
+          actual_outcome: string | null
+          completed_at: string | null
+          created_at: string
+          decision_id: string
+          delta_summary: string | null
+          expected_outcome: string | null
+          id: string
+          lessons: string[] | null
+          rating: number | null
+          reviewer_id: string | null
+          scheduled_for: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          actual_outcome?: string | null
+          completed_at?: string | null
+          created_at?: string
+          decision_id: string
+          delta_summary?: string | null
+          expected_outcome?: string | null
+          id?: string
+          lessons?: string[] | null
+          rating?: number | null
+          reviewer_id?: string | null
+          scheduled_for?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          actual_outcome?: string | null
+          completed_at?: string | null
+          created_at?: string
+          decision_id?: string
+          delta_summary?: string | null
+          expected_outcome?: string | null
+          id?: string
+          lessons?: string[] | null
+          rating?: number | null
+          reviewer_id?: string | null
+          scheduled_for?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_reviews_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_reviews_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_scenarios: {
         Row: {
           assumptions: Json | null
@@ -1015,6 +1141,69 @@ export type Database = {
           },
         ]
       }
+      memory_entries: {
+        Row: {
+          context: string | null
+          created_at: string
+          created_by: string | null
+          decision_id: string | null
+          embedding: Json | null
+          id: string
+          outcome: string | null
+          sensitivity: string
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          created_by?: string | null
+          decision_id?: string | null
+          embedding?: Json | null
+          id?: string
+          outcome?: string | null
+          sensitivity?: string
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          created_by?: string | null
+          decision_id?: string | null
+          embedding?: Json | null
+          id?: string
+          outcome?: string | null
+          sensitivity?: string
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_entries_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memory_entries_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       policies: {
         Row: {
           applicable_action_types: string[] | null
@@ -1275,6 +1464,154 @@ export type Database = {
             foreignKeyName: "proposals_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twin_corrections: {
+        Row: {
+          ai_recommendation: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string
+          decision_id: string | null
+          human_choice: string | null
+          id: string
+          proposed_learning: string | null
+          reason: string | null
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          ai_recommendation?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by: string
+          decision_id?: string | null
+          human_choice?: string | null
+          id?: string
+          proposed_learning?: string | null
+          reason?: string | null
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          ai_recommendation?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string
+          decision_id?: string | null
+          human_choice?: string | null
+          id?: string
+          proposed_learning?: string | null
+          reason?: string | null
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twin_corrections_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twin_corrections_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twin_preferences: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          created_by: string | null
+          id: string
+          statement: string
+          weight: number
+          workspace_id: string
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          statement: string
+          weight?: number
+          workspace_id: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          statement?: string
+          weight?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twin_preferences_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twin_profiles: {
+        Row: {
+          communication_style: string | null
+          created_at: string
+          decision_style: string | null
+          id: string
+          notes: string | null
+          red_lines: string | null
+          risk_appetite: string | null
+          twin_name: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          communication_style?: string | null
+          created_at?: string
+          decision_style?: string | null
+          id?: string
+          notes?: string | null
+          red_lines?: string | null
+          risk_appetite?: string | null
+          twin_name?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          communication_style?: string | null
+          created_at?: string
+          decision_style?: string | null
+          id?: string
+          notes?: string | null
+          red_lines?: string | null
+          risk_appetite?: string | null
+          twin_name?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twin_profiles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
             referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },

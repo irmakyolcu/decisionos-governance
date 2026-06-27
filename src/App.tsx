@@ -39,6 +39,10 @@ import ExecutionCenterPage from "./pages/ExecutionCenterPage";
 import PoliciesPage from "./pages/PoliciesPage";
 import AuditLedgerPage from "./pages/AuditLedgerPage";
 import DecisionRoomPage from "./pages/DecisionRoomPage";
+import DecisionTwinPage from "./pages/DecisionTwinPage";
+import StructuredMemoryPage from "./pages/StructuredMemoryPage";
+import PostDecisionReviewsPage from "./pages/PostDecisionReviewsPage";
+import AgentPerformancePage from "./pages/AgentPerformancePage";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +77,10 @@ function ProtectedRoutes() {
         <Route path="/policies" element={<PoliciesPage />} />
         <Route path="/audit" element={<AuditLedgerPage />} />
         <Route path="/decisions/:id" element={<DecisionRoomPage />} />
+        <Route path="/decision-twin" element={<DecisionTwinPage />} />
+        <Route path="/structured-memory" element={<StructuredMemoryPage />} />
+        <Route path="/reviews" element={<PostDecisionReviewsPage />} />
+        <Route path="/agent-performance" element={<AgentPerformancePage />} />
         <Route path="/ceo-profile" element={<CEOProfilePage />} />
         <Route path="/decision-intake" element={<DecisionIntakePage />} />
         <Route path="/decision-memory" element={<DecisionMemoryPage />} />

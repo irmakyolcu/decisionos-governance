@@ -2,7 +2,7 @@ import {
   Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
   Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
   Crown, Inbox, BookOpen, Network, Database, Compass, Mic,
-  Gavel, Zap, ScrollText, Lock,
+  Gavel, Zap, ScrollText, Lock, Sparkles, ClipboardCheck, Activity,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -20,6 +20,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Execution Center', url: '/execution', icon: Zap },
       { title: 'Policies', url: '/policies', icon: Shield },
       { title: 'Audit Ledger', url: '/audit', icon: Lock },
+      { title: 'Agent Performance', url: '/agent-performance', icon: Activity },
     ],
   },
   {
@@ -30,6 +31,9 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Decision Memory', url: '/decision-memory', icon: BookOpen },
       { title: 'Delegation Engine', url: '/delegation-engine', icon: Network },
       { title: 'Strategic Alignment', url: '/strategic-alignment', icon: Compass },
+      { title: 'Decision Twin', url: '/decision-twin', icon: Sparkles },
+      { title: 'Structured Memory', url: '/structured-memory', icon: BookOpen },
+      { title: 'Post-Decision Reviews', url: '/reviews', icon: ClipboardCheck },
       { title: 'Voice Assistant', url: '/voice-assistant', icon: Mic },
     ],
   },
