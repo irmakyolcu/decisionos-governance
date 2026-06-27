@@ -2,7 +2,7 @@ import {
   Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
   Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
   Crown, Inbox, BookOpen, Network, Database, Compass, Mic,
-  Gavel, Zap, ScrollText, Lock,
+  Gavel, Zap, ScrollText, Lock, Sparkles, ClipboardCheck, Activity,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
