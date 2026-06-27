@@ -39,6 +39,10 @@ import ExecutionCenterPage from "./pages/ExecutionCenterPage";
 import PoliciesPage from "./pages/PoliciesPage";
 import AuditLedgerPage from "./pages/AuditLedgerPage";
 import DecisionRoomPage from "./pages/DecisionRoomPage";
+import DecisionTwinPage from "./pages/DecisionTwinPage";
+import StructuredMemoryPage from "./pages/StructuredMemoryPage";
+import PostDecisionReviewsPage from "./pages/PostDecisionReviewsPage";
+import AgentPerformancePage from "./pages/AgentPerformancePage";
 
 const queryClient = new QueryClient();
 
