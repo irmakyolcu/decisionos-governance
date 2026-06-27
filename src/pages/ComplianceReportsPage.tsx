@@ -47,7 +47,7 @@ export default function ComplianceReportsPage() {
       .select('*')
       .eq('workspace_id', workspace.id)
       .order('created_at', { ascending: false });
-    setItems((data ?? []) as Report[]);
+    setItems((data ?? []) as unknown as Report[]);
   };
 
   useEffect(() => {

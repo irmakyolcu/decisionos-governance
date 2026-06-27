@@ -110,7 +110,7 @@ export default function AnomalyDetectionPage() {
       if (findings.length === 0) {
         toast.success('No anomalies detected');
       } else {
-        const rows = findings.map((f) => ({ ...f, workspace_id: workspace.id }));
+        const rows = findings.map((f) => ({ ...f, signal: f.signal as any, workspace_id: workspace.id }));
         const { error } = await supabase.from('anomalies').insert(rows);
         if (error) throw error;
         toast.success(`${findings.length} anomalies recorded`);
@@ -124,12 +124,12 @@ export default function AnomalyDetectionPage() {
   };
 
   const updateStatus = async (id: string, status: Anomaly['status']) => {
-    const patch: Partial<Anomaly> & { resolved_at?: string | null; resolved_by?: string | null } = { status };
+    const patch: Record<string, unknown> = { status };
     if (status === 'resolved' || status === 'dismissed') {
       patch.resolved_at = new Date().toISOString();
       patch.resolved_by = user?.id ?? null;
     }
-    await supabase.from('anomalies').update(patch).eq('id', id);
+    await supabase.from('anomalies').update(patch as any).eq('id', id);
     load();
   };
 
