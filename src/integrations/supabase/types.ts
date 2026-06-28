@@ -1192,6 +1192,72 @@ export type Database = {
           },
         ]
       }
+      gmail_sync_schedules: {
+        Row: {
+          cadence_minutes: number
+          created_at: string
+          created_by: string
+          decision_id: string
+          enabled: boolean
+          id: string
+          last_count: number | null
+          last_run_at: string | null
+          last_status: string | null
+          max_results: number
+          next_run_at: string
+          query: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          cadence_minutes?: number
+          created_at?: string
+          created_by: string
+          decision_id: string
+          enabled?: boolean
+          id?: string
+          last_count?: number | null
+          last_run_at?: string | null
+          last_status?: string | null
+          max_results?: number
+          next_run_at?: string
+          query?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          cadence_minutes?: number
+          created_at?: string
+          created_by?: string
+          decision_id?: string
+          enabled?: boolean
+          id?: string
+          last_count?: number | null
+          last_run_at?: string | null
+          last_status?: string | null
+          max_results?: number
+          next_run_at?: string
+          query?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gmail_sync_schedules_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: true
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gmail_sync_schedules_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integrations: {
         Row: {
           config: Json
