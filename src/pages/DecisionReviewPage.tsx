@@ -7,6 +7,7 @@ import { usePermissions } from '@/lib/permissions';
 import { ReadOnlyNotice } from '@/components/PermissionGate';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { GmailSyncPanel } from '@/components/GmailSyncPanel';
 
 export default function DecisionReviewPage() {
   const { decisions, loading, evaluatingStates, addComment, addProCon, approveDecision, updateStatus, evaluateDecision } = useDecisions();
