@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Mail, RefreshCw, Loader2, Paperclip, Clock, Power } from 'lucide-react';
+import { Mail, RefreshCw, Loader2, Paperclip, Clock, Power, CalendarClock, Pause, Play, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
