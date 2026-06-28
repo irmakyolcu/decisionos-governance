@@ -267,6 +267,8 @@ export default function DecisionReviewPage() {
               )}
             </div>
           </div>
+
+          <GmailSyncPanel decisionId={selected.id} defaultQuery={selected.title} />
         </div>
       </div>
     </div>
