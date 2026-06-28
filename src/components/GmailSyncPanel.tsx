@@ -204,7 +204,9 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-medium">PAUSED</span>
           )}
         </div>
+
         <div className="flex items-center gap-2 flex-wrap">
+          <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Cadence</label>
           <select
             value={cadence}
             onChange={(e) => setCadence(Number(e.target.value))}
@@ -220,15 +222,24 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
             className="px-2.5 py-1.5 rounded text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 flex items-center gap-1"
           >
             {scheduling ? <Loader2 className="h-3 w-3 animate-spin" /> : <Power className="h-3 w-3" />}
-            {schedule?.enabled ? 'Update' : 'Enable auto-sync'}
+            {schedule ? 'Save cadence' : 'Enable auto-sync'}
           </button>
           {schedule?.enabled && (
             <button
-              onClick={() => saveSchedule(false)}
+              onClick={() => patchSchedule({ enabled: false }, 'Auto-sync paused')}
               disabled={scheduling}
-              className="px-2.5 py-1.5 rounded text-xs font-medium bg-muted text-foreground hover:bg-muted/70 disabled:opacity-50"
+              className="px-2.5 py-1.5 rounded text-xs font-medium bg-muted text-foreground hover:bg-muted/70 disabled:opacity-50 flex items-center gap-1"
             >
-              Pause
+              <Pause className="h-3 w-3" /> Pause
+            </button>
+          )}
+          {schedule && !schedule.enabled && (
+            <button
+              onClick={() => patchSchedule({ enabled: true, next_run_at: new Date().toISOString() }, 'Auto-sync resumed')}
+              disabled={scheduling}
+              className="px-2.5 py-1.5 rounded text-xs font-medium bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 disabled:opacity-50 flex items-center gap-1"
+            >
+              <Play className="h-3 w-3" /> Resume
             </button>
           )}
           {schedule && (
@@ -241,17 +252,55 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
             </button>
           )}
         </div>
+
         {schedule && (
-          <div className="text-[10px] text-muted-foreground space-y-0.5">
+          <div className="flex items-center gap-2 flex-wrap pt-1">
+            <label className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+              <CalendarClock className="h-3 w-3" /> Next run at
+            </label>
+            <input
+              type="datetime-local"
+              value={toLocalInput(schedule.next_run_at)}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (!v) return;
+                patchSchedule({ next_run_at: new Date(v).toISOString() }, 'Next run rescheduled');
+              }}
+              disabled={scheduling || !schedule.enabled}
+              className="text-xs bg-background border border-border rounded px-2 py-1.5 disabled:opacity-50"
+            />
+            <button
+              onClick={() => patchSchedule({ next_run_at: new Date().toISOString(), enabled: true }, 'Will run on next scheduler tick')}
+              disabled={scheduling}
+              className="px-2.5 py-1.5 rounded text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50 flex items-center gap-1"
+              title="Reset next run to now"
+            >
+              <Zap className="h-3 w-3" /> Run on next tick
+            </button>
+          </div>
+        )}
+
+        {schedule && (
+          <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-border/50">
             <p>
-              Last run: {schedule.last_run_at ? new Date(schedule.last_run_at).toLocaleString() : '—'}
+              <span className="font-medium text-foreground">Cadence:</span> every {schedule.cadence_minutes} min
+              {' · '}<span className="font-medium text-foreground">Query:</span>{' '}
+              <span className="font-mono">{schedule.query || '(decision title)'}</span>
+            </p>
+            <p>
+              <span className="font-medium text-foreground">Last run:</span>{' '}
+              {schedule.last_run_at ? new Date(schedule.last_run_at).toLocaleString() : '—'}
               {schedule.last_status && <> · status <span className="font-mono">{schedule.last_status}</span></>}
               {schedule.last_count != null && <> · {schedule.last_count} new</>}
             </p>
-            <p>Next run: {schedule.enabled ? new Date(schedule.next_run_at).toLocaleString() : 'paused'}</p>
+            <p>
+              <span className="font-medium text-foreground">Next run:</span>{' '}
+              {schedule.enabled ? new Date(schedule.next_run_at).toLocaleString() : 'paused'}
+            </p>
           </div>
         )}
       </div>
+
 
       <div className="divide-y divide-border/50 max-h-96 overflow-y-auto">
         {loading ? (
