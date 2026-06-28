@@ -124,6 +124,26 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
     }
   };
 
+  const patchSchedule = async (patch: Record<string, any>, successMsg?: string) => {
+    if (!schedule) return;
+    setScheduling(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('gmail_sync_schedules')
+        .update(patch)
+        .eq('id', schedule.id)
+        .select()
+        .maybeSingle();
+      if (error) throw error;
+      setSchedule(data as Schedule);
+      if (successMsg) toast({ title: successMsg });
+    } catch (e: any) {
+      toast({ title: 'Update failed', description: e.message ?? String(e), variant: 'destructive' });
+    } finally {
+      setScheduling(false);
+    }
+  };
+
   const removeSchedule = async () => {
     if (!schedule) return;
     setScheduling(true);
@@ -135,6 +155,13 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
     } finally {
       setScheduling(false);
     }
+  };
+
+  // datetime-local needs "YYYY-MM-DDTHH:mm" in local tz
+  const toLocalInput = (iso: string) => {
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
 
   return (
