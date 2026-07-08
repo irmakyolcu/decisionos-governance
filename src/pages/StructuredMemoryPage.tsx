@@ -31,7 +31,25 @@ export default function StructuredMemoryPage() {
   const [q, setQ] = useState('');
   const [sensFilter, setSensFilter] = useState<string>('all');
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ title: '', summary: '', context: '', outcome: '', tags: '', sensitivity: 'internal' });
+  const [editing, setEditing] = useState<any | null>(null);
+  const emptyForm = { title: '', summary: '', context: '', outcome: '', tags: '', sensitivity: 'internal' };
+  const [form, setForm] = useState(emptyForm);
+
+  function openEdit(e: any) {
+    setEditing(e);
+    setForm({
+      title: e.title ?? '', summary: e.summary ?? '', context: e.context ?? '',
+      outcome: e.outcome ?? '', tags: (e.tags ?? []).join(', '), sensitivity: e.sensitivity ?? 'internal',
+    });
+    setOpen(true);
+  }
+  function openNew() { setEditing(null); setForm(emptyForm); setOpen(true); }
+
+  async function del(id: string) {
+    const { error } = await db.from('memory_entries').delete().eq('id', id);
+    if (error) return toast.error(error.message);
+    toast.success('Silindi'); refetch();
+  }
 
   const filtered = useMemo(() => rows.filter((r) =>
     (sensFilter === 'all' || r.sensitivity === sensFilter) &&
