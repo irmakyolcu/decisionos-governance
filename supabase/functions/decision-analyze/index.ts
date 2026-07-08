@@ -17,14 +17,27 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    const { decision_id, workspace_id } = await req.json();
-    if (!decision_id || !workspace_id) {
-      return new Response(JSON.stringify({ error: 'decision_id and workspace_id required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    const { decision_id } = await req.json();
+    if (!decision_id) {
+      return new Response(JSON.stringify({ error: 'decision_id required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
     const { data: decision } = await admin.from('decisions').select('*').eq('id', decision_id).maybeSingle();
     if (!decision) return new Response(JSON.stringify({ error: 'decision not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+    // Verify caller is a member of the decision's workspace (prevents cross-workspace access)
+    const { data: membership } = await admin
+      .from('workspace_members')
+      .select('role')
+      .eq('workspace_id', decision.workspace_id)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (!membership) {
+      return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    // Always derive workspace_id from the decision, never trust client input
+    const workspace_id = decision.workspace_id;
 
     const model = 'google/gemini-3-flash-preview';
     const sys = `You are the DecisionOS Decision Agent. You prepare decisions for human leaders to approve. You do NOT execute actions. You MUST distinguish facts, assumptions, and unknowns. Output strict JSON only.`;

@@ -103,6 +103,25 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+
+    // AuthN/AuthZ: allow either a valid user JWT OR the service role key (for cron/internal)
+    const authHeader = req.headers.get('Authorization') || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    const isServiceRole = !!token && token === Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    let userId: string | null = null;
+    if (!isServiceRole) {
+      if (!token) {
+        return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+      const userClient = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: authData, error: authErr } = await userClient.auth.getUser();
+      if (authErr || !authData?.user) {
+        return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+      userId = authData.user.id;
+    }
     const gwHeaders = { 'Authorization': `Bearer ${LOVABLE_KEY}`, 'X-Connection-Api-Key': GMAIL_KEY };
 
     // Optional manual trigger: { schedule_id } runs just that one
@@ -112,10 +131,30 @@ Deno.serve(async (req) => {
     if (body?.schedule_id) {
       query = admin.from('gmail_sync_schedules').select('*').eq('id', body.schedule_id);
     } else {
+      // Bulk cron sweep — restrict to service-role callers only
+      if (!isServiceRole) {
+        return new Response(JSON.stringify({ error: 'forbidden: bulk sweep requires service role' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
       query = query.lte('next_run_at', new Date().toISOString()).limit(20);
     }
     const { data: due, error } = await query;
     if (error) throw error;
+
+    // For user-triggered runs, verify workspace membership on every schedule fetched
+    let filteredDue = due ?? [];
+    if (!isServiceRole && userId) {
+      const filtered: any[] = [];
+      for (const s of filteredDue) {
+        const { data: decision } = await admin.from('decisions').select('workspace_id').eq('id', s.decision_id).maybeSingle();
+        if (!decision) continue;
+        const { data: mem } = await admin.from('workspace_members').select('user_id').eq('workspace_id', decision.workspace_id).eq('user_id', userId).maybeSingle();
+        if (mem) filtered.push(s);
+      }
+      filteredDue = filtered;
+      if (filteredDue.length === 0) {
+        return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
 
     const results: any[] = [];
     for (const s of (due ?? [])) {
