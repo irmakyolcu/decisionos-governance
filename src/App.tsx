@@ -47,6 +47,16 @@ import AnomalyDetectionPage from "./pages/AnomalyDetectionPage";
 import ComplianceReportsPage from "./pages/ComplianceReportsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import DecisionRolesPage from "./pages/DecisionRolesPage";
+import LandingPage from "./pages/LandingPage";
+import AskDecisionOSPage from "./pages/AskDecisionOSPage";
+import CompanyBrainPage from "./pages/CompanyBrainPage";
+import ClientsPage from "./pages/ClientsPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import ProcessesPage from "./pages/ProcessesPage";
+import CompanySkillsPage from "./pages/CompanySkillsPage";
+import RisksPage from "./pages/RisksPage";
+import DataSourcesPage from "./pages/DataSourcesPage";
+import AdminPermissionsPage from "./pages/AdminPermissionsPage";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +73,7 @@ function ProtectedRoutes() {
   }
 
   if (!session) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/landing" replace />;
   }
 
   // User is authenticated but has no workspace → onboarding
@@ -75,6 +85,15 @@ function ProtectedRoutes() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<ExecutiveDashboardPage />} />
+        <Route path="/ask" element={<AskDecisionOSPage />} />
+        <Route path="/brain" element={<CompanyBrainPage />} />
+        <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/processes" element={<ProcessesPage />} />
+        <Route path="/skills" element={<CompanySkillsPage />} />
+        <Route path="/risks" element={<RisksPage />} />
+        <Route path="/data-sources" element={<DataSourcesPage />} />
+        <Route path="/admin" element={<AdminPermissionsPage />} />
         <Route path="/home-legacy" element={<HomePage />} />
         <Route path="/approvals-center" element={<ApprovalCenterPage />} />
         <Route path="/execution" element={<ExecutionCenterPage />} />
@@ -140,6 +159,7 @@ const App = () => (
         <AuthProvider>
           <WorkspaceProvider>
             <Routes>
+              <Route path="/landing" element={<LandingPage />} />
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/invite" element={<InviteRoute />} />
               <Route path="/trust" element={<TrustPage />} />
