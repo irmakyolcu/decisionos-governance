@@ -57,6 +57,7 @@ import CompanySkillsPage from "./pages/CompanySkillsPage";
 import RisksPage from "./pages/RisksPage";
 import DataSourcesPage from "./pages/DataSourcesPage";
 import AdminPermissionsPage from "./pages/AdminPermissionsPage";
+import DecisionDetailPage from "./pages/DecisionDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -122,6 +123,7 @@ function ProtectedRoutes() {
         <Route path="/meetings" element={<MeetingsPage />} />
         <Route path="/decisions" element={<DecisionReviewPage />} />
         <Route path="/decisions/list" element={<DecisionsPage />} />
+        <Route path="/decisions/list/:id" element={<DecisionDetailPage />} />
         <Route path="/decision-records" element={<DecisionRecordsPage />} />
         <Route path="/ai-evaluation" element={<AIEvaluationPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
