@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { WorkspaceProvider, useWorkspace } from "@/contexts/WorkspaceContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AppLayout } from "@/components/AppLayout";
 import HomePage from "./pages/HomePage";
 import DecisionSpacesPage from "./pages/DecisionSpacesPage";
@@ -158,17 +159,19 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <WorkspaceProvider>
-            <Routes>
-              <Route path="/landing" element={<LandingPage />} />
-              <Route path="/auth" element={<AuthRoute />} />
-              <Route path="/invite" element={<InviteRoute />} />
-              <Route path="/trust" element={<TrustPage />} />
-              <Route path="/*" element={<ProtectedRoutes />} />
-            </Routes>
-          </WorkspaceProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <WorkspaceProvider>
+              <Routes>
+                <Route path="/landing" element={<LandingPage />} />
+                <Route path="/auth" element={<AuthRoute />} />
+                <Route path="/invite" element={<InviteRoute />} />
+                <Route path="/trust" element={<TrustPage />} />
+                <Route path="/*" element={<ProtectedRoutes />} />
+              </Routes>
+            </WorkspaceProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

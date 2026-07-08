@@ -1,8 +1,26 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Brain, Shield, GitBranch, Users, Zap, Building2, ArrowRight, Sparkles } from 'lucide-react';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function LandingPage() {
+  const { t } = useLanguage();
+
+  const features = [
+    { icon: GitBranch, title: t('f.decisionMemory'), body: t('f.decisionMemoryBody') },
+    { icon: Shield, title: t('f.permBrain'), body: t('f.permBrainBody') },
+    { icon: Zap, title: t('f.skills'), body: t('f.skillsBody') },
+    { icon: Building2, title: t('f.client'), body: t('f.clientBody') },
+    { icon: Brain, title: t('f.ask'), body: t('f.askBody') },
+    { icon: Users, title: t('f.expertise'), body: t('f.expertiseBody') },
+  ];
+
+  const sources = [
+    t('src.emails'), t('src.meetings'), t('src.documents'),
+    t('src.crm'), t('src.slack'), t('src.memory'),
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
@@ -15,8 +33,9 @@ export default function LandingPage() {
             <span className="font-bold text-lg">DecisionOS</span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/auth"><Button variant="ghost" size="sm">Sign in</Button></Link>
-            <Link to="/auth"><Button size="sm">Get started</Button></Link>
+            <LanguageToggle />
+            <Link to="/auth"><Button variant="ghost" size="sm">{t('nav.signin')}</Button></Link>
+            <Link to="/auth"><Button size="sm">{t('nav.getStarted')}</Button></Link>
           </div>
         </div>
       </header>
@@ -24,19 +43,19 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 py-24 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-muted/40 text-xs text-muted-foreground mb-6">
-          <Sparkles className="h-3 w-3" /> Permission-aware Company Brain
+          <Sparkles className="h-3 w-3" /> {t('hero.badge')}
         </div>
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight max-w-4xl mx-auto leading-[1.1]">
-          Turn every company interaction into organizational intelligence.
+          {t('hero.title')}
         </h1>
         <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-          DecisionOS transforms your emails, meetings, documents, decisions, and workflows into a living Company Brain for employees and AI agents.
+          {t('hero.subtitle')}
         </p>
         <div className="mt-8 flex items-center justify-center gap-3">
           <Link to="/auth">
-            <Button size="lg" className="gap-2">Build Your Company Brain <ArrowRight className="h-4 w-4" /></Button>
+            <Button size="lg" className="gap-2">{t('hero.cta')} <ArrowRight className="h-4 w-4" /></Button>
           </Link>
-          <Button size="lg" variant="outline">View Product Demo</Button>
+          <Button size="lg" variant="outline">{t('hero.demo')}</Button>
         </div>
       </section>
 
@@ -44,15 +63,12 @@ export default function LandingPage() {
       <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">The Problem</div>
-            <h2 className="text-3xl font-bold mb-4">Your company's memory is scattered.</h2>
-            <p className="text-muted-foreground">
-              Critical decisions live in Slack threads. Client promises hide in email. Processes exist only in one person's head.
-              When they leave, the knowledge leaves with them.
-            </p>
+            <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">{t('problem.tag')}</div>
+            <h2 className="text-3xl font-bold mb-4">{t('problem.title')}</h2>
+            <p className="text-muted-foreground">{t('problem.body')}</p>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {['Emails','Meetings','Documents','CRM','Slack','Employee memory'].map((s) => (
+            {sources.map((s) => (
               <div key={s} className="p-4 rounded-lg border border-border bg-card text-sm">{s}</div>
             ))}
           </div>
@@ -62,17 +78,10 @@ export default function LandingPage() {
       {/* Features */}
       <section className="max-w-7xl mx-auto px-6 py-16 border-t border-border">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold">How DecisionOS works</h2>
+          <h2 className="text-3xl font-bold">{t('features.title')}</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { icon: GitBranch, title: 'Decision Memory', body: 'Every decision structured with reasoning, evidence, approvers, and outcomes.' },
-            { icon: Shield, title: 'Permission-Aware Brain', body: 'Answers respect roles, departments, projects, and confidentiality — automatically.' },
-            { icon: Zap, title: 'Company Skills for AI Agents', body: 'Machine-readable operating instructions so agents work the way your company works.' },
-            { icon: Building2, title: 'Client & Project Intelligence', body: 'Promises, risks, and commitments surfaced before they become problems.' },
-            { icon: Brain, title: 'Ask DecisionOS', body: 'Source-cited answers about any decision, client, process, or policy.' },
-            { icon: Users, title: 'Expertise Map', body: 'See who owns what — and where knowledge concentration puts you at risk.' },
-          ].map(({ icon: Icon, title, body }) => (
+          {features.map(({ icon: Icon, title, body }) => (
             <div key={title} className="p-6 rounded-xl border border-border bg-card">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                 <Icon className="h-5 w-5 text-primary" />
@@ -87,17 +96,17 @@ export default function LandingPage() {
       {/* Quote */}
       <section className="max-w-4xl mx-auto px-6 py-20 text-center border-t border-border">
         <p className="text-2xl md:text-3xl font-medium leading-snug">
-          Every employee leaves knowledge behind. Every meeting creates context. Every decision contains intelligence.
-          <span className="text-primary"> DecisionOS makes sure your company never loses it.</span>
+          {t('quote')}
+          <span className="text-primary"> {t('quote.highlight')}</span>
         </p>
       </section>
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-6 py-20 border-t border-border">
         <div className="rounded-2xl border border-border bg-card p-12 text-center">
-          <h2 className="text-3xl font-bold mb-3">Ready to build your Company Brain?</h2>
-          <p className="text-muted-foreground mb-6">Start capturing decisions, promises, and knowledge in minutes.</p>
-          <Link to="/auth"><Button size="lg" className="gap-2">Get started free <ArrowRight className="h-4 w-4" /></Button></Link>
+          <h2 className="text-3xl font-bold mb-3">{t('cta.title')}</h2>
+          <p className="text-muted-foreground mb-6">{t('cta.body')}</p>
+          <Link to="/auth"><Button size="lg" className="gap-2">{t('cta.button')} <ArrowRight className="h-4 w-4" /></Button></Link>
         </div>
       </section>
 
