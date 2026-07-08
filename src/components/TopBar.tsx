@@ -1,5 +1,6 @@
 import { Search, User, LogOut, Shield, CheckCircle, Eye } from 'lucide-react';
 import { NotificationsBell } from '@/components/NotificationsBell';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
@@ -52,7 +53,9 @@ export function TopBar() {
       </div>
 
       <div className="flex items-center gap-4">
+        <LanguageToggle />
         <NotificationsBell />
+
 
 
         <Link to="/profile" className="flex items-center gap-2 hover:bg-muted rounded-md px-2 py-1 transition-colors" title="Profili Düzenle">
