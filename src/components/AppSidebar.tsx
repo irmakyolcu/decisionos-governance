@@ -1,9 +1,6 @@
 import {
-  Home, Layers, FileText, CheckCircle, Calendar, GitBranch, Archive,
-  Brain, BarChart3, Shield, Settings, ChevronLeft, ChevronRight, Users,
-  Crown, Inbox, BookOpen, Network, Database, Compass, Mic,
-  Gavel, Zap, ScrollText, Lock, Sparkles, ClipboardCheck, Activity,
-  AlertTriangle, FileCheck, Plug, UserCog,
+  Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
+  Zap, AlertTriangle, Database, Users, Shield, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -14,54 +11,30 @@ import {
 
 const navGroups: { label: string; items: { title: string; url: string; icon: any }[] }[] = [
   {
-    label: 'Decision Control',
+    label: 'Company Brain',
     items: [
-      { title: 'Executive Dashboard', url: '/', icon: Home },
-      { title: 'Approval Center', url: '/approvals-center', icon: Gavel },
-      { title: 'Execution Center', url: '/execution', icon: Zap },
-      { title: 'Policies', url: '/policies', icon: Shield },
-      { title: 'Audit Ledger', url: '/audit', icon: Lock },
-      { title: 'Agent Performance', url: '/agent-performance', icon: Activity },
-      { title: 'Anomaly Detection', url: '/anomalies', icon: AlertTriangle },
-      { title: 'Compliance Reports', url: '/compliance', icon: FileCheck },
-      { title: 'Decision Roles', url: '/decision-roles', icon: UserCog },
+      { title: 'Home', url: '/', icon: Home },
+      { title: 'Ask DecisionOS', url: '/ask', icon: Sparkles },
+      { title: 'Company Brain', url: '/brain', icon: Brain },
     ],
   },
   {
-    label: 'Decision Intelligence',
+    label: 'Intelligence',
     items: [
-      { title: 'Decision Intake', url: '/decision-intake', icon: Inbox },
-      { title: 'CEO Decision Profile', url: '/ceo-profile', icon: Crown },
-      { title: 'Decision Memory', url: '/decision-memory', icon: BookOpen },
-      { title: 'Delegation Engine', url: '/delegation-engine', icon: Network },
-      { title: 'Strategic Alignment', url: '/strategic-alignment', icon: Compass },
-      { title: 'Decision Twin', url: '/decision-twin', icon: Sparkles },
-      { title: 'Structured Memory', url: '/structured-memory', icon: BookOpen },
-      { title: 'Post-Decision Reviews', url: '/reviews', icon: ClipboardCheck },
-      { title: 'Voice Assistant', url: '/voice-assistant', icon: Mic },
-    ],
-  },
-  {
-    label: 'Governance',
-    items: [
-      { title: 'Decision Spaces', url: '/decision-spaces', icon: Layers },
-      { title: 'Proposals', url: '/proposals', icon: FileText },
-      { title: 'Approvals', url: '/approvals', icon: CheckCircle },
-      { title: 'Meetings', url: '/meetings', icon: Calendar },
       { title: 'Decisions', url: '/decisions', icon: GitBranch },
-      { title: 'Decision Records', url: '/decision-records', icon: Archive },
-      { title: 'AI Evaluation', url: '/ai-evaluation', icon: Brain },
-      { title: 'Decision Analytics', url: '/analytics', icon: BarChart3 },
-      { title: 'Authority & Budget', url: '/authority', icon: ScrollText },
-      { title: 'Training Data', url: '/training-data', icon: Database },
+      { title: 'Clients', url: '/clients', icon: Building2 },
+      { title: 'Projects', url: '/projects', icon: FolderKanban },
+      { title: 'Processes', url: '/processes', icon: Workflow },
+      { title: 'Company Skills', url: '/skills', icon: Zap },
+      { title: 'Risks & Alerts', url: '/risks', icon: AlertTriangle },
     ],
   },
   {
-    label: 'Workspace',
+    label: 'Admin',
     items: [
+      { title: 'Data Sources', url: '/data-sources', icon: Database },
       { title: 'Team', url: '/team', icon: Users },
-      { title: 'Integrations', url: '/integrations', icon: Plug },
-      { title: 'Settings', url: '/settings', icon: Settings },
+      { title: 'Admin & Permissions', url: '/admin', icon: Shield },
     ],
   },
 ];
@@ -74,13 +47,13 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
-            <GitBranch className="h-4 w-4 text-primary-foreground" />
+          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+            <Brain className="h-4 w-4 text-primary-foreground" />
           </div>
           {!collapsed && (
             <div>
               <h2 className="text-sm font-bold text-sidebar-accent-foreground tracking-wide">DecisionOS</h2>
-              <p className="text-[10px] text-sidebar-muted">CEO Digital Twin</p>
+              <p className="text-[10px] text-sidebar-muted">Company Brain</p>
             </div>
           )}
         </div>

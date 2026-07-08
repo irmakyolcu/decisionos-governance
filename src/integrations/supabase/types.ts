@@ -401,6 +401,51 @@ export type Database = {
           },
         ]
       }
+      answer_feedback: {
+        Row: {
+          correction: string | null
+          created_at: string | null
+          id: string
+          message_id: string
+          rating: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          correction?: string | null
+          created_at?: string | null
+          id?: string
+          message_id: string
+          rating: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          correction?: string | null
+          created_at?: string | null
+          id?: string
+          message_id?: string
+          rating?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answer_feedback_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "conversation_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answer_feedback_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_events: {
         Row: {
           action_id: string | null
@@ -463,6 +508,213 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          workspace_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          workspace_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          confidentiality:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          contract_terms: string | null
+          created_at: string | null
+          created_by: string
+          health_score: number | null
+          id: string
+          industry: string | null
+          key_contacts: Json | null
+          name: string
+          notes: string | null
+          promises: Json | null
+          relationship_owner: string | null
+          revenue_at_risk: number | null
+          risk_level: Database["public"]["Enums"]["risk_severity"] | null
+          sentiment_trend: string | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          contract_terms?: string | null
+          created_at?: string | null
+          created_by: string
+          health_score?: number | null
+          id?: string
+          industry?: string | null
+          key_contacts?: Json | null
+          name: string
+          notes?: string | null
+          promises?: Json | null
+          relationship_owner?: string | null
+          revenue_at_risk?: number | null
+          risk_level?: Database["public"]["Enums"]["risk_severity"] | null
+          sentiment_trend?: string | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          contract_terms?: string | null
+          created_at?: string | null
+          created_by?: string
+          health_score?: number | null
+          id?: string
+          industry?: string | null
+          key_contacts?: Json | null
+          name?: string
+          notes?: string | null
+          promises?: Json | null
+          relationship_owner?: string | null
+          revenue_at_risk?: number | null
+          risk_level?: Database["public"]["Enums"]["risk_severity"] | null
+          sentiment_trend?: string | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_skills: {
+        Row: {
+          confidentiality:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at: string | null
+          created_by: string
+          decision_rules: Json | null
+          description: string | null
+          exceptions: string | null
+          expected_output: string | null
+          human_review_required: boolean | null
+          id: string
+          last_tested_at: string | null
+          name: string
+          owner_id: string | null
+          permissions_required: Json | null
+          related_processes: Json | null
+          required_approvals: Json | null
+          required_inputs: Json | null
+          status: Database["public"]["Enums"]["skill_status"] | null
+          steps: Json | null
+          tools_needed: Json | null
+          trigger: string | null
+          updated_at: string | null
+          version: number | null
+          workspace_id: string
+        }
+        Insert: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at?: string | null
+          created_by: string
+          decision_rules?: Json | null
+          description?: string | null
+          exceptions?: string | null
+          expected_output?: string | null
+          human_review_required?: boolean | null
+          id?: string
+          last_tested_at?: string | null
+          name: string
+          owner_id?: string | null
+          permissions_required?: Json | null
+          related_processes?: Json | null
+          required_approvals?: Json | null
+          required_inputs?: Json | null
+          status?: Database["public"]["Enums"]["skill_status"] | null
+          steps?: Json | null
+          tools_needed?: Json | null
+          trigger?: string | null
+          updated_at?: string | null
+          version?: number | null
+          workspace_id: string
+        }
+        Update: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at?: string | null
+          created_by?: string
+          decision_rules?: Json | null
+          description?: string | null
+          exceptions?: string | null
+          expected_output?: string | null
+          human_review_required?: boolean | null
+          id?: string
+          last_tested_at?: string | null
+          name?: string
+          owner_id?: string | null
+          permissions_required?: Json | null
+          related_processes?: Json | null
+          required_approvals?: Json | null
+          required_inputs?: Json | null
+          status?: Database["public"]["Enums"]["skill_status"] | null
+          steps?: Json | null
+          tools_needed?: Json | null
+          trigger?: string | null
+          updated_at?: string | null
+          version?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_skills_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_reports: {
         Row: {
           created_at: string
@@ -512,6 +764,141 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "compliance_reports_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_messages: {
+        Row: {
+          citations: Json | null
+          confidence: number | null
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          role: string
+          suggested_action: string | null
+        }
+        Insert: {
+          citations?: Json | null
+          confidence?: number | null
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          role: string
+          suggested_action?: string | null
+        }
+        Update: {
+          citations?: Json | null
+          confidence?: number | null
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          suggested_action?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_sources: {
+        Row: {
+          access_scope: string | null
+          config: Json | null
+          created_at: string | null
+          created_by: string
+          id: string
+          indexed_count: number | null
+          kind: Database["public"]["Enums"]["source_kind"]
+          label: string
+          last_sync_at: string | null
+          owner_id: string | null
+          status: string | null
+          sync_error: string | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          access_scope?: string | null
+          config?: Json | null
+          created_at?: string | null
+          created_by: string
+          id?: string
+          indexed_count?: number | null
+          kind: Database["public"]["Enums"]["source_kind"]
+          label: string
+          last_sync_at?: string | null
+          owner_id?: string | null
+          status?: string | null
+          sync_error?: string | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          access_scope?: string | null
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          indexed_count?: number | null
+          kind?: Database["public"]["Enums"]["source_kind"]
+          label?: string
+          last_sync_at?: string | null
+          owner_id?: string | null
+          status?: string | null
+          sync_error?: string | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_sources_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1308,6 +1695,81 @@ export type Database = {
           },
         ]
       }
+      knowledge_items: {
+        Row: {
+          confidentiality:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          content: string
+          created_at: string | null
+          created_by: string
+          document_id: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          source_date: string | null
+          source_url: string | null
+          summary: string | null
+          tags: Json | null
+          title: string
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          content: string
+          created_at?: string | null
+          created_by: string
+          document_id?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          source_date?: string | null
+          source_url?: string | null
+          summary?: string | null
+          tags?: Json | null
+          title: string
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          content?: string
+          created_at?: string | null
+          created_by?: string
+          document_id?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          source_date?: string | null
+          source_url?: string | null
+          summary?: string | null
+          tags?: Json | null
+          title?: string
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_items_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "knowledge_items_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_attendees: {
         Row: {
           meeting_id: string
@@ -1715,6 +2177,89 @@ export type Database = {
           },
         ]
       }
+      processes: {
+        Row: {
+          confidentiality:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at: string | null
+          created_by: string
+          department: string | null
+          exceptions: string | null
+          flags: Json | null
+          id: string
+          inputs: Json | null
+          last_verified_at: string | null
+          name: string
+          outputs: Json | null
+          owner_id: string | null
+          purpose: string | null
+          related_policies: Json | null
+          required_approvals: Json | null
+          steps: Json | null
+          systems_used: Json | null
+          updated_at: string | null
+          verification_owner: string | null
+          workspace_id: string
+        }
+        Insert: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at?: string | null
+          created_by: string
+          department?: string | null
+          exceptions?: string | null
+          flags?: Json | null
+          id?: string
+          inputs?: Json | null
+          last_verified_at?: string | null
+          name: string
+          outputs?: Json | null
+          owner_id?: string | null
+          purpose?: string | null
+          related_policies?: Json | null
+          required_approvals?: Json | null
+          steps?: Json | null
+          systems_used?: Json | null
+          updated_at?: string | null
+          verification_owner?: string | null
+          workspace_id: string
+        }
+        Update: {
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at?: string | null
+          created_by?: string
+          department?: string | null
+          exceptions?: string | null
+          flags?: Json | null
+          id?: string
+          inputs?: Json | null
+          last_verified_at?: string | null
+          name?: string
+          outputs?: Json | null
+          owner_id?: string | null
+          purpose?: string | null
+          related_policies?: Json | null
+          required_approvals?: Json | null
+          steps?: Json | null
+          systems_used?: Json | null
+          updated_at?: string | null
+          verification_owner?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1752,6 +2297,87 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          client_id: string | null
+          confidentiality:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at: string | null
+          created_by: string
+          dependencies: Json | null
+          id: string
+          knowledge_gaps: Json | null
+          milestones: Json | null
+          name: string
+          next_actions: Json | null
+          objective: string | null
+          open_questions: Json | null
+          owner_id: string | null
+          status: string | null
+          team: Json | null
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at?: string | null
+          created_by: string
+          dependencies?: Json | null
+          id?: string
+          knowledge_gaps?: Json | null
+          milestones?: Json | null
+          name: string
+          next_actions?: Json | null
+          objective?: string | null
+          open_questions?: Json | null
+          owner_id?: string | null
+          status?: string | null
+          team?: Json | null
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          client_id?: string | null
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          created_at?: string | null
+          created_by?: string
+          dependencies?: Json | null
+          id?: string
+          knowledge_gaps?: Json | null
+          milestones?: Json | null
+          name?: string
+          next_actions?: Json | null
+          objective?: string | null
+          open_questions?: Json | null
+          owner_id?: string | null
+          status?: string | null
+          team?: Json | null
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1799,6 +2425,74 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "proposals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risks: {
+        Row: {
+          affected_entity_id: string | null
+          affected_entity_type: string | null
+          category: string
+          created_at: string | null
+          created_by: string
+          due_date: string | null
+          evidence: Json | null
+          id: string
+          owner_id: string | null
+          recommended_action: string | null
+          severity: Database["public"]["Enums"]["risk_severity"] | null
+          sources: Json | null
+          status: Database["public"]["Enums"]["risk_status"] | null
+          summary: string
+          updated_at: string | null
+          why_it_matters: string | null
+          workspace_id: string
+        }
+        Insert: {
+          affected_entity_id?: string | null
+          affected_entity_type?: string | null
+          category: string
+          created_at?: string | null
+          created_by: string
+          due_date?: string | null
+          evidence?: Json | null
+          id?: string
+          owner_id?: string | null
+          recommended_action?: string | null
+          severity?: Database["public"]["Enums"]["risk_severity"] | null
+          sources?: Json | null
+          status?: Database["public"]["Enums"]["risk_status"] | null
+          summary: string
+          updated_at?: string | null
+          why_it_matters?: string | null
+          workspace_id: string
+        }
+        Update: {
+          affected_entity_id?: string | null
+          affected_entity_type?: string | null
+          category?: string
+          created_at?: string | null
+          created_by?: string
+          due_date?: string | null
+          evidence?: Json | null
+          id?: string
+          owner_id?: string | null
+          recommended_action?: string | null
+          severity?: Database["public"]["Enums"]["risk_severity"] | null
+          sources?: Json | null
+          status?: Database["public"]["Enums"]["risk_status"] | null
+          summary?: string
+          updated_at?: string | null
+          why_it_matters?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risks_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1954,6 +2648,107 @@ export type Database = {
           },
         ]
       }
+      uploaded_documents: {
+        Row: {
+          access_scope: string | null
+          confidentiality:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          content_text: string | null
+          created_at: string | null
+          created_by: string
+          data_source_id: string | null
+          file_path: string | null
+          id: string
+          metadata: Json | null
+          mime_type: string | null
+          process_status:
+            | Database["public"]["Enums"]["doc_process_status"]
+            | null
+          related_client_id: string | null
+          related_project_id: string | null
+          source_kind: Database["public"]["Enums"]["source_kind"] | null
+          title: string
+          updated_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          access_scope?: string | null
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          content_text?: string | null
+          created_at?: string | null
+          created_by: string
+          data_source_id?: string | null
+          file_path?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          process_status?:
+            | Database["public"]["Enums"]["doc_process_status"]
+            | null
+          related_client_id?: string | null
+          related_project_id?: string | null
+          source_kind?: Database["public"]["Enums"]["source_kind"] | null
+          title: string
+          updated_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          access_scope?: string | null
+          confidentiality?:
+            | Database["public"]["Enums"]["confidentiality_level"]
+            | null
+          content_text?: string | null
+          created_at?: string | null
+          created_by?: string
+          data_source_id?: string | null
+          file_path?: string | null
+          id?: string
+          metadata?: Json | null
+          mime_type?: string | null
+          process_status?:
+            | Database["public"]["Enums"]["doc_process_status"]
+            | null
+          related_client_id?: string | null
+          related_project_id?: string | null
+          source_kind?: Database["public"]["Enums"]["source_kind"] | null
+          title?: string
+          updated_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_documents_data_source_id_fkey"
+            columns: ["data_source_id"]
+            isOneToOne: false
+            referencedRelation: "data_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "uploaded_documents_related_client_id_fkey"
+            columns: ["related_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "uploaded_documents_related_project_id_fkey"
+            columns: ["related_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "uploaded_documents_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_invites: {
         Row: {
           accepted_at: string | null
@@ -2059,6 +2854,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_confidential: {
+        Args: {
+          _creator: string
+          _level: Database["public"]["Enums"]["confidentiality_level"]
+          _user_id: string
+          _workspace_id: string
+        }
+        Returns: boolean
+      }
       get_invite_by_token: {
         Args: { _token: string }
         Returns: {
@@ -2108,6 +2912,11 @@ export type Database = {
         | "cancelled"
         | "expired"
       authority_level: "observe" | "prepare" | "act" | "commit"
+      confidentiality_level:
+        | "public_internal"
+        | "internal"
+        | "confidential"
+        | "highly_confidential"
       decision_role_kind:
         | "approver"
         | "legal"
@@ -2123,6 +2932,12 @@ export type Database = {
         | "Rejected"
         | "Escalated"
         | "Executed"
+      doc_process_status:
+        | "uploaded"
+        | "processing"
+        | "indexed"
+        | "needs_review"
+        | "failed"
       outcome_status: "Success" | "Partial Success" | "Failure" | "Pending"
       policy_effect:
         | "allow"
@@ -2135,6 +2950,33 @@ export type Database = {
       procon_type: "pro" | "con"
       proposal_status: "Submitted" | "Under Review" | "Approved" | "Rejected"
       risk_level: "Low" | "Medium" | "High" | "Critical"
+      risk_severity: "low" | "medium" | "high" | "critical"
+      risk_status:
+        | "new"
+        | "investigating"
+        | "action_required"
+        | "resolved"
+        | "dismissed"
+      skill_status: "draft" | "active" | "needs_review" | "deprecated"
+      source_kind:
+        | "gmail"
+        | "outlook"
+        | "slack"
+        | "teams"
+        | "drive"
+        | "sharepoint"
+        | "notion"
+        | "hubspot"
+        | "salesforce"
+        | "jira"
+        | "linear"
+        | "github"
+        | "zoom"
+        | "manual_upload"
+        | "meeting_transcript"
+        | "pasted_text"
+        | "url"
+        | "internal_note"
       workspace_role: "admin" | "approver" | "viewer"
     }
     CompositeTypes: {
@@ -2278,6 +3120,12 @@ export const Constants = {
         "expired",
       ],
       authority_level: ["observe", "prepare", "act", "commit"],
+      confidentiality_level: [
+        "public_internal",
+        "internal",
+        "confidential",
+        "highly_confidential",
+      ],
       decision_role_kind: [
         "approver",
         "legal",
@@ -2295,6 +3143,13 @@ export const Constants = {
         "Escalated",
         "Executed",
       ],
+      doc_process_status: [
+        "uploaded",
+        "processing",
+        "indexed",
+        "needs_review",
+        "failed",
+      ],
       outcome_status: ["Success", "Partial Success", "Failure", "Pending"],
       policy_effect: [
         "allow",
@@ -2308,6 +3163,35 @@ export const Constants = {
       procon_type: ["pro", "con"],
       proposal_status: ["Submitted", "Under Review", "Approved", "Rejected"],
       risk_level: ["Low", "Medium", "High", "Critical"],
+      risk_severity: ["low", "medium", "high", "critical"],
+      risk_status: [
+        "new",
+        "investigating",
+        "action_required",
+        "resolved",
+        "dismissed",
+      ],
+      skill_status: ["draft", "active", "needs_review", "deprecated"],
+      source_kind: [
+        "gmail",
+        "outlook",
+        "slack",
+        "teams",
+        "drive",
+        "sharepoint",
+        "notion",
+        "hubspot",
+        "salesforce",
+        "jira",
+        "linear",
+        "github",
+        "zoom",
+        "manual_upload",
+        "meeting_transcript",
+        "pasted_text",
+        "url",
+        "internal_note",
+      ],
       workspace_role: ["admin", "approver", "viewer"],
     },
   },
