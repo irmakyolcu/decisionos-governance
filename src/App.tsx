@@ -47,6 +47,16 @@ import AnomalyDetectionPage from "./pages/AnomalyDetectionPage";
 import ComplianceReportsPage from "./pages/ComplianceReportsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import DecisionRolesPage from "./pages/DecisionRolesPage";
+import LandingPage from "./pages/LandingPage";
+import AskDecisionOSPage from "./pages/AskDecisionOSPage";
+import CompanyBrainPage from "./pages/CompanyBrainPage";
+import ClientsPage from "./pages/ClientsPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import ProcessesPage from "./pages/ProcessesPage";
+import CompanySkillsPage from "./pages/CompanySkillsPage";
+import RisksPage from "./pages/RisksPage";
+import DataSourcesPage from "./pages/DataSourcesPage";
+import AdminPermissionsPage from "./pages/AdminPermissionsPage";
 
 const queryClient = new QueryClient();
 
