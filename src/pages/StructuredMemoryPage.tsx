@@ -6,12 +6,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTable } from '@/hooks/useGovernance';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { BookOpen, Plus, Lock, Search } from 'lucide-react';
+import { BookOpen, Plus, Lock, Search, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const db = supabase as any;
@@ -30,7 +31,25 @@ export default function StructuredMemoryPage() {
   const [q, setQ] = useState('');
   const [sensFilter, setSensFilter] = useState<string>('all');
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ title: '', summary: '', context: '', outcome: '', tags: '', sensitivity: 'internal' });
+  const [editing, setEditing] = useState<any | null>(null);
+  const emptyForm = { title: '', summary: '', context: '', outcome: '', tags: '', sensitivity: 'internal' };
+  const [form, setForm] = useState(emptyForm);
+
+  function openEdit(e: any) {
+    setEditing(e);
+    setForm({
+      title: e.title ?? '', summary: e.summary ?? '', context: e.context ?? '',
+      outcome: e.outcome ?? '', tags: (e.tags ?? []).join(', '), sensitivity: e.sensitivity ?? 'internal',
+    });
+    setOpen(true);
+  }
+  function openNew() { setEditing(null); setForm(emptyForm); setOpen(true); }
+
+  async function del(id: string) {
+    const { error } = await db.from('memory_entries').delete().eq('id', id);
+    if (error) return toast.error(error.message);
+    toast.success('Silindi'); refetch();
+  }
 
   const filtered = useMemo(() => rows.filter((r) =>
     (sensFilter === 'all' || r.sensitivity === sensFilter) &&
@@ -39,17 +58,20 @@ export default function StructuredMemoryPage() {
       (r.tags || []).join(' ').toLowerCase().includes(q.toLowerCase()))
   ), [rows, q, sensFilter]);
 
-  async function add() {
+  async function save() {
     if (!workspace || !form.title) return;
-    const { error } = await db.from('memory_entries').insert({
-      workspace_id: workspace.id, ...form,
+    const payload = {
+      workspace_id: workspace.id,
+      title: form.title, summary: form.summary, context: form.context,
+      outcome: form.outcome, sensitivity: form.sensitivity,
       tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
-      created_by: user?.id,
-    });
+    };
+    const { error } = editing
+      ? await db.from('memory_entries').update(payload).eq('id', editing.id)
+      : await db.from('memory_entries').insert({ ...payload, created_by: user?.id });
     if (error) { toast.error(error.message); return; }
-    toast.success('Saved to memory'); setOpen(false);
-    setForm({ title: '', summary: '', context: '', outcome: '', tags: '', sensitivity: 'internal' });
-    refetch();
+    toast.success(editing ? 'Güncellendi' : 'Kaydedildi');
+    setOpen(false); setEditing(null); setForm(emptyForm); refetch();
   }
 
   return (
@@ -59,10 +81,10 @@ export default function StructuredMemoryPage() {
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2"><BookOpen className="h-7 w-7" /> Decision Memory</h1>
           <p className="text-muted-foreground mt-1">Structured library of past decisions. Sensitivity controls how the Twin uses each entry.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />Add Entry</Button></DialogTrigger>
+        <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
+          <DialogTrigger asChild><Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />Add Entry</Button></DialogTrigger>
           <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>New memory entry</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{editing ? 'Kaydı düzenle' : 'New memory entry'}</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} /></div>
               <div><Label>Summary</Label><Textarea value={form.summary} onChange={(e) => setForm({...form, summary: e.target.value})} /></div>
@@ -76,10 +98,11 @@ export default function StructuredMemoryPage() {
                 </Select>
               </div>
             </div>
-            <DialogFooter><Button onClick={add}>Save</Button></DialogFooter>
+            <DialogFooter><Button onClick={save}>{editing ? 'Güncelle' : 'Save'}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
+
 
       <div className="flex gap-2">
         <div className="relative flex-1 max-w-md">
@@ -116,7 +139,27 @@ export default function StructuredMemoryPage() {
                   {e.tags.map((t: string) => <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>)}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString()}</p>
+              <div className="flex items-center justify-between pt-1">
+                <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString()}</p>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(e)}><Pencil className="h-3.5 w-3.5" /></Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Kaydı sil?</AlertDialogTitle>
+                        <AlertDialogDescription>"{e.title}" hafızadan kalıcı olarak silinecek.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => del(e.id)}>Sil</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}

@@ -1141,6 +1141,53 @@ export type Database = {
           },
         ]
       }
+      decision_history: {
+        Row: {
+          change_type: string
+          changed_by: string | null
+          created_at: string
+          decision_id: string
+          field_name: string | null
+          id: string
+          new_value: Json | null
+          note: string | null
+          old_value: Json | null
+          workspace_id: string
+        }
+        Insert: {
+          change_type: string
+          changed_by?: string | null
+          created_at?: string
+          decision_id: string
+          field_name?: string | null
+          id?: string
+          new_value?: Json | null
+          note?: string | null
+          old_value?: Json | null
+          workspace_id: string
+        }
+        Update: {
+          change_type?: string
+          changed_by?: string | null
+          created_at?: string
+          decision_id?: string
+          field_name?: string | null
+          id?: string
+          new_value?: Json | null
+          note?: string | null
+          old_value?: Json | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_history_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_pros_cons: {
         Row: {
           added_by: string

@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useDecisions } from '@/hooks/useDecisions';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { filterDecisionsByRole } from '@/lib/roleHierarchy';
 import { UserRole } from '@/types/decision';
-import { GitBranch, Eye, Sparkles, Loader2 } from 'lucide-react';
+import { GitBranch, Eye, Sparkles, Loader2, Lock, Pencil } from 'lucide-react';
 import { CreateDecisionDialog } from '@/components/CreateDecisionDialog';
 import { PermissionGate } from '@/components/PermissionGate';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -58,16 +59,21 @@ export default function DecisionsPage() {
                   {decisions.length === 0 ? 'Henüz karar yok. İlk kararınızı oluşturun.' : 'No decisions visible at this authority level.'}
                 </td></tr>
               ) : (
-                visible.map((d) => (
-                  <tr key={d.id}>
+                visible.map((d) => {
+                  const isLocked = d.status === 'Approved' || d.status === 'Executed';
+                  return (
+                  <tr key={d.id} className="hover:bg-muted/40">
                     <td>
-                      <div className="flex items-center gap-2">
+                      <Link to={`/decisions/list/${d.id}`} className="flex items-center gap-2 group">
                         <GitBranch className="h-4 w-4 text-primary flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-foreground">{d.title}</p>
+                          <p className="font-medium text-foreground group-hover:underline flex items-center gap-1.5">
+                            {d.title}
+                            {isLocked && <Lock className="h-3 w-3 text-amber-600" />}
+                          </p>
                           <p className="text-xs text-muted-foreground truncate max-w-xs">{d.description}</p>
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td className="font-mono text-sm">€{d.budget.toLocaleString()}</td>
                     <td>
@@ -102,9 +108,17 @@ export default function DecisionsPage() {
                         {d.createdBy.role}
                       </span>
                     </td>
-                    <td className="text-muted-foreground">{d.createdAt.toLocaleDateString()}</td>
+                    <td className="text-muted-foreground">
+                      <div className="flex items-center justify-between gap-2">
+                        <span>{d.createdAt.toLocaleDateString()}</span>
+                        <Link to={`/decisions/list/${d.id}`} className="text-primary hover:underline inline-flex items-center gap-1 text-xs">
+                          <Pencil className="h-3 w-3" />{isLocked ? 'İncele' : 'Düzenle'}
+                        </Link>
+                      </div>
+                    </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
