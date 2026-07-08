@@ -139,7 +139,27 @@ export default function StructuredMemoryPage() {
                   {e.tags.map((t: string) => <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>)}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString()}</p>
+              <div className="flex items-center justify-between pt-1">
+                <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString()}</p>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(e)}><Pencil className="h-3.5 w-3.5" /></Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Kaydı sil?</AlertDialogTitle>
+                        <AlertDialogDescription>"{e.title}" hafızadan kalıcı olarak silinecek.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => del(e.id)}>Sil</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
