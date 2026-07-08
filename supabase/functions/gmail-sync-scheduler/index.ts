@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
     }
 
     const results: any[] = [];
-    for (const s of (due ?? [])) {
+    for (const s of filteredDue) {
       const res = await runOne(admin, s, gwHeaders);
       const now = new Date();
       const next = new Date(now.getTime() + (s.cadence_minutes || 60) * 60_000).toISOString();
