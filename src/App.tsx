@@ -73,7 +73,7 @@ function ProtectedRoutes() {
   }
 
   if (!session) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/landing" replace />;
   }
 
   // User is authenticated but has no workspace → onboarding
@@ -85,6 +85,15 @@ function ProtectedRoutes() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<ExecutiveDashboardPage />} />
+        <Route path="/ask" element={<AskDecisionOSPage />} />
+        <Route path="/brain" element={<CompanyBrainPage />} />
+        <Route path="/clients" element={<ClientsPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/processes" element={<ProcessesPage />} />
+        <Route path="/skills" element={<CompanySkillsPage />} />
+        <Route path="/risks" element={<RisksPage />} />
+        <Route path="/data-sources" element={<DataSourcesPage />} />
+        <Route path="/admin" element={<AdminPermissionsPage />} />
         <Route path="/home-legacy" element={<HomePage />} />
         <Route path="/approvals-center" element={<ApprovalCenterPage />} />
         <Route path="/execution" element={<ExecutionCenterPage />} />
