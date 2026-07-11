@@ -7,74 +7,132 @@ type Dict = Record<string, { en: string; tr: string }>;
 const dict: Dict = {
   'nav.signin': { en: 'Sign in', tr: 'Giriş Yap' },
   'nav.getStarted': { en: 'Get started', tr: 'Başla' },
-  'hero.badge': { en: 'Permission-aware Company Brain', tr: 'İzin Farkında Şirket Beyni' },
+
+  // Hero
+  'hero.badge': { en: 'The Company Brain Platform', tr: 'Şirket Beyni Platformu' },
   'hero.title': {
-    en: 'Turn every company interaction into organizational intelligence.',
-    tr: 'Her şirket etkileşimini kurumsal zekâya dönüştürün.',
+    en: 'The Intelligence Layer for Every Company.',
+    tr: 'Her Şirket İçin Zekâ Katmanı.',
   },
   'hero.subtitle': {
-    en: 'DecisionOS transforms your emails, meetings, documents, decisions, and workflows into a living Company Brain for employees and AI agents.',
-    tr: 'DecisionOS; e-postalarınızı, toplantılarınızı, belgelerinizi, kararlarınızı ve iş akışlarınızı çalışanlar ve AI ajanları için yaşayan bir Şirket Beynine dönüştürür.',
+    en: 'DecisionOS builds a living Company Brain that learns from every decision, every conversation, every meeting and every business outcome.',
+    tr: 'DecisionOS; her karardan, her konuşmadan, her toplantıdan ve her iş sonucundan öğrenen yaşayan bir Şirket Beyni inşa eder.',
   },
   'hero.cta': { en: 'Build Your Company Brain', tr: 'Şirket Beyninizi Oluşturun' },
-  'hero.demo': { en: 'View Product Demo', tr: 'Ürün Demosunu İzle' },
-  'problem.tag': { en: 'The Problem', tr: 'Sorun' },
-  'problem.title': { en: "Your company's memory is scattered.", tr: 'Şirketinizin hafızası dağınık.' },
-  'problem.body': {
-    en: "Critical decisions live in Slack threads. Client promises hide in email. Processes exist only in one person's head. When they leave, the knowledge leaves with them.",
-    tr: 'Kritik kararlar Slack konularında yaşar. Müşteri sözleri e-postalarda saklıdır. Süreçler yalnızca bir kişinin aklındadır. O kişi ayrıldığında bilgi de onunla birlikte gider.',
+  'hero.demo': { en: 'Watch Demo', tr: 'Demoyu İzle' },
+
+  // Problem
+  'problem.tag': { en: '01 — The Problem', tr: '01 — Sorun' },
+  'problem.title': {
+    en: "Companies store information. They don't preserve intelligence.",
+    tr: 'Şirketler bilgi depolar. Ama zekâyı korumaz.',
   },
-  'src.emails': { en: 'Emails', tr: 'E-postalar' },
-  'src.meetings': { en: 'Meetings', tr: 'Toplantılar' },
-  'src.documents': { en: 'Documents', tr: 'Belgeler' },
-  'src.crm': { en: 'CRM', tr: 'CRM' },
-  'src.slack': { en: 'Slack', tr: 'Slack' },
-  'src.memory': { en: 'Employee memory', tr: 'Çalışan hafızası' },
-  'features.title': { en: 'How DecisionOS works', tr: 'DecisionOS nasıl çalışır' },
-  'f.decisionMemory': { en: 'Decision Memory', tr: 'Karar Hafızası' },
-  'f.decisionMemoryBody': {
-    en: 'Every decision structured with reasoning, evidence, approvers, and outcomes.',
-    tr: 'Her karar; gerekçe, kanıt, onaylayanlar ve sonuçlarla birlikte yapılandırılır.',
+  'problem.body1': {
+    en: 'Critical decisions disappear every day — buried in threads, lost in inboxes, forgotten in meetings.',
+    tr: 'Kritik kararlar her gün kayboluyor — konuların derinliklerinde, gelen kutularında, toplantı notlarında.',
   },
-  'f.permBrain': { en: 'Permission-Aware Brain', tr: 'İzin Farkında Beyin' },
-  'f.permBrainBody': {
-    en: 'Answers respect roles, departments, projects, and confidentiality — automatically.',
-    tr: 'Cevaplar; rolleri, departmanları, projeleri ve gizliliği otomatik olarak dikkate alır.',
+  'problem.body2': {
+    en: 'When employees leave, their judgment leaves with them.',
+    tr: 'Çalışanlar ayrıldığında, muhakemeleri de onlarla birlikte gider.',
   },
-  'f.skills': { en: 'Company Skills for AI Agents', tr: 'AI Ajanları için Şirket Yetenekleri' },
-  'f.skillsBody': {
-    en: 'Machine-readable operating instructions so agents work the way your company works.',
-    tr: 'Ajanların şirketinizin çalışma biçimine uygun çalışması için makine okunur işletim talimatları.',
+
+  // Brain
+  'brain.tag': { en: '02 — Company Brain', tr: '02 — Şirket Beyni' },
+  'brain.title': { en: 'Every decision makes your company smarter.', tr: 'Her karar, şirketinizi daha akıllı yapar.' },
+  'brain.body': {
+    en: 'DecisionOS does not store documents. It understands context, stakeholders, trade-offs, goals, previous decisions, business history, and outcomes.',
+    tr: 'DecisionOS belge depolamaz. Bağlamı, paydaşları, ödünleşimleri, hedefleri, önceki kararları, iş tarihini ve sonuçları anlar.',
   },
-  'f.client': { en: 'Client & Project Intelligence', tr: 'Müşteri ve Proje Zekâsı' },
-  'f.clientBody': {
-    en: 'Promises, risks, and commitments surfaced before they become problems.',
-    tr: 'Sözler, riskler ve taahhütler sorun haline gelmeden önce gün yüzüne çıkar.',
+  'brain.inputs': { en: 'Enterprise Systems', tr: 'Kurumsal Sistemler' },
+  'brain.core': { en: 'DecisionOS Company Brain', tr: 'DecisionOS Şirket Beyni' },
+  'brain.consumers': { en: 'Executives · Employees · AI Agents', tr: 'Yöneticiler · Çalışanlar · AI Ajanları' },
+
+  // Chief of Staff
+  'cos.tag': { en: '03 — AI Chief of Staff', tr: '03 — AI Genel Sekreter' },
+  'cos.title': { en: 'An AI Chief of Staff for every executive.', tr: 'Her yönetici için bir AI Genel Sekreter.' },
+  'cos.body': {
+    en: 'The intelligence briefing your leadership team wishes they had every morning.',
+    tr: 'Yönetim ekibinizin her sabah sahip olmayı dilediği zekâ brifingi.',
   },
-  'f.ask': { en: 'Ask DecisionOS', tr: 'DecisionOS’a Sor' },
-  'f.askBody': {
-    en: 'Source-cited answers about any decision, client, process, or policy.',
-    tr: 'Herhangi bir karar, müşteri, süreç veya politika hakkında kaynak referanslı cevaplar.',
+  'cos.brief': { en: 'Decision Brief', tr: 'Karar Brifingi' },
+  'cos.brief.body': { en: 'Q4 budget reallocation across three business units', tr: 'Üç iş biriminde Q4 bütçe yeniden dağılımı' },
+  'cos.action': { en: 'Recommended Action', tr: 'Önerilen Aksiyon' },
+  'cos.action.body': { en: 'Shift 12% from Ops to Growth. Confidence 84%.', tr: 'Operasyondan Büyümeye %12 aktarım. Güven %84.' },
+  'cos.risk': { en: 'Risk Analysis', tr: 'Risk Analizi' },
+  'cos.risk.body': { en: '2 medium risks flagged in customer retention and vendor concentration.', tr: 'Müşteri elde tutma ve tedarikçi yoğunluğunda 2 orta düzey risk.' },
+  'cos.similar': { en: 'Similar Past Decisions', tr: 'Benzer Geçmiş Kararlar' },
+  'cos.similar.body': { en: '3 comparable reallocations from 2023–2025 — average uplift +9%.', tr: '2023–2025 arasında 3 benzer aktarım — ortalama etki +%9.' },
+  'cos.stake': { en: 'Stakeholder Impact', tr: 'Paydaş Etkisi' },
+  'cos.stake.body': { en: 'Impacts 4 teams · 12 owners · 2 external partners.', tr: '4 ekibi · 12 sorumluyu · 2 dış partneri etkiler.' },
+  'cos.conf': { en: 'Confidence Score', tr: 'Güven Skoru' },
+  'cos.conf.body': { en: 'Model + evidence weighting: 0.84 / 1.00', tr: 'Model + kanıt ağırlığı: 0.84 / 1.00' },
+
+  // Decision Memory
+  'mem.tag': { en: '04 — Decision Memory', tr: '04 — Karar Hafızası' },
+  'mem.title': { en: 'Your organization should never forget.', tr: 'Şirketiniz asla unutmamalı.' },
+  'mem.body': {
+    en: 'Every outcome — good or bad — improves the next recommendation.',
+    tr: 'Her sonuç — iyi ya da kötü — bir sonraki öneriyi iyileştirir.',
   },
-  'f.expertise': { en: 'Expertise Map', tr: 'Uzmanlık Haritası' },
-  'f.expertiseBody': {
-    en: 'See who owns what — and where knowledge concentration puts you at risk.',
-    tr: 'Kimin neyi sahiplendiğini ve bilgi yoğunluğunun sizi nerede riske attığını görün.',
+  'mem.d1': { en: 'Market Expansion', tr: 'Pazar Genişlemesi' },
+  'mem.d1.out': { en: 'Result: +18% Revenue', tr: 'Sonuç: +%18 Gelir' },
+  'mem.d2': { en: 'Hiring Strategy', tr: 'İşe Alım Stratejisi' },
+  'mem.d2.out': { en: 'Outcome: Reduced turnover', tr: 'Sonuç: Personel devri düştü' },
+  'mem.d3': { en: 'Pricing Decision', tr: 'Fiyatlandırma Kararı' },
+  'mem.d3.out': { en: 'Outcome: Conversion +22%', tr: 'Sonuç: Dönüşüm +%22' },
+
+  // Agents
+  'agents.tag': { en: '05 — Multi-Agent Future', tr: '05 — Çoklu Ajan Geleceği' },
+  'agents.title': { en: 'One Company Brain. Unlimited AI Agents.', tr: 'Tek Şirket Beyni. Sınırsız AI Ajanı.' },
+  'agents.body': {
+    en: 'DecisionOS becomes the intelligence layer coordinating every enterprise AI agent — grounded in the same context, memory and policies.',
+    tr: 'DecisionOS; her kurumsal AI ajanını koordine eden zekâ katmanı olur — aynı bağlam, hafıza ve politikalar üzerine kurulu.',
   },
-  'quote': {
-    en: 'Every employee leaves knowledge behind. Every meeting creates context. Every decision contains intelligence.',
-    tr: 'Her çalışan bilgi bırakır. Her toplantı bağlam oluşturur. Her karar zekâ içerir.',
+  'agents.sales': { en: 'Sales Agent', tr: 'Satış Ajanı' },
+  'agents.finance': { en: 'Finance Agent', tr: 'Finans Ajanı' },
+  'agents.marketing': { en: 'Marketing Agent', tr: 'Pazarlama Ajanı' },
+  'agents.hr': { en: 'HR Agent', tr: 'İK Ajanı' },
+  'agents.legal': { en: 'Legal Agent', tr: 'Hukuk Ajanı' },
+  'agents.ops': { en: 'Operations Agent', tr: 'Operasyon Ajanı' },
+
+  // Why
+  'why.tag': { en: '06 — Why DecisionOS', tr: '06 — Neden DecisionOS' },
+  'why.title': { en: 'A new category. Not another assistant.', tr: 'Yeni bir kategori. Başka bir asistan değil.' },
+  'why.others': { en: 'Others', tr: 'Diğerleri' },
+  'why.us': { en: 'DecisionOS', tr: 'DecisionOS' },
+  'why.o1': { en: 'AI Chat', tr: 'AI Sohbet' },
+  'why.o2': { en: 'Search', tr: 'Arama' },
+  'why.o3': { en: 'Documents', tr: 'Belgeler' },
+  'why.o4': { en: 'Knowledge base', tr: 'Bilgi tabanı' },
+  'why.o5': { en: 'Single user', tr: 'Tek kullanıcı' },
+  'why.u1': { en: 'Organizational Intelligence', tr: 'Kurumsal Zekâ' },
+  'why.u2': { en: 'Decision Memory', tr: 'Karar Hafızası' },
+  'why.u3': { en: 'Context Awareness', tr: 'Bağlam Farkındalığı' },
+  'why.u4': { en: 'Recommendations', tr: 'Öneriler' },
+  'why.u5': { en: 'Company-wide Intelligence', tr: 'Şirket Çapında Zekâ' },
+
+  // Why now
+  'now.tag': { en: '07 — Why Now', tr: '07 — Neden Şimdi' },
+  'now.title': { en: 'Three forces converging into one layer.', tr: 'Tek bir katmanda birleşen üç güç.' },
+  'now.c1': { en: 'Generative AI', tr: 'Üretken AI' },
+  'now.c1.body': { en: 'Models are finally capable of reasoning across enterprise context.', tr: 'Modeller nihayet kurumsal bağlamda muhakeme edebiliyor.' },
+  'now.c2': { en: 'Enterprise AI Adoption', tr: 'Kurumsal AI Benimseme' },
+  'now.c2.body': { en: 'Every function is buying AI. None of it shares memory.', tr: 'Her fonksiyon AI satın alıyor. Hiçbiri hafıza paylaşmıyor.' },
+  'now.c3': { en: 'AI Agents', tr: 'AI Ajanları' },
+  'now.c3.body': { en: 'Agents need a shared brain to act safely on behalf of the company.', tr: 'Ajanların şirket adına güvenle hareket etmesi için ortak bir beyne ihtiyacı var.' },
+
+  // Vision
+  'vision.tag': { en: '08 — Vision', tr: '08 — Vizyon' },
+  'vision.l1': { en: 'Every company has CRM.', tr: 'Her şirketin bir CRM’i var.' },
+  'vision.l2': { en: 'Every company has ERP.', tr: 'Her şirketin bir ERP’si var.' },
+  'vision.l3': { en: 'The next enterprise platform is Company Intelligence.', tr: 'Bir sonraki kurumsal platform, Şirket Zekâsıdır.' },
+
+  // Final CTA
+  'cta.title': {
+    en: 'Build the brain your company will rely on for the next decade.',
+    tr: 'Şirketinizin önümüzdeki on yıl güveneceği beyni inşa edin.',
   },
-  'quote.highlight': {
-    en: 'DecisionOS makes sure your company never loses it.',
-    tr: 'DecisionOS, şirketinizin bunu asla kaybetmemesini sağlar.',
-  },
-  'cta.title': { en: 'Ready to build your Company Brain?', tr: 'Şirket Beyninizi kurmaya hazır mısınız?' },
-  'cta.body': {
-    en: 'Start capturing decisions, promises, and knowledge in minutes.',
-    tr: 'Kararları, sözleri ve bilgileri dakikalar içinde kayıt altına almaya başlayın.',
-  },
-  'cta.button': { en: 'Get started free', tr: 'Ücretsiz Başla' },
+  'cta.button': { en: 'Build Your Company Brain', tr: 'Şirket Beyninizi Oluşturun' },
 };
 
 interface Ctx {
