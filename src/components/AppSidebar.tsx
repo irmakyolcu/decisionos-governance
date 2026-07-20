@@ -27,6 +27,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Decision Memory', url: '/memory/decisions', icon: GitBranch },
       { title: 'Lessons Learned', url: '/memory/lessons', icon: Lightbulb },
       { title: 'Lessons ↔ Decisions', url: '/memory/links', icon: Link2 },
+      { title: 'Link Audit Trail', url: '/memory/link-audit', icon: History },
       { title: 'Company Timeline', url: '/memory/timeline', icon: History },
       { title: 'Glossary', url: '/memory/glossary', icon: BookMarked },
     ],
