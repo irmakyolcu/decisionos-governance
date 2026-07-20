@@ -46,6 +46,16 @@ const dict: Dict = {
   'brain.inputs': { en: 'Enterprise Systems', tr: 'Kurumsal Sistemler' },
   'brain.core': { en: 'DecisionOS Company Brain', tr: 'DecisionOS Şirket Beyni' },
   'brain.consumers': { en: 'Executives · Employees · AI Agents', tr: 'Yöneticiler · Çalışanlar · AI Ajanları' },
+  'brain.outputs': { en: 'Outputs', tr: 'Çıktılar' },
+  'brain.in.emails': { en: 'Emails', tr: 'E-postalar' },
+  'brain.in.meetings': { en: 'Meetings', tr: 'Toplantılar' },
+  'brain.in.slack': { en: 'Slack', tr: 'Slack' },
+  'brain.in.crm': { en: 'CRM', tr: 'CRM' },
+  'brain.in.calendar': { en: 'Calendar', tr: 'Takvim' },
+  'brain.in.erp': { en: 'ERP', tr: 'ERP' },
+  'brain.out.execs': { en: 'Executives', tr: 'Yöneticiler' },
+  'brain.out.employees': { en: 'Employees', tr: 'Çalışanlar' },
+  'brain.out.agents': { en: 'AI Agents', tr: 'AI Ajanları' },
 
   // Chief of Staff
   'cos.tag': { en: '03 — AI Chief of Staff', tr: '03 — AI Genel Sekreter' },
