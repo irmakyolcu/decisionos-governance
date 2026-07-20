@@ -18,7 +18,7 @@ type Integration = {
   config: Record<string, unknown>;
 };
 
-type CatalogEntry = { provider: string; display_name: string; kind: string; description: string; category: 'messaging' | 'meetings' | 'productivity' | 'crm' | 'erp' | 'custom' };
+type CatalogEntry = { provider: string; display_name: string; kind: string; description: string; category: 'messaging' | 'meetings' | 'productivity' | 'crm' | 'erp' | 'hr' | 'finance' | 'itsm' | 'data' | 'security' | 'custom' };
 
 const CATALOG: CatalogEntry[] = [
   // Messaging & Collaboration
@@ -35,31 +35,82 @@ const CATALOG: CatalogEntry[] = [
   { provider: 'fathom', display_name: 'Fathom', kind: 'connector', category: 'meetings', description: 'Import Fathom AI meeting summaries and highlights.' },
   { provider: 'gong', display_name: 'Gong', kind: 'connector', category: 'meetings', description: 'Import revenue-call intelligence into decisions.' },
 
-  // Productivity
+  // Productivity & Docs
   { provider: 'gmail', display_name: 'Gmail', kind: 'connector', category: 'productivity', description: 'Send and receive emails as part of approved actions.' },
   { provider: 'google_calendar', display_name: 'Google Calendar', kind: 'connector', category: 'productivity', description: 'Schedule decision review meetings and reminders.' },
   { provider: 'gdrive', display_name: 'Google Drive', kind: 'connector', category: 'productivity', description: 'Attach evidence files to decisions.' },
   { provider: 'notion', display_name: 'Notion', kind: 'connector', category: 'productivity', description: 'Sync Notion docs into the Company Brain.' },
+  { provider: 'confluence', display_name: 'Confluence', kind: 'connector', category: 'productivity', description: 'Ingest Confluence spaces as governed knowledge.' },
+  { provider: 'sharepoint', display_name: 'SharePoint', kind: 'connector', category: 'productivity', description: 'Index SharePoint sites, lists, and documents.' },
+  { provider: 'onedrive', display_name: 'OneDrive', kind: 'connector', category: 'productivity', description: 'Attach OneDrive files as decision evidence.' },
+  { provider: 'dropbox', display_name: 'Dropbox', kind: 'connector', category: 'productivity', description: 'Sync Dropbox folders into the document store.' },
+  { provider: 'box', display_name: 'Box', kind: 'connector', category: 'productivity', description: 'Enterprise document sync with retention support.' },
   { provider: 'jira', display_name: 'Jira', kind: 'connector', category: 'productivity', description: 'Create issues from approved action proposals.' },
 
   // CRM
   { provider: 'salesforce', display_name: 'Salesforce', kind: 'connector', category: 'crm', description: 'Pull deal context and push CRM updates after execution.' },
   { provider: 'hubspot', display_name: 'HubSpot', kind: 'connector', category: 'crm', description: 'Sync customer signals into decision intake.' },
+  { provider: 'ms_dynamics_365', display_name: 'Microsoft Dynamics 365', kind: 'connector', category: 'crm', description: 'Sync accounts, opportunities, and cases from Dynamics 365.' },
+  { provider: 'zoho_crm', display_name: 'Zoho CRM', kind: 'connector', category: 'crm', description: 'Pipeline and customer signals from Zoho CRM.' },
+  { provider: 'pipedrive', display_name: 'Pipedrive', kind: 'connector', category: 'crm', description: 'Deal and activity context from Pipedrive.' },
 
   // ERP
-  { provider: 'sap', display_name: 'SAP', kind: 'connector', category: 'erp', description: 'Pull financial actuals for post-decision reviews.' },
+  { provider: 'sap_s4hana', display_name: 'SAP S/4HANA', kind: 'connector', category: 'erp', description: 'Financials, supply chain, and procurement master data.' },
+  { provider: 'sap_ariba', display_name: 'SAP Ariba', kind: 'connector', category: 'erp', description: 'Procurement contracts and supplier risk signals.' },
+  { provider: 'oracle_erp_cloud', display_name: 'Oracle ERP Cloud', kind: 'connector', category: 'erp', description: 'GL, AP/AR, and project financials from Oracle Fusion.' },
+  { provider: 'oracle_netsuite', display_name: 'Oracle NetSuite', kind: 'connector', category: 'erp', description: 'Financials and operational KPIs from NetSuite.' },
+  { provider: 'ms_dynamics_365_fo', display_name: 'Dynamics 365 Finance & Ops', kind: 'connector', category: 'erp', description: 'ERP data from Microsoft Dynamics 365 F&O.' },
+  { provider: 'ifs_cloud', display_name: 'IFS Cloud', kind: 'connector', category: 'erp', description: 'Asset, project, and service ERP for industrial orgs.' },
+  { provider: 'infor_cloudsuite', display_name: 'Infor CloudSuite', kind: 'connector', category: 'erp', description: 'Industry-specific ERP from Infor.' },
+  { provider: 'logo_netsis', display_name: 'Logo Netsis', kind: 'connector', category: 'erp', description: 'Turkish ERP: finance, inventory, and procurement.' },
+  { provider: 'mikro_erp', display_name: 'Mikro ERP', kind: 'connector', category: 'erp', description: 'Turkish ERP: sales, purchasing, and accounting.' },
+
+  // HR / HCM
+  { provider: 'workday', display_name: 'Workday', kind: 'connector', category: 'hr', description: 'Workers, org hierarchy, and time-off from Workday.' },
+  { provider: 'sap_successfactors', display_name: 'SAP SuccessFactors', kind: 'connector', category: 'hr', description: 'Employee central and performance data.' },
+  { provider: 'bamboohr', display_name: 'BambooHR', kind: 'connector', category: 'hr', description: 'Employee records and org data for SMBs.' },
+  { provider: 'rippling', display_name: 'Rippling', kind: 'connector', category: 'hr', description: 'People, payroll, and device context.' },
+
+  // Finance / Accounting
+  { provider: 'quickbooks', display_name: 'QuickBooks', kind: 'connector', category: 'finance', description: 'GL, invoices, and expenses.' },
+  { provider: 'xero', display_name: 'Xero', kind: 'connector', category: 'finance', description: 'SMB accounting and cash flow.' },
+  { provider: 'stripe', display_name: 'Stripe', kind: 'connector', category: 'finance', description: 'Revenue, subscriptions, and payout signals.' },
+
+  // ITSM / DevOps
+  { provider: 'servicenow', display_name: 'ServiceNow', kind: 'connector', category: 'itsm', description: 'Incidents, changes, and CMDB context.' },
+  { provider: 'zendesk', display_name: 'Zendesk', kind: 'connector', category: 'itsm', description: 'Support tickets and CSAT signals.' },
+  { provider: 'github', display_name: 'GitHub', kind: 'connector', category: 'itsm', description: 'Repos, PRs, and issue context for engineering decisions.' },
+  { provider: 'gitlab', display_name: 'GitLab', kind: 'connector', category: 'itsm', description: 'DevOps pipelines and MR context.' },
+
+  // Data / BI
+  { provider: 'snowflake', display_name: 'Snowflake', kind: 'connector', category: 'data', description: 'Query the warehouse for decision KPIs.' },
+  { provider: 'bigquery', display_name: 'BigQuery', kind: 'connector', category: 'data', description: 'Analytics warehouse metrics and cohorts.' },
+  { provider: 'databricks', display_name: 'Databricks', kind: 'connector', category: 'data', description: 'Lakehouse tables and ML feature outputs.' },
+  { provider: 'looker', display_name: 'Looker', kind: 'connector', category: 'data', description: 'Governed dashboards and Explores.' },
+  { provider: 'powerbi', display_name: 'Power BI', kind: 'connector', category: 'data', description: 'Enterprise BI reports and datasets.' },
+  { provider: 'tableau', display_name: 'Tableau', kind: 'connector', category: 'data', description: 'Dashboards and metric definitions.' },
+
+  // Identity / Security
+  { provider: 'okta', display_name: 'Okta', kind: 'connector', category: 'security', description: 'SSO, SCIM, and access governance.' },
+  { provider: 'azure_ad', display_name: 'Microsoft Entra ID', kind: 'connector', category: 'security', description: 'Enterprise SSO and directory sync (Azure AD).' },
 
   // Custom
   { provider: 'mcp_custom', display_name: 'Custom MCP Server', kind: 'mcp', category: 'custom', description: 'Connect any Model Context Protocol server endpoint.' },
   { provider: 'webhook_custom', display_name: 'Custom Webhook', kind: 'webhook', category: 'custom', description: 'Send events to a custom HTTPS endpoint.' },
+  { provider: 'rest_api_custom', display_name: 'Custom REST API', kind: 'rest', category: 'custom', description: 'Bring any internal system with a REST + API key.' },
 ];
 
 const CATEGORY_LABELS: Record<CatalogEntry['category'], string> = {
   messaging: 'Messaging & Collaboration',
   meetings: 'Meetings & Transcription',
-  productivity: 'Productivity',
+  productivity: 'Productivity & Docs',
   crm: 'CRM',
   erp: 'ERP',
+  hr: 'HR / HCM',
+  finance: 'Finance & Accounting',
+  itsm: 'ITSM & DevOps',
+  data: 'Data & BI',
+  security: 'Identity & Security',
   custom: 'Custom',
 };
 
