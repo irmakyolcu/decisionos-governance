@@ -112,6 +112,9 @@ export default function LandingPage() {
             <Button size="lg" variant="outline" className="h-12 px-6 gap-2" onClick={() => setDemoOpen(true)}>
               <Play className="h-4 w-4" /> {t('hero.demo')}
             </Button>
+          </div>
+
+
 
 
           {/* Hero illustration: systems → brain */}
