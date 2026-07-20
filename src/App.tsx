@@ -47,6 +47,8 @@ import AgentPerformancePage from "./pages/AgentPerformancePage";
 import AnomalyDetectionPage from "./pages/AnomalyDetectionPage";
 import ComplianceReportsPage from "./pages/ComplianceReportsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
+import IntegrationDetailPage from "./pages/IntegrationDetailPage";
+
 import DecisionRolesPage from "./pages/DecisionRolesPage";
 import LandingPage from "./pages/LandingPage";
 import AskDecisionOSPage from "./pages/AskDecisionOSPage";
