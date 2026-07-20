@@ -35,6 +35,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Data Sources', url: '/data-sources', icon: Database },
       { title: 'Team', url: '/team', icon: Users },
       { title: 'Admin & Permissions', url: '/admin', icon: Shield },
+      { title: 'Security Audit', url: '/security-audit', icon: ShieldCheck },
     ],
   },
 ];
