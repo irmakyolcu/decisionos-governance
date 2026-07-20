@@ -61,6 +61,7 @@ import RisksPage from "./pages/RisksPage";
 import DataSourcesPage from "./pages/DataSourcesPage";
 import AdminPermissionsPage from "./pages/AdminPermissionsPage";
 import DecisionDetailPage from "./pages/DecisionDetailPage";
+import SecurityAuditPage from "./pages/SecurityAuditPage";
 
 const queryClient = new QueryClient();
 
