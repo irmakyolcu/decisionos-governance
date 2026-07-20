@@ -104,6 +104,7 @@ function ProtectedRoutes() {
         <Route path="/execution" element={<ExecutionCenterPage />} />
         <Route path="/policies" element={<PoliciesPage />} />
         <Route path="/audit" element={<AuditLedgerPage />} />
+        <Route path="/security-audit" element={<SecurityAuditPage />} />
         <Route path="/decisions/:id" element={<DecisionRoomPage />} />
         <Route path="/decision-twin" element={<DecisionTwinPage />} />
         <Route path="/structured-memory" element={<StructuredMemoryPage />} />
