@@ -111,6 +111,8 @@ function ProtectedRoutes() {
         <Route path="/anomalies" element={<AnomalyDetectionPage />} />
         <Route path="/compliance" element={<ComplianceReportsPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
+        <Route path="/integrations/:provider" element={<IntegrationDetailPage />} />
+
         <Route path="/decision-roles" element={<DecisionRolesPage />} />
         <Route path="/ceo-profile" element={<CEOProfilePage />} />
         <Route path="/decision-intake" element={<DecisionIntakePage />} />
