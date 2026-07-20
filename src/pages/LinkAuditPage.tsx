@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { useLinkAudit, type LinkAuditEntry } from '@/hooks/useLinkAudit';
 import { toast } from 'sonner';
+import { usePermissions } from '@/lib/permissions';
+import { Card as UICard, CardContent as UICardContent } from '@/components/ui/card';
+import { ShieldAlert } from 'lucide-react';
 
 const ACTION_META: Record<LinkAuditEntry['action'], { label: string; cls: string; icon: any }> = {
   link:        { label: 'Linked',    cls: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30', icon: Link2 },
@@ -29,10 +32,28 @@ const SOURCE_META: Record<LinkAuditEntry['source'], { label: string; icon: any }
 
 export default function LinkAuditPage() {
   const { entries, clear } = useLinkAudit();
+  const { isAdmin, isApprover, role } = usePermissions();
+  const canView = isAdmin || isApprover;
+  const canClear = isAdmin;
   const [q, setQ] = useState('');
   const [actionF, setActionF] = useState('all');
   const [sourceF, setSourceF] = useState('all');
   const [actorF, setActorF] = useState('all');
+
+  if (!canView) {
+    return (
+      <UICard className="max-w-lg mx-auto mt-16">
+        <UICardContent className="p-8 text-center space-y-3">
+          <ShieldAlert className="h-10 w-10 text-muted-foreground mx-auto" />
+          <h2 className="text-lg font-semibold">Erişim yetkiniz yok</h2>
+          <p className="text-sm text-muted-foreground">
+            Link Audit Trail yalnızca Admin ve Approver rollerine açıktır.
+            {role ? ` Mevcut rolünüz: ${role}.` : ''}
+          </p>
+        </UICardContent>
+      </UICard>
+    );
+  }
 
   const actors = useMemo(() => {
     const s = new Set<string>();
@@ -96,25 +117,27 @@ export default function LinkAuditPage() {
           <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0}>
             <Download className="h-4 w-4 mr-2" /> Export CSV
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm" disabled={entries.length === 0}>
-                <Trash2 className="h-4 w-4 mr-2" /> Clear log
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Audit kaydını temizle?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Bu işlem geri alınamaz. Tüm bağlantı geçmişi silinir ancak mevcut ders–karar bağları korunur.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                <AlertDialogAction onClick={() => { clear(); toast.success('Audit kaydı temizlendi'); }}>Temizle</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {canClear && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" disabled={entries.length === 0}>
+                  <Trash2 className="h-4 w-4 mr-2" /> Clear log
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Audit kaydını temizle?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bu işlem geri alınamaz. Tüm bağlantı geçmişi silinir ancak mevcut ders–karar bağları korunur.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => { clear(); toast.success('Audit kaydı temizlendi'); }}>Temizle</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
 
