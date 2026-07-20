@@ -32,10 +32,28 @@ const SOURCE_META: Record<LinkAuditEntry['source'], { label: string; icon: any }
 
 export default function LinkAuditPage() {
   const { entries, clear } = useLinkAudit();
+  const { isAdmin, isApprover, role } = usePermissions();
+  const canView = isAdmin || isApprover;
+  const canClear = isAdmin;
   const [q, setQ] = useState('');
   const [actionF, setActionF] = useState('all');
   const [sourceF, setSourceF] = useState('all');
   const [actorF, setActorF] = useState('all');
+
+  if (!canView) {
+    return (
+      <UICard className="max-w-lg mx-auto mt-16">
+        <UICardContent className="p-8 text-center space-y-3">
+          <ShieldAlert className="h-10 w-10 text-muted-foreground mx-auto" />
+          <h2 className="text-lg font-semibold">Erişim yetkiniz yok</h2>
+          <p className="text-sm text-muted-foreground">
+            Link Audit Trail yalnızca Admin ve Approver rollerine açıktır.
+            {role ? ` Mevcut rolünüz: ${role}.` : ''}
+          </p>
+        </UICardContent>
+      </UICard>
+    );
+  }
 
   const actors = useMemo(() => {
     const s = new Set<string>();
