@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "ws write agent_runs" ON public.agent_runs;
+CREATE POLICY "ws write agent_runs" ON public.agent_runs FOR ALL USING (is_workspace_writer(auth.uid(), workspace_id)) WITH CHECK (is_workspace_writer(auth.uid(), workspace_id));
