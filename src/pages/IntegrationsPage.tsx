@@ -145,47 +145,58 @@ export default function IntegrationsPage() {
       {loading ? (
         <Card><CardContent className="p-8 text-sm text-muted-foreground">Loading…</CardContent></Card>
       ) : (
-        <div className="grid md:grid-cols-2 gap-4">
-          {CATALOG.map((entry) => {
-            const existing = byProvider(entry.provider);
-            const connected = existing?.status === 'connected';
+        <div className="space-y-8">
+          {(Object.keys(CATEGORY_LABELS) as CatalogEntry['category'][]).map((cat) => {
+            const entries = CATALOG.filter((e) => e.category === cat);
+            if (!entries.length) return null;
             return (
-              <Card key={entry.provider}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-base">{entry.display_name}</CardTitle>
-                      <p className="text-xs text-muted-foreground mt-1">{entry.description}</p>
-                    </div>
-                    <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
-                      {connected ? <><Check className="h-3 w-3 mr-1" />Connected</> : <><X className="h-3 w-3 mr-1" />Not connected</>}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-muted-foreground">
-                      {existing?.last_synced_at ? `Last synced ${new Date(existing.last_synced_at).toLocaleString()}` : 'Never synced'}
-                    </div>
-                    <div className="flex gap-2">
-                      {connected ? (
-                        <>
-                          <Button size="sm" variant="outline" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
-                            {busyProvider === entry.provider ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
-                            Sync
-                          </Button>
-                          <Button size="sm" variant="ghost" disabled={!isAdmin} onClick={() => disconnect(entry)}>Disconnect</Button>
-                        </>
-                      ) : (
-                        <Button size="sm" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
-                          {busyProvider === entry.provider && <Loader2 className="h-3 w-3 animate-spin" />}
-                          Connect
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div key={cat}>
+                <h2 className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-3">{CATEGORY_LABELS[cat]}</h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {entries.map((entry) => {
+                    const existing = byProvider(entry.provider);
+                    const connected = existing?.status === 'connected';
+                    return (
+                      <Card key={entry.provider}>
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <CardTitle className="text-base">{entry.display_name}</CardTitle>
+                              <p className="text-xs text-muted-foreground mt-1">{entry.description}</p>
+                            </div>
+                            <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
+                              {connected ? <><Check className="h-3 w-3 mr-1" />Connected</> : <><X className="h-3 w-3 mr-1" />Not connected</>}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center justify-between">
+                            <div className="text-xs text-muted-foreground">
+                              {existing?.last_synced_at ? `Last synced ${new Date(existing.last_synced_at).toLocaleString()}` : 'Never synced'}
+                            </div>
+                            <div className="flex gap-2">
+                              {connected ? (
+                                <>
+                                  <Button size="sm" variant="outline" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
+                                    {busyProvider === entry.provider ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                                    Sync
+                                  </Button>
+                                  <Button size="sm" variant="ghost" disabled={!isAdmin} onClick={() => disconnect(entry)}>Disconnect</Button>
+                                </>
+                              ) : (
+                                <Button size="sm" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
+                                  {busyProvider === entry.provider && <Loader2 className="h-3 w-3 animate-spin" />}
+                                  Connect
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </div>
