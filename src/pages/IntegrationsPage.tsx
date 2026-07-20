@@ -117,7 +117,7 @@ export default function IntegrationsPage() {
                     const existing = byProvider(entry.provider);
                     const connected = existing?.status === 'connected';
                     return (
-                      <Card key={entry.provider}>
+                      <Card key={entry.provider} className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => navigate(`/integrations/${entry.provider}`)}>
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div>
@@ -129,12 +129,13 @@ export default function IntegrationsPage() {
                             </Badge>
                           </div>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-between">
                             <div className="text-xs text-muted-foreground">
                               {existing?.last_synced_at ? `Last synced ${new Date(existing.last_synced_at).toLocaleString()}` : 'Never synced'}
                             </div>
                             <div className="flex gap-2">
+                              <Button size="sm" variant="ghost" onClick={() => navigate(`/integrations/${entry.provider}`)}>Details</Button>
                               {connected ? (
                                 <>
                                   <Button size="sm" variant="outline" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
@@ -153,6 +154,7 @@ export default function IntegrationsPage() {
                           </div>
                         </CardContent>
                       </Card>
+
                     );
                   })}
                 </div>
