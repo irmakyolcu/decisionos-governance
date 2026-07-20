@@ -22,9 +22,11 @@ type Integration = {
 
 
 export default function IntegrationsPage() {
+  const navigate = useNavigate();
   const { workspace, role } = useWorkspace();
   const { user } = useAuth();
   const isAdmin = role === 'admin';
+
   const [items, setItems] = useState<Integration[]>([]);
   const [busyProvider, setBusyProvider] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
