@@ -23,7 +23,15 @@ export default function LandingPage() {
     { icon: StickyNote, label: 'Notion' },
   ];
 
-  const brainInputs = ['Emails', 'Meetings', 'Slack', 'CRM', 'Calendar', 'ERP'];
+  const brainInputs: Array<{ key: string }> = [
+    { key: 'brain.in.emails' },
+    { key: 'brain.in.meetings' },
+    { key: 'brain.in.slack' },
+    { key: 'brain.in.crm' },
+    { key: 'brain.in.calendar' },
+    { key: 'brain.in.erp' },
+  ];
+  const brainOutputs = ['brain.out.execs', 'brain.out.employees', 'brain.out.agents'];
 
   const cosCards = [
     { icon: Target, key: 'brief', accent: 'from-primary/20 to-primary/5' },
