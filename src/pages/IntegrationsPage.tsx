@@ -18,18 +18,50 @@ type Integration = {
   config: Record<string, unknown>;
 };
 
-const CATALOG: Array<{ provider: string; display_name: string; kind: string; description: string }> = [
-  { provider: 'gmail', display_name: 'Gmail', kind: 'connector', description: 'Send and receive emails as part of approved actions.' },
-  { provider: 'google_calendar', display_name: 'Google Calendar', kind: 'connector', description: 'Schedule decision review meetings and reminders.' },
-  { provider: 'slack', display_name: 'Slack', kind: 'connector', description: 'Push approval requests and audit notifications to channels.' },
-  { provider: 'teams', display_name: 'Microsoft Teams', kind: 'connector', description: 'Approval and notification channel for Microsoft 365 orgs.' },
-  { provider: 'gdrive', display_name: 'Google Drive', kind: 'connector', description: 'Attach evidence files to decisions.' },
-  { provider: 'salesforce', display_name: 'Salesforce', kind: 'connector', description: 'Pull deal context and push CRM updates after execution.' },
-  { provider: 'hubspot', display_name: 'HubSpot', kind: 'connector', description: 'Sync customer signals into decision intake.' },
-  { provider: 'jira', display_name: 'Jira', kind: 'connector', description: 'Create issues from approved action proposals.' },
-  { provider: 'sap', display_name: 'SAP', kind: 'connector', description: 'Pull financial actuals for post-decision reviews.' },
-  { provider: 'mcp_custom', display_name: 'Custom MCP Server', kind: 'mcp', description: 'Connect any Model Context Protocol server endpoint.' },
+type CatalogEntry = { provider: string; display_name: string; kind: string; description: string; category: 'messaging' | 'meetings' | 'productivity' | 'crm' | 'erp' | 'custom' };
+
+const CATALOG: CatalogEntry[] = [
+  // Messaging & Collaboration
+  { provider: 'slack', display_name: 'Slack', kind: 'connector', category: 'messaging', description: 'Push approval requests and audit notifications to channels.' },
+  { provider: 'teams', display_name: 'Microsoft Teams', kind: 'connector', category: 'messaging', description: 'Approval and notification channel for Microsoft 365 orgs.' },
+  { provider: 'discord', display_name: 'Discord', kind: 'connector', category: 'messaging', description: 'Route notifications to Discord servers and channels.' },
+
+  // Meetings & Transcription
+  { provider: 'zoom', display_name: 'Zoom', kind: 'connector', category: 'meetings', description: 'Import Zoom meeting recordings and transcripts as decision evidence.' },
+  { provider: 'google_meet', display_name: 'Google Meet', kind: 'connector', category: 'meetings', description: 'Pull Meet recordings and captions into decision context.' },
+  { provider: 'ms_teams_meetings', display_name: 'Teams Meetings', kind: 'connector', category: 'meetings', description: 'Sync Microsoft Teams meeting transcripts and recordings.' },
+  { provider: 'fireflies', display_name: 'Fireflies.ai', kind: 'connector', category: 'meetings', description: 'Auto-import AI meeting notes and action items.' },
+  { provider: 'otter', display_name: 'Otter.ai', kind: 'connector', category: 'meetings', description: 'Sync Otter transcripts into structured meeting memory.' },
+  { provider: 'fathom', display_name: 'Fathom', kind: 'connector', category: 'meetings', description: 'Import Fathom AI meeting summaries and highlights.' },
+  { provider: 'gong', display_name: 'Gong', kind: 'connector', category: 'meetings', description: 'Import revenue-call intelligence into decisions.' },
+
+  // Productivity
+  { provider: 'gmail', display_name: 'Gmail', kind: 'connector', category: 'productivity', description: 'Send and receive emails as part of approved actions.' },
+  { provider: 'google_calendar', display_name: 'Google Calendar', kind: 'connector', category: 'productivity', description: 'Schedule decision review meetings and reminders.' },
+  { provider: 'gdrive', display_name: 'Google Drive', kind: 'connector', category: 'productivity', description: 'Attach evidence files to decisions.' },
+  { provider: 'notion', display_name: 'Notion', kind: 'connector', category: 'productivity', description: 'Sync Notion docs into the Company Brain.' },
+  { provider: 'jira', display_name: 'Jira', kind: 'connector', category: 'productivity', description: 'Create issues from approved action proposals.' },
+
+  // CRM
+  { provider: 'salesforce', display_name: 'Salesforce', kind: 'connector', category: 'crm', description: 'Pull deal context and push CRM updates after execution.' },
+  { provider: 'hubspot', display_name: 'HubSpot', kind: 'connector', category: 'crm', description: 'Sync customer signals into decision intake.' },
+
+  // ERP
+  { provider: 'sap', display_name: 'SAP', kind: 'connector', category: 'erp', description: 'Pull financial actuals for post-decision reviews.' },
+
+  // Custom
+  { provider: 'mcp_custom', display_name: 'Custom MCP Server', kind: 'mcp', category: 'custom', description: 'Connect any Model Context Protocol server endpoint.' },
+  { provider: 'webhook_custom', display_name: 'Custom Webhook', kind: 'webhook', category: 'custom', description: 'Send events to a custom HTTPS endpoint.' },
 ];
+
+const CATEGORY_LABELS: Record<CatalogEntry['category'], string> = {
+  messaging: 'Messaging & Collaboration',
+  meetings: 'Meetings & Transcription',
+  productivity: 'Productivity',
+  crm: 'CRM',
+  erp: 'ERP',
+  custom: 'Custom',
+};
 
 export default function IntegrationsPage() {
   const { workspace, role } = useWorkspace();
