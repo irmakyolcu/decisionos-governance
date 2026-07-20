@@ -14,6 +14,14 @@ const CATS: DecisionCategory[] = ['Strategy','Partnership','Hiring','Finance','P
 export default function DecisionMemoryPage() {
   const [q, setQ] = useState('');
   const [active, setActive] = useState<DecisionCategory | 'All'>('All');
+  const { rows: lessons } = useLessons();
+  const lessonsByDecision = useMemo(() => {
+    const map: Record<string, typeof lessons> = {};
+    lessons.forEach((l) => (l.decisionIds ?? []).forEach((did) => {
+      (map[did] ||= []).push(l);
+    }));
+    return map;
+  }, [lessons]);
 
   const items = useMemo(() => {
     return memoryDecisions.filter((d) => {
@@ -71,6 +79,30 @@ export default function DecisionMemoryPage() {
                 <p className="text-[10px] uppercase tracking-wider text-primary mb-1">Lesson</p>
                 <p className="text-sm text-foreground">{d.lessons}</p>
               </div>
+              {(() => {
+                const linked = lessonsByDecision[d.id] ?? [];
+                return (
+                  <div className="pt-2 border-t">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Linked lessons ({linked.length})</span>
+                      <Link to="/memory/links" className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
+                        <Link2 className="h-3 w-3" /> Manage
+                      </Link>
+                    </div>
+                    {linked.length === 0 ? (
+                      <p className="text-xs text-muted-foreground italic">No lessons linked yet.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-1.5">
+                        {linked.map((l) => (
+                          <Badge key={l.id} variant="secondary" className="gap-1 text-xs">
+                            <Lightbulb className="h-3 w-3" /> {l.title}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         ))}

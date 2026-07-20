@@ -119,6 +119,7 @@ function ProtectedRoutes() {
         <Route path="/memory/lessons" element={<LessonsLearnedPage />} />
         <Route path="/memory/timeline" element={<CompanyTimelinePage />} />
         <Route path="/memory/glossary" element={<GlossaryPage />} />
+        <Route path="/memory/links" element={<LessonDecisionLinksPage />} />
         <Route path="/reviews" element={<PostDecisionReviewsPage />} />
         <Route path="/agent-performance" element={<AgentPerformancePage />} />
         <Route path="/anomalies" element={<AnomalyDetectionPage />} />
