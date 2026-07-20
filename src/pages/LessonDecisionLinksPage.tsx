@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  Link2, Sparkles, Search, Check, X, Lightbulb, GitBranch, ArrowRight, Wand2,
+  Link2, Sparkles, Search, Check, X, Lightbulb, GitBranch, ArrowRight, Wand2, History,
 } from 'lucide-react';
 import { useLessons, scoreMatch, type Lesson } from '@/hooks/useLessons';
 import { memoryDecisions } from '@/data/ceoTwin';
@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 const MIN_SCORE = 2;
 
 export default function LessonDecisionLinksPage() {
-  const { rows: lessons, setLinks, persist } = useLessons();
+  const { rows: lessons, setLinks } = useLessons();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState<string>('all');
   const [showOnlyUnlinked, setShowOnlyUnlinked] = useState(false);
@@ -167,7 +167,7 @@ export default function LessonDecisionLinksPage() {
                           {suggestions.map((s) => (
                             <button
                               key={s.d.id}
-                              onClick={() => setLinks(l.id, [...(l.decisionIds ?? []), s.d.id])}
+                              onClick={() => setLinks(l.id, [...(l.decisionIds ?? []), s.d.id], 'suggestion')}
                               className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md border bg-background hover:border-primary transition"
                             >
                               <Check className="h-3 w-3 text-emerald-500" />
