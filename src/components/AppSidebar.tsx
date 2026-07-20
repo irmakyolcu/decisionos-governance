@@ -1,6 +1,7 @@
 import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
+  BookOpen, Lightbulb, History, BookMarked,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -16,6 +17,17 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Home', url: '/', icon: Home },
       { title: 'Ask DecisionOS', url: '/ask', icon: Sparkles },
       { title: 'Company Brain', url: '/brain', icon: Brain },
+    ],
+  },
+  {
+    label: 'Corporate Memory',
+    items: [
+      { title: 'Memory Hub', url: '/memory', icon: Brain },
+      { title: 'Structured Memory', url: '/memory/structured', icon: BookOpen },
+      { title: 'Decision Memory', url: '/memory/decisions', icon: GitBranch },
+      { title: 'Lessons Learned', url: '/memory/lessons', icon: Lightbulb },
+      { title: 'Company Timeline', url: '/memory/timeline', icon: History },
+      { title: 'Glossary', url: '/memory/glossary', icon: BookMarked },
     ],
   },
   {
