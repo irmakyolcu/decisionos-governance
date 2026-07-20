@@ -45,17 +45,18 @@ export default function LessonDecisionLinksPage() {
 
   function autoLinkAll() {
     let touched = 0;
-    const next = lessons.map((l) => {
+    lessons.forEach((l) => {
       const sug = suggestFor(l);
-      if (!sug.length) return l;
+      if (!sug.length) return;
       const existing = new Set(l.decisionIds ?? []);
-      let added = false;
-      sug.forEach((s) => { if (!existing.has(s.d.id)) { existing.add(s.d.id); added = true; } });
-      if (added) touched += 1;
-      return { ...l, decisionIds: [...existing] };
+      const nextIds = new Set(existing);
+      sug.forEach((s) => nextIds.add(s.d.id));
+      if (nextIds.size !== existing.size) {
+        setLinks(l.id, [...nextIds], 'auto_link_all');
+        touched += 1;
+      }
     });
-    persist(next);
-    toast.success(touched ? `${touched} ders için otomatik bağlantı önerildi` : 'Yeni eşleşme bulunamadı');
+    toast.success(touched ? `${touched} ders için otomatik bağlantı eklendi` : 'Yeni eşleşme bulunamadı');
   }
 
   const totalLinks = lessons.reduce((n, l) => n + (l.decisionIds?.length ?? 0), 0);
