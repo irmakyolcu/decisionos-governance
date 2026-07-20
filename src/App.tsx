@@ -62,6 +62,10 @@ import DataSourcesPage from "./pages/DataSourcesPage";
 import AdminPermissionsPage from "./pages/AdminPermissionsPage";
 import DecisionDetailPage from "./pages/DecisionDetailPage";
 import SecurityAuditPage from "./pages/SecurityAuditPage";
+import CorporateMemoryHubPage from "./pages/CorporateMemoryHubPage";
+import LessonsLearnedPage from "./pages/LessonsLearnedPage";
+import CompanyTimelinePage from "./pages/CompanyTimelinePage";
+import GlossaryPage from "./pages/GlossaryPage";
 
 const queryClient = new QueryClient();
 
@@ -108,6 +112,12 @@ function ProtectedRoutes() {
         <Route path="/decisions/:id" element={<DecisionRoomPage />} />
         <Route path="/decision-twin" element={<DecisionTwinPage />} />
         <Route path="/structured-memory" element={<StructuredMemoryPage />} />
+        <Route path="/memory" element={<CorporateMemoryHubPage />} />
+        <Route path="/memory/structured" element={<StructuredMemoryPage />} />
+        <Route path="/memory/decisions" element={<DecisionMemoryPage />} />
+        <Route path="/memory/lessons" element={<LessonsLearnedPage />} />
+        <Route path="/memory/timeline" element={<CompanyTimelinePage />} />
+        <Route path="/memory/glossary" element={<GlossaryPage />} />
         <Route path="/reviews" element={<PostDecisionReviewsPage />} />
         <Route path="/agent-performance" element={<AgentPerformancePage />} />
         <Route path="/anomalies" element={<AnomalyDetectionPage />} />
