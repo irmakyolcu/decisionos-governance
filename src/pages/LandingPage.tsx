@@ -406,9 +406,53 @@ export default function LandingPage() {
       <footer className="border-t border-border py-10 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} DecisionOS — The Company Brain Platform
       </footer>
+
+      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden bg-card border-border">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle className="flex items-center gap-2">
+              <Play className="h-4 w-4 text-primary" /> DecisionOS — Product Demo
+            </DialogTitle>
+            <DialogDescription>
+              {t('demo.desc')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-6">
+            <div className="relative aspect-video w-full rounded-xl overflow-hidden border border-border bg-gradient-to-br from-primary/20 via-background to-info/10">
+              <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,hsl(var(--primary)/0.25),transparent_60%)]" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center px-6">
+                <div className="h-16 w-16 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center backdrop-blur">
+                  <Brain className="h-8 w-8 text-primary" />
+                </div>
+                <div className="text-lg font-semibold">{t('demo.title')}</div>
+                <p className="text-sm text-muted-foreground max-w-md">{t('demo.body')}</p>
+                <div className="flex gap-2 mt-2">
+                  <Link to="/auth" onClick={() => setDemoOpen(false)}>
+                    <Button size="sm" className="gap-2">{t('demo.try')} <ArrowRight className="h-3.5 w-3.5" /></Button>
+                  </Link>
+                  <Button size="sm" variant="outline" onClick={() => setDemoOpen(false)}>{t('demo.close')}</Button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
+              {[
+                { icon: Brain, k: 'demo.f1' },
+                { icon: ShieldCheck, k: 'demo.f2' },
+                { icon: LineChart, k: 'demo.f3' },
+              ].map(({ icon: Icon, k }) => (
+                <div key={k} className="rounded-lg border border-border bg-background/50 p-3">
+                  <Icon className="h-4 w-4 text-primary mb-2" />
+                  <div className="text-foreground">{t(k)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
 
 function Section({ tag, children }: { tag: string; children: React.ReactNode }) {
   return (
