@@ -174,8 +174,8 @@ export default function LandingPage() {
           <div className="space-y-2">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">{t('brain.inputs')}</div>
             {brainInputs.map((s) => (
-              <div key={s} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
-                <span>{s}</span>
+              <div key={s.key} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
+                <span>{t(s.key)}</span>
                 <ArrowRight className="h-3.5 w-3.5 text-primary" />
               </div>
             ))}
