@@ -47,6 +47,8 @@ import AgentPerformancePage from "./pages/AgentPerformancePage";
 import AnomalyDetectionPage from "./pages/AnomalyDetectionPage";
 import ComplianceReportsPage from "./pages/ComplianceReportsPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
+import IntegrationDetailPage from "./pages/IntegrationDetailPage";
+
 import DecisionRolesPage from "./pages/DecisionRolesPage";
 import LandingPage from "./pages/LandingPage";
 import AskDecisionOSPage from "./pages/AskDecisionOSPage";
@@ -109,6 +111,8 @@ function ProtectedRoutes() {
         <Route path="/anomalies" element={<AnomalyDetectionPage />} />
         <Route path="/compliance" element={<ComplianceReportsPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
+        <Route path="/integrations/:provider" element={<IntegrationDetailPage />} />
+
         <Route path="/decision-roles" element={<DecisionRolesPage />} />
         <Route path="/ceo-profile" element={<CEOProfilePage />} />
         <Route path="/decision-intake" element={<DecisionIntakePage />} />
