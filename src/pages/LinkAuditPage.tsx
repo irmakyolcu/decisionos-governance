@@ -117,25 +117,27 @@ export default function LinkAuditPage() {
           <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0}>
             <Download className="h-4 w-4 mr-2" /> Export CSV
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm" disabled={entries.length === 0}>
-                <Trash2 className="h-4 w-4 mr-2" /> Clear log
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Audit kaydını temizle?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Bu işlem geri alınamaz. Tüm bağlantı geçmişi silinir ancak mevcut ders–karar bağları korunur.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                <AlertDialogAction onClick={() => { clear(); toast.success('Audit kaydı temizlendi'); }}>Temizle</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {canClear && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" disabled={entries.length === 0}>
+                  <Trash2 className="h-4 w-4 mr-2" /> Clear log
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Audit kaydını temizle?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bu işlem geri alınamaz. Tüm bağlantı geçmişi silinir ancak mevcut ders–karar bağları korunur.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => { clear(); toast.success('Audit kaydı temizlendi'); }}>Temizle</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
 
