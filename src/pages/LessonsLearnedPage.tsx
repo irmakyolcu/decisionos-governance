@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,22 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Lightbulb, Plus, Search, Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { Lightbulb, Plus, Search, Trash2, TrendingUp, TrendingDown, Minus, GitBranch, Link2 } from 'lucide-react';
+import { useLessons, type Lesson } from '@/hooks/useLessons';
+import { memoryDecisions } from '@/data/ceoTwin';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-
-type Lesson = {
-  id: string;
-  title: string;
-  context: string;
-  what_worked: string;
-  what_failed: string;
-  recommendation: string;
-  category: string;
-  impact: 'positive' | 'negative' | 'mixed';
-  source: string;
-  created_at: string;
-};
 
 const CATEGORIES = ['Strategy', 'Product', 'Hiring', 'Sales', 'Ops', 'Finance', 'Partnership', 'Crisis'];
 
@@ -34,9 +23,7 @@ const seed: Lesson[] = [
     what_worked: 'Champion inside product team was highly engaged and technical.',
     what_failed: 'No VP-level sponsor meant procurement blocked commercial expansion.',
     recommendation: 'Only start paid pilots when a named EVP sponsor is on the kickoff call.',
-    category: 'Sales',
-    impact: 'negative',
-    source: 'Deal review – Acme Corp',
+    category: 'Sales', impact: 'negative', source: 'Deal review – Acme Corp',
     created_at: new Date().toISOString(),
   },
   {
@@ -46,60 +33,43 @@ const seed: Lesson[] = [
     what_worked: 'Switching to Loom + written responses cut cycle time by 60%.',
     what_failed: 'Live meetings encouraged tangents and social debate.',
     recommendation: 'Default to async design reviews; live only for tier-1 launches.',
-    category: 'Product',
-    impact: 'positive',
-    source: 'Design ops retro',
+    category: 'Product', impact: 'positive', source: 'Design ops retro',
     created_at: new Date().toISOString(),
   },
 ];
 
 export default function LessonsLearnedPage() {
-  const { workspace } = useWorkspace();
-  const key = workspace ? `mem:lessons:${workspace.id}` : 'mem:lessons';
-  const [rows, setRows] = useState<Lesson[]>([]);
+  const { rows, persist } = useLessons();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
   const [impact, setImpact] = useState('all');
   const [open, setOpen] = useState(false);
   const empty: Omit<Lesson, 'id' | 'created_at'> = {
     title: '', context: '', what_worked: '', what_failed: '', recommendation: '',
-    category: 'Strategy', impact: 'mixed', source: '',
+    category: 'Strategy', impact: 'mixed', source: '', decisionIds: [],
   };
   const [form, setForm] = useState(empty);
 
+  // Seed once if empty
   useEffect(() => {
-    if (!workspace) return;
-    const raw = localStorage.getItem(key);
-    const initial = raw ? (JSON.parse(raw) as Lesson[]) : seed;
-    setRows(initial);
-    if (!raw) localStorage.setItem(key, JSON.stringify(initial));
-    localStorage.setItem(`${key}:count`, String(initial.length));
-  }, [workspace, key]);
-
-  function persist(next: Lesson[]) {
-    setRows(next);
-    localStorage.setItem(key, JSON.stringify(next));
-    localStorage.setItem(`${key}:count`, String(next.length));
-  }
+    if (rows.length === 0 && !localStorage.getItem('mem:lessons:seeded')) {
+      persist(seed);
+      localStorage.setItem('mem:lessons:seeded', '1');
+    }
+  }, [rows.length, persist]);
 
   function save() {
     if (!form.title.trim()) return toast.error('Başlık gerekli');
-    const next = [{ ...form, id: crypto.randomUUID(), created_at: new Date().toISOString() }, ...rows];
-    persist(next);
-    setOpen(false);
-    setForm(empty);
-    toast.success('Ders eklendi');
+    persist([{ ...form, id: crypto.randomUUID(), created_at: new Date().toISOString() }, ...rows]);
+    setOpen(false); setForm(empty); toast.success('Ders eklendi');
   }
-
-  function remove(id: string) {
-    persist(rows.filter((r) => r.id !== id));
-  }
+  function remove(id: string) { persist(rows.filter((r) => r.id !== id)); }
 
   const filtered = useMemo(() => rows.filter((r) => {
     const okC = cat === 'all' || r.category === cat;
     const okI = impact === 'all' || r.impact === impact;
     const ql = q.toLowerCase();
-    const okQ = !ql || [r.title, r.context, r.recommendation, r.source].some((v) => v.toLowerCase().includes(ql));
+    const okQ = !ql || [r.title, r.context, r.recommendation, r.source].some((v) => v?.toLowerCase().includes(ql));
     return okC && okI && okQ;
   }), [rows, q, cat, impact]);
 
@@ -115,43 +85,48 @@ export default function LessonsLearnedPage() {
           <h1 className="page-title flex items-center gap-2"><Lightbulb className="h-6 w-6 text-primary" /> Lessons Learned</h1>
           <p className="page-description">Distilled insights from past decisions, deals, launches and crises.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm"><Plus className="h-4 w-4 mr-2" /> New Lesson</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>Capture a lesson</DialogTitle></DialogHeader>
-            <div className="space-y-3">
-              <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Category</Label>
-                  <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                  </Select>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/memory/links"><Link2 className="h-4 w-4 mr-2" /> Link to decisions</Link>
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm"><Plus className="h-4 w-4 mr-2" /> New Lesson</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader><DialogTitle>Capture a lesson</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Category</Label>
+                    <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Impact</Label>
+                    <Select value={form.impact} onValueChange={(v: any) => setForm({ ...form, impact: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="positive">Positive</SelectItem>
+                        <SelectItem value="negative">Negative</SelectItem>
+                        <SelectItem value="mixed">Mixed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div>
-                  <Label>Impact</Label>
-                  <Select value={form.impact} onValueChange={(v: any) => setForm({ ...form, impact: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="positive">Positive</SelectItem>
-                      <SelectItem value="negative">Negative</SelectItem>
-                      <SelectItem value="mixed">Mixed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <div><Label>Context</Label><Textarea rows={2} value={form.context} onChange={(e) => setForm({ ...form, context: e.target.value })} /></div>
+                <div><Label>What worked</Label><Textarea rows={2} value={form.what_worked} onChange={(e) => setForm({ ...form, what_worked: e.target.value })} /></div>
+                <div><Label>What failed</Label><Textarea rows={2} value={form.what_failed} onChange={(e) => setForm({ ...form, what_failed: e.target.value })} /></div>
+                <div><Label>Recommendation for next time</Label><Textarea rows={2} value={form.recommendation} onChange={(e) => setForm({ ...form, recommendation: e.target.value })} /></div>
+                <div><Label>Source (project, deal, incident…)</Label><Input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} /></div>
               </div>
-              <div><Label>Context</Label><Textarea rows={2} value={form.context} onChange={(e) => setForm({ ...form, context: e.target.value })} /></div>
-              <div><Label>What worked</Label><Textarea rows={2} value={form.what_worked} onChange={(e) => setForm({ ...form, what_worked: e.target.value })} /></div>
-              <div><Label>What failed</Label><Textarea rows={2} value={form.what_failed} onChange={(e) => setForm({ ...form, what_failed: e.target.value })} /></div>
-              <div><Label>Recommendation for next time</Label><Textarea rows={2} value={form.recommendation} onChange={(e) => setForm({ ...form, recommendation: e.target.value })} /></div>
-              <div><Label>Source (project, deal, incident…)</Label><Input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} /></div>
-            </div>
-            <DialogFooter><Button onClick={save}>Save</Button></DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter><Button onClick={save}>Save</Button></DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Card><CardContent className="p-4 flex flex-wrap gap-3">
@@ -178,34 +153,56 @@ export default function LessonsLearnedPage() {
       </CardContent></Card>
 
       <div className="grid md:grid-cols-2 gap-3">
-        {filtered.map((r) => (
-          <Card key={r.id}>
-            <CardContent className="p-5 space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline" className="text-xs">{r.category}</Badge>
-                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">{impactIcon(r.impact)} {r.impact}</span>
+        {filtered.map((r) => {
+          const linked = memoryDecisions.filter((d) => r.decisionIds?.includes(d.id));
+          return (
+            <Card key={r.id}>
+              <CardContent className="p-5 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge variant="outline" className="text-xs">{r.category}</Badge>
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">{impactIcon(r.impact)} {r.impact}</span>
+                    </div>
+                    <h3 className="font-semibold mt-2">{r.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{r.source} · {new Date(r.created_at).toLocaleDateString()}</p>
                   </div>
-                  <h3 className="font-semibold mt-2">{r.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">{r.source} · {new Date(r.created_at).toLocaleDateString()}</p>
+                  <Button variant="ghost" size="icon" onClick={() => remove(r.id)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => remove(r.id)}><Trash2 className="h-4 w-4" /></Button>
-              </div>
-              {r.context && <p className="text-sm text-muted-foreground">{r.context}</p>}
-              <div className="grid gap-2">
-                {r.what_worked && <Row label="Worked" tone="positive" value={r.what_worked} />}
-                {r.what_failed && <Row label="Failed" tone="negative" value={r.what_failed} />}
-                {r.recommendation && (
-                  <div className="rounded-md bg-primary/5 border border-primary/20 p-2.5">
-                    <p className="text-[10px] uppercase tracking-wider text-primary mb-1">Next time</p>
-                    <p className="text-sm">{r.recommendation}</p>
+                {r.context && <p className="text-sm text-muted-foreground">{r.context}</p>}
+                <div className="grid gap-2">
+                  {r.what_worked && <Row label="Worked" tone="positive" value={r.what_worked} />}
+                  {r.what_failed && <Row label="Failed" tone="negative" value={r.what_failed} />}
+                  {r.recommendation && (
+                    <div className="rounded-md bg-primary/5 border border-primary/20 p-2.5">
+                      <p className="text-[10px] uppercase tracking-wider text-primary mb-1">Next time</p>
+                      <p className="text-sm">{r.recommendation}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="pt-2 border-t">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Linked decisions ({linked.length})</span>
+                    <Link to="/memory/links" className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
+                      <Link2 className="h-3 w-3" /> Manage
+                    </Link>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  {linked.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">No decisions linked yet.</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {linked.map((d) => (
+                        <Badge key={d.id} variant="secondary" className="gap-1 text-xs">
+                          <GitBranch className="h-3 w-3" /> {d.title}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
         {filtered.length === 0 && (
           <Card className="md:col-span-2"><CardContent className="p-10 text-center text-sm text-muted-foreground">
             <Lightbulb className="h-6 w-6 mx-auto mb-2 opacity-50" /> No lessons match your filters.

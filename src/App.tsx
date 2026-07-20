@@ -66,6 +66,7 @@ import CorporateMemoryHubPage from "./pages/CorporateMemoryHubPage";
 import LessonsLearnedPage from "./pages/LessonsLearnedPage";
 import CompanyTimelinePage from "./pages/CompanyTimelinePage";
 import GlossaryPage from "./pages/GlossaryPage";
+import LessonDecisionLinksPage from "./pages/LessonDecisionLinksPage";
 
 const queryClient = new QueryClient();
 

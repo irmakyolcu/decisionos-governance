@@ -5,7 +5,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { memoryDecisions } from '@/data/ceoTwin';
 import type { DecisionCategory } from '@/types/ceoTwin';
-import { Search, BookOpen } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, Link2 } from 'lucide-react';
+import { useLessons } from '@/hooks/useLessons';
+import { Link } from 'react-router-dom';
 
 const CATS: DecisionCategory[] = ['Strategy','Partnership','Hiring','Finance','Product','Legal','Sales','Investor Relations'];
 
