@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  Link2, Sparkles, Search, Check, X, Lightbulb, GitBranch, ArrowRight, Wand2,
+  Link2, Sparkles, Search, Check, X, Lightbulb, GitBranch, ArrowRight, Wand2, History,
 } from 'lucide-react';
 import { useLessons, scoreMatch, type Lesson } from '@/hooks/useLessons';
 import { memoryDecisions } from '@/data/ceoTwin';
@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 const MIN_SCORE = 2;
 
 export default function LessonDecisionLinksPage() {
-  const { rows: lessons, setLinks, persist } = useLessons();
+  const { rows: lessons, setLinks } = useLessons();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState<string>('all');
   const [showOnlyUnlinked, setShowOnlyUnlinked] = useState(false);
@@ -45,17 +45,18 @@ export default function LessonDecisionLinksPage() {
 
   function autoLinkAll() {
     let touched = 0;
-    const next = lessons.map((l) => {
+    lessons.forEach((l) => {
       const sug = suggestFor(l);
-      if (!sug.length) return l;
+      if (!sug.length) return;
       const existing = new Set(l.decisionIds ?? []);
-      let added = false;
-      sug.forEach((s) => { if (!existing.has(s.d.id)) { existing.add(s.d.id); added = true; } });
-      if (added) touched += 1;
-      return { ...l, decisionIds: [...existing] };
+      const nextIds = new Set(existing);
+      sug.forEach((s) => nextIds.add(s.d.id));
+      if (nextIds.size !== existing.size) {
+        setLinks(l.id, [...nextIds], 'auto_link_all');
+        touched += 1;
+      }
     });
-    persist(next);
-    toast.success(touched ? `${touched} ders için otomatik bağlantı önerildi` : 'Yeni eşleşme bulunamadı');
+    toast.success(touched ? `${touched} ders için otomatik bağlantı eklendi` : 'Yeni eşleşme bulunamadı');
   }
 
   const totalLinks = lessons.reduce((n, l) => n + (l.decisionIds?.length ?? 0), 0);
@@ -71,9 +72,14 @@ export default function LessonDecisionLinksPage() {
             Bir dersi bir veya birden fazla geçmiş karara bağlayın. Otomatik öneri anahtar kelime örtüşmesine göre çalışır.
           </p>
         </div>
-        <Button size="sm" onClick={autoLinkAll}>
-          <Wand2 className="h-4 w-4 mr-2" /> Auto-link all
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <a href="/memory/link-audit"><History className="h-4 w-4 mr-2" /> Audit trail</a>
+          </Button>
+          <Button size="sm" onClick={autoLinkAll}>
+            <Wand2 className="h-4 w-4 mr-2" /> Auto-link all
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -166,7 +172,7 @@ export default function LessonDecisionLinksPage() {
                           {suggestions.map((s) => (
                             <button
                               key={s.d.id}
-                              onClick={() => setLinks(l.id, [...(l.decisionIds ?? []), s.d.id])}
+                              onClick={() => setLinks(l.id, [...(l.decisionIds ?? []), s.d.id], 'suggestion')}
                               className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md border bg-background hover:border-primary transition"
                             >
                               <Check className="h-3 w-3 text-emerald-500" />

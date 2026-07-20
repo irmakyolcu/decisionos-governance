@@ -1,5 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { memoryDecisions } from '@/data/ceoTwin';
+import { diffLinks, type LinkAuditEntry } from './useLinkAudit';
 
 export type Lesson = {
   id: string;
@@ -18,10 +21,17 @@ export type Lesson = {
 export function lessonsKey(wsId?: string) {
   return wsId ? `mem:lessons:${wsId}` : 'mem:lessons';
 }
+function auditKeyFor(wsId?: string) {
+  return wsId ? `mem:link-audit:${wsId}` : 'mem:link-audit';
+}
+
+export type LinkChangeSource = 'manual' | 'suggestion' | 'auto_link_all';
 
 export function useLessons() {
   const { workspace } = useWorkspace();
+  const { user } = useAuth();
   const key = lessonsKey(workspace?.id);
+  const aKey = auditKeyFor(workspace?.id);
   const [rows, setRows] = useState<Lesson[]>([]);
 
   const reload = useCallback(() => {
@@ -31,16 +41,49 @@ export function useLessons() {
 
   useEffect(() => { reload(); }, [reload]);
 
+  const writeAudit = useCallback((rowsToAdd: Omit<LinkAuditEntry, 'id' | 'at' | 'actorId' | 'actorEmail'>[]) => {
+    if (rowsToAdd.length === 0) return;
+    const now = new Date().toISOString();
+    const enriched: LinkAuditEntry[] = rowsToAdd.map((r) => ({
+      ...r,
+      id: crypto.randomUUID(),
+      at: now,
+      actorId: user?.id ?? null,
+      actorEmail: user?.email ?? null,
+    }));
+    const raw = localStorage.getItem(aKey);
+    const current = raw ? (JSON.parse(raw) as LinkAuditEntry[]) : [];
+    localStorage.setItem(aKey, JSON.stringify([...enriched, ...current].slice(0, 2000)));
+    // trigger storage event listeners in same tab
+    window.dispatchEvent(new StorageEvent('storage', { key: aKey }));
+  }, [aKey, user]);
+
   const persist = useCallback((next: Lesson[]) => {
     setRows(next);
     localStorage.setItem(key, JSON.stringify(next));
     localStorage.setItem(`${key}:count`, String(next.length));
   }, [key]);
 
-  const setLinks = useCallback((lessonId: string, decisionIds: string[]) => {
+  const decisionTitle = useCallback((id: string) => memoryDecisions.find((d) => d.id === id)?.title ?? id, []);
+
+  const setLinks = useCallback((lessonId: string, decisionIds: string[], source: LinkChangeSource = 'manual') => {
+    const lesson = rows.find((r) => r.id === lessonId);
+    if (!lesson) return;
+    const { added, removed } = diffLinks(lesson.decisionIds ?? [], decisionIds);
     const next = rows.map((r) => (r.id === lessonId ? { ...r, decisionIds } : r));
     persist(next);
-  }, [rows, persist]);
+    const audit: Omit<LinkAuditEntry, 'id' | 'at' | 'actorId' | 'actorEmail'>[] = [
+      ...added.map((did) => ({
+        action: 'link' as const, source, lessonId, lessonTitle: lesson.title,
+        decisionId: did, decisionTitle: decisionTitle(did),
+      })),
+      ...removed.map((did) => ({
+        action: 'unlink' as const, source: 'manual' as const, lessonId, lessonTitle: lesson.title,
+        decisionId: did, decisionTitle: decisionTitle(did),
+      })),
+    ];
+    writeAudit(audit);
+  }, [rows, persist, writeAudit, decisionTitle]);
 
   const toggleLink = useCallback((lessonId: string, decisionId: string) => {
     const lesson = rows.find((r) => r.id === lessonId);
@@ -54,7 +97,7 @@ export function useLessons() {
   return { rows, persist, reload, setLinks, toggleLink };
 }
 
-// Simple keyword-overlap scoring (>=2 shared meaningful tokens counts as a match)
+// Simple keyword-overlap scoring
 const STOP = new Set(['the','a','an','and','or','of','to','in','for','on','with','is','are','was','were','be','by','it','this','that','from','at','as','we','our','you','not','no','yes','but','if','so','then','than','over','under','into','out','about','after','before','when','while','more','less','can','will','would','should','could','may','might','use','used','using','via','per','&']);
 
 export function tokenize(s: string): string[] {
