@@ -1,6 +1,6 @@
 import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
-  Zap, AlertTriangle, Database, Users, Shield, ChevronLeft, ChevronRight,
+  Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
