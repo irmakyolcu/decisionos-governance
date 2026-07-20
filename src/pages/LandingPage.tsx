@@ -23,7 +23,15 @@ export default function LandingPage() {
     { icon: StickyNote, label: 'Notion' },
   ];
 
-  const brainInputs = ['Emails', 'Meetings', 'Slack', 'CRM', 'Calendar', 'ERP'];
+  const brainInputs: Array<{ key: string }> = [
+    { key: 'brain.in.emails' },
+    { key: 'brain.in.meetings' },
+    { key: 'brain.in.slack' },
+    { key: 'brain.in.crm' },
+    { key: 'brain.in.calendar' },
+    { key: 'brain.in.erp' },
+  ];
+  const brainOutputs = ['brain.out.execs', 'brain.out.employees', 'brain.out.agents'];
 
   const cosCards = [
     { icon: Target, key: 'brief', accent: 'from-primary/20 to-primary/5' },
@@ -166,8 +174,8 @@ export default function LandingPage() {
           <div className="space-y-2">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">{t('brain.inputs')}</div>
             {brainInputs.map((s) => (
-              <div key={s} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
-                <span>{s}</span>
+              <div key={s.key} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
+                <span>{t(s.key)}</span>
                 <ArrowRight className="h-3.5 w-3.5 text-primary" />
               </div>
             ))}
@@ -184,11 +192,11 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3 md:text-right">Outputs</div>
-            {['Executives', 'Employees', 'AI Agents'].map((s) => (
-              <div key={s} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3 md:text-right">{t('brain.outputs')}</div>
+            {brainOutputs.map((k) => (
+              <div key={k} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
                 <ArrowRight className="h-3.5 w-3.5 text-primary" />
-                <span>{s}</span>
+                <span>{t(k)}</span>
               </div>
             ))}
           </div>
