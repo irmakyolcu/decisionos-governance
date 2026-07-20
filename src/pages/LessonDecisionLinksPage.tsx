@@ -72,9 +72,14 @@ export default function LessonDecisionLinksPage() {
             Bir dersi bir veya birden fazla geçmiş karara bağlayın. Otomatik öneri anahtar kelime örtüşmesine göre çalışır.
           </p>
         </div>
-        <Button size="sm" onClick={autoLinkAll}>
-          <Wand2 className="h-4 w-4 mr-2" /> Auto-link all
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <a href="/memory/link-audit"><History className="h-4 w-4 mr-2" /> Audit trail</a>
+          </Button>
+          <Button size="sm" onClick={autoLinkAll}>
+            <Wand2 className="h-4 w-4 mr-2" /> Auto-link all
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
