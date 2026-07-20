@@ -20,6 +20,14 @@ const dict: Dict = {
   },
   'hero.cta': { en: 'Build Your Company Brain', tr: 'Şirket Beyninizi Oluşturun' },
   'hero.demo': { en: 'Watch Demo', tr: 'Demoyu İzle' },
+  'demo.desc': { en: 'A 60-second walkthrough of the Company Brain, AI Chief of Staff, and Decision Memory.', tr: 'Şirket Beyni, AI Chief of Staff ve Karar Hafızası için 60 saniyelik hızlı tur.' },
+  'demo.title': { en: 'Interactive demo coming soon', tr: 'Etkileşimli demo çok yakında' },
+  'demo.body': { en: 'Meanwhile, create a free workspace and explore DecisionOS with sample data in under a minute.', tr: 'Şimdilik ücretsiz bir çalışma alanı oluşturun ve örnek verilerle DecisionOS\'u bir dakikadan kısa sürede keşfedin.' },
+  'demo.try': { en: 'Try it now', tr: 'Hemen dene' },
+  'demo.close': { en: 'Close', tr: 'Kapat' },
+  'demo.f1': { en: 'Unified Company Brain across all your tools', tr: 'Tüm araçlarınız için birleşik Şirket Beyni' },
+  'demo.f2': { en: 'Governed AI with human approvals & audit', tr: 'İnsan onaylı, denetlenebilir AI yönetimi' },
+  'demo.f3': { en: 'Decision Memory that learns from outcomes', tr: 'Sonuçlardan öğrenen Karar Hafızası' },
 
   // Problem
   'problem.tag': { en: '01 — The Problem', tr: '01 — Sorun' },
