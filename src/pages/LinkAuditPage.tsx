@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { useLinkAudit, type LinkAuditEntry } from '@/hooks/useLinkAudit';
 import { toast } from 'sonner';
+import { usePermissions } from '@/lib/permissions';
+import { Card as UICard, CardContent as UICardContent } from '@/components/ui/card';
+import { ShieldAlert } from 'lucide-react';
 
 const ACTION_META: Record<LinkAuditEntry['action'], { label: string; cls: string; icon: any }> = {
   link:        { label: 'Linked',    cls: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30', icon: Link2 },
