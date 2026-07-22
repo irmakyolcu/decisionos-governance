@@ -39,6 +39,7 @@ Deno.serve(async (req) => {
     // Validate URL
     let target: URL;
     try { target = new URL(url); } catch { return json({ error: 'invalid url' }, 400); }
+    if (!['http:', 'https:'].includes(target.protocol)) return json({ error: 'only http(s) allowed' }, 400);
     // API key in query string
     if (auth && auth.type === 'api_key' && auth.location === 'query' && auth.key_name && auth.key_value) {
       target.searchParams.set(auth.key_name, auth.key_value);
