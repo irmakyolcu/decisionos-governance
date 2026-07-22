@@ -33,6 +33,7 @@ import StrategicAlignmentPage from "./pages/StrategicAlignmentPage";
 import TwinOnboardingPage from "./pages/TwinOnboardingPage";
 import TrustPage from "./pages/TrustPage";
 import VoiceAssistantPage from "./pages/VoiceAssistantPage";
+import ApiKeysPage from "./pages/ApiKeysPage";
 import NotFound from "./pages/NotFound";
 import ExecutiveDashboardPage from "./pages/ExecutiveDashboardPage";
 import ApprovalCenterPage from "./pages/ApprovalCenterPage";
