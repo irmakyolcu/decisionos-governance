@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Database, FileText, Loader2, Sparkles } from 'lucide-react';
+import { Upload, Database, FileText, Loader2, Sparkles, Globe, Plus, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const ACCEPTS = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.md,.json,.xml,.log,.rtf,.html,.htm,.png,.jpg,.jpeg,.webp,.gif,.tiff,.mp3,.wav,.m4a,.ogg';
@@ -35,6 +35,9 @@ export default function DataSourcesPage() {
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({ title: '', content_text: '', confidentiality: 'internal', mime_type: 'text/plain' });
   const [file, setFile] = useState<File | null>(null);
+  const [apiOpen, setApiOpen] = useState(false);
+  const [apiFetching, setApiFetching] = useState(false);
+  const [apiForm, setApiForm] = useState({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
 
   const load = async () => {
     if (!workspace) return;
@@ -104,6 +107,54 @@ export default function DataSourcesPage() {
     load();
   };
 
+  const fetchApi = async () => {
+    if (!workspace || !apiForm.url) return;
+    setApiFetching(true);
+    try {
+      let headers: Record<string, string> = {};
+      if (apiForm.headers.trim()) {
+        try { headers = JSON.parse(apiForm.headers); } catch { throw new Error('Headers geçerli JSON değil'); }
+      }
+      const body = apiForm.body.trim() ? apiForm.body : undefined;
+      const { data, error } = await supabase.functions.invoke('fetch-api-source', {
+        body: {
+          workspace_id: workspace.id,
+          title: apiForm.title || undefined,
+          url: apiForm.url,
+          method: apiForm.method,
+          headers,
+          body,
+          confidentiality: apiForm.confidentiality,
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast({ title: 'API çekildi', description: `${(data as any).length} karakter indekslendi.` });
+      setApiOpen(false);
+      setApiForm({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+      load();
+    } catch (e: any) {
+      toast({ title: 'API çekilemedi', description: e.message, variant: 'destructive' });
+    } finally { setApiFetching(false); }
+  };
+
+  const refreshApi = async (source: any) => {
+    const cfg = source.config || {};
+    if (!cfg.url) return toast({ title: 'URL yok', variant: 'destructive' });
+    setApiFetching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-api-source', {
+        body: { workspace_id: workspace!.id, title: source.label, url: cfg.url, method: cfg.method || 'GET' },
+      });
+      if (error || (data as any)?.error) throw new Error(error?.message || (data as any).error);
+      toast({ title: 'Yenilendi' });
+      load();
+    } catch (e: any) {
+      toast({ title: 'Hata', description: e.message, variant: 'destructive' });
+    } finally { setApiFetching(false); }
+  };
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -152,6 +203,84 @@ export default function DataSourcesPage() {
             );
           })}
         </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="font-semibold flex items-center gap-2"><Globe className="h-4 w-4" /> API Endpoints</h2>
+            <p className="text-xs text-muted-foreground">Harici REST API'lerden veri çekip Company Brain'e indeksle.</p>
+          </div>
+          <Dialog open={apiOpen} onOpenChange={setApiOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-2" />API ekle</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>API Endpoint Bağla</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div><Label>Başlık (opsiyonel)</Label><Input value={apiForm.title} onChange={(e) => setApiForm({ ...apiForm, title: e.target.value })} placeholder="ör. CRM müşteri listesi" /></div>
+                <div className="grid grid-cols-[100px_1fr] gap-2">
+                  <div>
+                    <Label>Method</Label>
+                    <Select value={apiForm.method} onValueChange={(v) => setApiForm({ ...apiForm, method: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="GET">GET</SelectItem>
+                        <SelectItem value="POST">POST</SelectItem>
+                        <SelectItem value="PUT">PUT</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label>URL</Label><Input value={apiForm.url} onChange={(e) => setApiForm({ ...apiForm, url: e.target.value })} placeholder="https://api.example.com/v1/data" /></div>
+                </div>
+                <div>
+                  <Label>Headers (JSON, opsiyonel)</Label>
+                  <Textarea rows={3} value={apiForm.headers} onChange={(e) => setApiForm({ ...apiForm, headers: e.target.value })} placeholder='{"Authorization": "Bearer ..."}' className="font-mono text-xs" />
+                </div>
+                {apiForm.method !== 'GET' && (
+                  <div>
+                    <Label>Body (opsiyonel)</Label>
+                    <Textarea rows={3} value={apiForm.body} onChange={(e) => setApiForm({ ...apiForm, body: e.target.value })} className="font-mono text-xs" />
+                  </div>
+                )}
+                <div><Label>Confidentiality</Label>
+                  <Select value={apiForm.confidentiality} onValueChange={(v) => setApiForm({ ...apiForm, confidentiality: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public_internal">Public internal</SelectItem>
+                      <SelectItem value="internal">Internal</SelectItem>
+                      <SelectItem value="confidential">Confidential</SelectItem>
+                      <SelectItem value="highly_confidential">Highly confidential</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={fetchApi} disabled={apiFetching || !apiForm.url} className="w-full">
+                  {apiFetching ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Çekiliyor…</> : 'Çek ve İndeksle'}
+                </Button>
+                <p className="text-[10px] text-muted-foreground">Yanıt metin olarak alınır, ilk 200KB indekslenir. Özel/iç ağ adresleri engellenmiştir.</p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+        {sources.filter((s) => s.kind === 'api').length === 0 ? (
+          <Card className="p-6 text-center"><Globe className="h-5 w-5 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">Henüz API bağlı değil.</p></Card>
+        ) : (
+          <div className="space-y-2">
+            {sources.filter((s) => s.kind === 'api').map((s) => (
+              <Card key={s.id} className="p-3 flex items-center gap-3">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm truncate">{s.label}</div>
+                  <div className="text-[10px] text-muted-foreground truncate">{s.config?.method || 'GET'} · {s.config?.url}</div>
+                </div>
+                <Badge variant="outline" className="text-[10px]">{s.status}</Badge>
+                <Button size="sm" variant="ghost" onClick={() => refreshApi(s)} disabled={apiFetching} className="gap-1">
+                  <RefreshCw className={`h-3 w-3 ${apiFetching ? 'animate-spin' : ''}`} /> Yenile
+                </Button>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
