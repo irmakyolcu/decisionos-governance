@@ -62,7 +62,7 @@ export default function DataSourcesPage() {
         title: form.title, file_path: filePath, content_text: contentText,
         mime_type: file?.type || form.mime_type,
         confidentiality: form.confidentiality as any,
-        process_status: 'indexed',
+        process_status: contentText ? 'indexed' : (filePath ? 'processing' : 'indexed'),
       }).select().single();
       if (error) throw error;
 
@@ -74,13 +74,25 @@ export default function DataSourcesPage() {
           confidentiality: form.confidentiality as any,
           source_date: new Date().toISOString(),
         });
+      } else if (doc && filePath) {
+        // Trigger AI extraction in background
+        supabase.functions.invoke('ingest-document', { body: { document_id: doc.id } })
+          .then(() => load())
+          .catch(() => void 0);
       }
-      toast({ title: 'Uploaded', description: 'Document indexed into your Company Brain.' });
+      toast({ title: 'Yüklendi', description: contentText ? 'Doküman indekslendi.' : 'Doküman yüklendi; AI ile içerik çıkarılıyor…' });
       setUploadOpen(false); setFile(null); setForm({ title: '', content_text: '', confidentiality: 'internal', mime_type: 'text/plain' });
       load();
     } catch (e: any) {
       toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
     } finally { setUploading(false); }
+  };
+
+  const reingest = async (id: string) => {
+    toast({ title: 'AI çıkarımı başladı', description: 'Bir kaç saniye sürebilir.' });
+    const { error } = await supabase.functions.invoke('ingest-document', { body: { document_id: id } });
+    if (error) toast({ title: 'Hata', description: error.message, variant: 'destructive' });
+    else { toast({ title: 'Bitti', description: 'İçerik güncellendi.' }); load(); }
   };
 
   const addConnector = async (kind: string, label: string) => {
