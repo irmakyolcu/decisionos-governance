@@ -16,8 +16,25 @@ Deno.serve(async (req) => {
     if (authErr || !claims?.claims) return json({ error: 'Unauthorized' }, 401);
     const userId = claims.claims.sub;
 
-    const { workspace_id, title, url, method = 'GET', headers = {}, body, confidentiality = 'internal' } = await req.json();
+    const { workspace_id, title, url, method = 'GET', headers = {}, body, confidentiality = 'internal', auth } = await req.json();
     if (!workspace_id || !url) return json({ error: 'workspace_id and url required' }, 400);
+
+    // Build auth headers from structured auth object
+    const authHeaders: Record<string, string> = {};
+    if (auth && typeof auth === 'object') {
+      if (auth.type === 'bearer' && auth.token) {
+        authHeaders['Authorization'] = `Bearer ${auth.token}`;
+      } else if (auth.type === 'api_key' && auth.key_name && auth.key_value) {
+        if (auth.location === 'query') {
+          // handled below when building URL
+        } else {
+          authHeaders[auth.key_name] = auth.key_value;
+        }
+      } else if (auth.type === 'basic' && auth.username != null) {
+        const encoded = btoa(`${auth.username}:${auth.password ?? ''}`);
+        authHeaders['Authorization'] = `Basic ${encoded}`;
+      }
+    }
 
     // Validate URL
     let target: URL;
