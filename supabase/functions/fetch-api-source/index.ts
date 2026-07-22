@@ -99,10 +99,10 @@ Deno.serve(async (req) => {
       source_date: new Date().toISOString(),
     });
 
-    // Also register as a data_source for visibility
+    // Also register as a data_source for visibility (auth stored for refresh; workspace-RLS protected)
     await admin.from('data_sources').insert({
       workspace_id, created_by: userId, kind: 'api', label: finalTitle,
-      status: 'connected', config: { url: target.toString(), method },
+      status: 'connected', config: { url, method, auth: auth ?? null },
     });
 
     return json({ ok: true, document_id: doc.id, length: truncated.length, content_type: ct });
