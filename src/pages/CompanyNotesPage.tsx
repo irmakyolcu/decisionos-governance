@@ -301,14 +301,105 @@ export default function CompanyNotesPage() {
   );
 }
 
+type Attachment = {
+  id: string;
+  note_id: string;
+  file_name: string;
+  storage_path: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  uploaded_by: string;
+  created_at: string;
+};
+
+const ACCEPTED_TYPES = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.csv,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation';
+
+function humanSize(bytes?: number | null) {
+  if (!bytes && bytes !== 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 function NoteCard({
-  note, onPin, onEdit, onDelete,
+  note, workspaceId, onPin, onEdit, onDelete,
 }: {
   note: Note;
+  workspaceId: string;
   onPin: (n: Note) => void;
   onEdit: (n: Note) => void;
   onDelete: (id: string) => void;
 }) {
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  async function loadAttachments() {
+    const { data, error } = await supabase
+      .from('note_attachments')
+      .select('*')
+      .eq('note_id', note.id)
+      .order('created_at', { ascending: false });
+    if (error) return;
+    setAttachments((data ?? []) as Attachment[]);
+  }
+
+  useEffect(() => { loadAttachments(); /* eslint-disable-next-line */ }, [note.id]);
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error('Dosya boyutu 20MB üzeri olamaz');
+      return;
+    }
+    setUploading(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) throw new Error('Oturum yok');
+      const safeName = file.name.replace(/[^\w.\-]+/g, '_');
+      const path = `notes/${workspaceId}/${note.id}/${Date.now()}_${safeName}`;
+      const { error: upErr } = await supabase.storage
+        .from('company-docs')
+        .upload(path, file, { contentType: file.type || undefined, upsert: false });
+      if (upErr) throw upErr;
+      const { error: insErr } = await supabase.from('note_attachments').insert({
+        workspace_id: workspaceId,
+        note_id: note.id,
+        uploaded_by: uid,
+        file_name: file.name,
+        storage_path: path,
+        mime_type: file.type || null,
+        size_bytes: file.size,
+      });
+      if (insErr) throw insErr;
+      toast.success('Dosya yüklendi');
+      loadAttachments();
+    } catch (err: any) {
+      toast.error(err.message ?? 'Yükleme başarısız');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function openFile(a: Attachment) {
+    const { data, error } = await supabase.storage
+      .from('company-docs')
+      .createSignedUrl(a.storage_path, 300);
+    if (error || !data) return toast.error(error?.message ?? 'Bağlantı alınamadı');
+    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  async function removeAttachment(a: Attachment) {
+    if (!confirm(`"${a.file_name}" silinsin mi?`)) return;
+    await supabase.storage.from('company-docs').remove([a.storage_path]);
+    const { error } = await supabase.from('note_attachments').delete().eq('id', a.id);
+    if (error) return toast.error(error.message);
+    toast.success('Ek silindi');
+    loadAttachments();
+  }
+
   return (
     <Card className="group">
       <CardContent className="p-4 space-y-3">
@@ -323,6 +414,11 @@ function NoteCard({
               <Badge className={`text-[10px] ${importanceStyle[note.importance]}`} variant="secondary">
                 {importanceLabel[note.importance]}
               </Badge>
+              {attachments.length > 0 && (
+                <Badge variant="outline" className="text-[10px] flex items-center gap-1">
+                  <Paperclip className="h-3 w-3" /> {attachments.length}
+                </Badge>
+              )}
             </div>
           </div>
           <div className="flex opacity-0 group-hover:opacity-100 transition">
@@ -347,6 +443,54 @@ function NoteCard({
             ))}
           </div>
         )}
+
+        {/* Attachments */}
+        <div className="pt-2 border-t space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
+              <Paperclip className="h-3 w-3" /> Ekler
+            </span>
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                className="hidden"
+                accept={ACCEPTED_TYPES}
+                onChange={handleUpload}
+                disabled={uploading}
+              />
+              <span className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
+                {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
+                {uploading ? 'Yükleniyor…' : 'Dosya ekle'}
+              </span>
+            </label>
+          </div>
+          {attachments.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground italic">Henüz ek yok. PDF, Word, Excel ekleyebilirsiniz.</p>
+          ) : (
+            <ul className="space-y-1">
+              {attachments.map((a) => (
+                <li key={a.id} className="flex items-center gap-2 text-xs bg-muted/40 rounded px-2 py-1.5">
+                  <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <button
+                    onClick={() => openFile(a)}
+                    className="min-w-0 flex-1 text-left truncate hover:underline"
+                    title={a.file_name}
+                  >
+                    {a.file_name}
+                  </button>
+                  <span className="text-[10px] text-muted-foreground shrink-0">{humanSize(a.size_bytes)}</span>
+                  <button onClick={() => openFile(a)} className="text-muted-foreground hover:text-foreground" title="Aç / indir">
+                    <Download className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => removeAttachment(a)} className="text-muted-foreground hover:text-destructive" title="Sil">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <div className="text-[11px] text-muted-foreground pt-1 border-t">
           Güncellendi {formatDistanceToNow(new Date(note.updated_at), { addSuffix: true, locale: tr })}
         </div>
