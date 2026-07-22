@@ -20,8 +20,8 @@ export default function LandingPage() {
     { icon: Mail, label: 'Gmail' },
     { icon: MessageSquare, label: 'Slack' },
     { icon: Users, label: 'Teams' },
-    { icon: Calendar, label: 'Meetings' },
-    { icon: FileText, label: 'Docs' },
+    { icon: Calendar, label: t('src.meetings') },
+    { icon: FileText, label: t('src.docs') },
     { icon: Database, label: 'CRM' },
     { icon: Server, label: 'ERP' },
     { icon: StickyNote, label: 'Notion' },
@@ -404,14 +404,14 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-border py-10 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} DecisionOS — The Company Brain Platform
+        © {new Date().getFullYear()} DecisionOS — {t('footer.tagline')}
       </footer>
 
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden bg-card border-border">
           <DialogHeader className="p-6 pb-2">
             <DialogTitle className="flex items-center gap-2">
-              <Play className="h-4 w-4 text-primary" /> DecisionOS — Product Demo
+              <Play className="h-4 w-4 text-primary" /> {t('demo.header')}
             </DialogTitle>
             <DialogDescription>
               {t('demo.desc')}
