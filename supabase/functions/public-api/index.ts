@@ -94,7 +94,7 @@ async function handleDecisions(req: Request, key: KeyRow, id?: string) {
       budget: typeof body.budget === 'number' ? body.budget : null,
       risk_level: body.risk_level ?? 'Medium',
       status: 'Draft',
-      created_by: key.workspace_id, // placeholder; api-key acts on workspace behalf
+      created_by: key.created_by, // placeholder; api-key acts on workspace behalf
       options_considered: Array.isArray(body.options_considered) ? body.options_considered : [],
     }).select().single();
     if (error) return json({ error: error.message }, 400);
@@ -123,7 +123,7 @@ async function handleLessons(req: Request, key: KeyRow) {
       summary: body.summary ? String(body.summary).slice(0, 1000) : null,
       kind: 'lesson',
       confidentiality: 'internal',
-      created_by: key.workspace_id,
+      created_by: key.created_by,
     }).select().single();
     if (error) return json({ error: error.message }, 400);
     return json({ data }, 201);
@@ -150,7 +150,7 @@ async function handleKnowledge(req: Request, key: KeyRow) {
       content: String(body.content).slice(0, 20000),
       summary: body.summary ? String(body.summary).slice(0, 1000) : String(body.content).slice(0, 300),
       confidentiality: body.confidentiality ?? 'internal',
-      created_by: key.workspace_id,
+      created_by: key.created_by,
     }).select().single();
     if (error) return json({ error: error.message }, 400);
     return json({ data }, 201);
