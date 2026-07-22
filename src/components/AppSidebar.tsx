@@ -50,6 +50,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Team', url: '/team', icon: Users },
       { title: 'Admin & Permissions', url: '/admin', icon: Shield },
       { title: 'Security Audit', url: '/security-audit', icon: ShieldCheck },
+      { title: 'API Anahtarları', url: '/api-keys', icon: KeyRound },
     ],
   },
 ];
