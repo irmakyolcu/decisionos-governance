@@ -1,7 +1,7 @@
 import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
-  BookOpen, Lightbulb, History, BookMarked, Link2,
+  BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -50,6 +50,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Team', url: '/team', icon: Users },
       { title: 'Admin & Permissions', url: '/admin', icon: Shield },
       { title: 'Security Audit', url: '/security-audit', icon: ShieldCheck },
+      { title: 'API Anahtarları', url: '/api-keys', icon: KeyRound },
     ],
   },
 ];
