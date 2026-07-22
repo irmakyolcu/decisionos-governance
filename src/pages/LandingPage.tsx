@@ -411,7 +411,7 @@ export default function LandingPage() {
         <DialogContent className="max-w-3xl p-0 overflow-hidden bg-card border-border">
           <DialogHeader className="p-6 pb-2">
             <DialogTitle className="flex items-center gap-2">
-              <Play className="h-4 w-4 text-primary" /> DecisionOS — Product Demo
+              <Play className="h-4 w-4 text-primary" /> {t('demo.header')}
             </DialogTitle>
             <DialogDescription>
               {t('demo.desc')}
