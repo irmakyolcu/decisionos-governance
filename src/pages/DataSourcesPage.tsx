@@ -38,6 +38,8 @@ export default function DataSourcesPage() {
   const [apiOpen, setApiOpen] = useState(false);
   const [apiFetching, setApiFetching] = useState(false);
   const [apiForm, setApiForm] = useState({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+
+  const load = async () => {
     if (!workspace) return;
     const { data: s } = await supabase.from('data_sources').select('*').eq('workspace_id', workspace.id);
     setSources(s ?? []);
