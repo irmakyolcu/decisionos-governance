@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     try {
       resp = await fetch(target.toString(), {
         method,
-        headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers },
+        headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers, ...authHeaders },
         body: body && method !== 'GET' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
         signal: controller.signal,
       });
