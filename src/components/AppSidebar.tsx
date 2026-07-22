@@ -29,6 +29,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Lessons ↔ Decisions', url: '/memory/links', icon: Link2 },
       { title: 'Link Audit Trail', url: '/memory/link-audit', icon: History },
       { title: 'Company Timeline', url: '/memory/timeline', icon: History },
+      { title: 'Önemli Notlar', url: '/memory/notes', icon: StickyNote },
       { title: 'Glossary', url: '/memory/glossary', icon: BookMarked },
     ],
   },
