@@ -1288,6 +1288,80 @@ export type Database = {
           },
         ]
       }
+      decision_macro_assessments: {
+        Row: {
+          commentary: string | null
+          created_at: string
+          decision_id: string
+          geographies: string[] | null
+          geopolitical_notes: string | null
+          headline: string | null
+          id: string
+          indicators: Json | null
+          macro_level: string | null
+          macro_score: number | null
+          model: string | null
+          opportunities: Json | null
+          outlook: string | null
+          risks: Json | null
+          sector: string | null
+          sources: Json | null
+          trigger_reason: string | null
+          triggered_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          commentary?: string | null
+          created_at?: string
+          decision_id: string
+          geographies?: string[] | null
+          geopolitical_notes?: string | null
+          headline?: string | null
+          id?: string
+          indicators?: Json | null
+          macro_level?: string | null
+          macro_score?: number | null
+          model?: string | null
+          opportunities?: Json | null
+          outlook?: string | null
+          risks?: Json | null
+          sector?: string | null
+          sources?: Json | null
+          trigger_reason?: string | null
+          triggered_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          commentary?: string | null
+          created_at?: string
+          decision_id?: string
+          geographies?: string[] | null
+          geopolitical_notes?: string | null
+          headline?: string | null
+          id?: string
+          indicators?: Json | null
+          macro_level?: string | null
+          macro_score?: number | null
+          model?: string | null
+          opportunities?: Json | null
+          outlook?: string | null
+          risks?: Json | null
+          sector?: string | null
+          sources?: Json | null
+          trigger_reason?: string | null
+          triggered_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_macro_assessments_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_pros_cons: {
         Row: {
           added_by: string
