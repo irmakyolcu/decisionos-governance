@@ -344,7 +344,7 @@ export default function DataSourcesPage() {
                 <Globe className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">{s.label}</div>
-                  <div className="text-[10px] text-muted-foreground truncate">{s.config?.method || 'GET'} · {s.config?.url}</div>
+                  <div className="text-[10px] text-muted-foreground truncate">{s.config?.method || 'GET'} · {s.config?.url} {s.config?.auth?.type && s.config.auth.type !== 'none' ? `· 🔐 ${s.config.auth.type}` : ''}</div>
                 </div>
                 <Badge variant="outline" className="text-[10px]">{s.status}</Badge>
                 <Button size="sm" variant="ghost" onClick={() => refreshApi(s)} disabled={apiFetching} className="gap-1">
