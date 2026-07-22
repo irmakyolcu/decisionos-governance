@@ -191,6 +191,7 @@ export default function DecisionDetailPage() {
           <TabsTrigger value="details">Detaylar</TabsTrigger>
           <TabsTrigger value="risk"><Gauge className="h-3.5 w-3.5 mr-1" />AI Risk ({assessments.length})</TabsTrigger>
           <TabsTrigger value="macro"><Globe2 className="h-3.5 w-3.5 mr-1" />Makro & Jeopolitik ({macros.length})</TabsTrigger>
+          <TabsTrigger value="context"><Activity className="h-3.5 w-3.5 mr-1" />Bağlam & Sonuç</TabsTrigger>
           <TabsTrigger value="sources"><FileText className="h-3.5 w-3.5 mr-1" />Kaynaklar ({evidence.length})</TabsTrigger>
           <TabsTrigger value="history"><History className="h-3.5 w-3.5 mr-1" />Geçmiş ({history.length})</TabsTrigger>
         </TabsList>
