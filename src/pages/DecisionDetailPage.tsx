@@ -12,8 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Lock, Save, Trash2, Plus, History, FileText, ShieldCheck, Sparkles, TrendingUp, TrendingDown, Minus, Loader2, Gauge, Globe2, AlertTriangle, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Lock, Save, Trash2, Plus, History, FileText, ShieldCheck, Sparkles, TrendingUp, TrendingDown, Minus, Loader2, Gauge, Globe2, AlertTriangle, Lightbulb, Activity } from 'lucide-react';
 import { toast } from 'sonner';
+import ContextOutcomePanel from '@/components/decision/ContextOutcomePanel';
 
 const db = supabase as any;
 const STATUSES = ['Draft', 'Pending', 'Under Review', 'Approved', 'Rejected', 'Escalated', 'Executed'] as const;
@@ -190,6 +191,7 @@ export default function DecisionDetailPage() {
           <TabsTrigger value="details">Detaylar</TabsTrigger>
           <TabsTrigger value="risk"><Gauge className="h-3.5 w-3.5 mr-1" />AI Risk ({assessments.length})</TabsTrigger>
           <TabsTrigger value="macro"><Globe2 className="h-3.5 w-3.5 mr-1" />Makro & Jeopolitik ({macros.length})</TabsTrigger>
+          <TabsTrigger value="context"><Activity className="h-3.5 w-3.5 mr-1" />Bağlam & Sonuç</TabsTrigger>
           <TabsTrigger value="sources"><FileText className="h-3.5 w-3.5 mr-1" />Kaynaklar ({evidence.length})</TabsTrigger>
           <TabsTrigger value="history"><History className="h-3.5 w-3.5 mr-1" />Geçmiş ({history.length})</TabsTrigger>
         </TabsList>
@@ -255,6 +257,9 @@ export default function DecisionDetailPage() {
           ))}
         </TabsContent>
 
+        <TabsContent value="context" className="mt-4">
+          <ContextOutcomePanel decisionId={decision.id} workspaceId={decision.workspace_id} canWrite={!locked} />
+        </TabsContent>
 
         <TabsContent value="sources" className="mt-4">
           <EvidencePanel decisionId={decision.id} workspaceId={decision.workspace_id} evidence={evidence} onChange={load} />

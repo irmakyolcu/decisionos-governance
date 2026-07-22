@@ -1181,6 +1181,62 @@ export type Database = {
           },
         ]
       }
+      decision_context_snapshots: {
+        Row: {
+          company_state: string
+          decision_id: string
+          financial_health: string | null
+          id: string
+          key_challenges: string | null
+          kpis: Json | null
+          market_conditions: string | null
+          recorded_at: string
+          recorded_by: string | null
+          revenue: number | null
+          runway_months: number | null
+          team_size: number | null
+          workspace_id: string
+        }
+        Insert: {
+          company_state: string
+          decision_id: string
+          financial_health?: string | null
+          id?: string
+          key_challenges?: string | null
+          kpis?: Json | null
+          market_conditions?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          revenue?: number | null
+          runway_months?: number | null
+          team_size?: number | null
+          workspace_id: string
+        }
+        Update: {
+          company_state?: string
+          decision_id?: string
+          financial_health?: string | null
+          id?: string
+          key_challenges?: string | null
+          kpis?: Json | null
+          market_conditions?: string | null
+          recorded_at?: string
+          recorded_by?: string | null
+          revenue?: number | null
+          runway_months?: number | null
+          team_size?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_context_snapshots_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_evidence: {
         Row: {
           contradicts: string | null
@@ -1355,6 +1411,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "decision_macro_assessments_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decision_outcomes: {
+        Row: {
+          created_at: string
+          decision_id: string
+          id: string
+          impact_financial: number | null
+          impact_qualitative: string | null
+          lessons_learned: string | null
+          measured_at: string
+          metrics: Json | null
+          outcome_status: string
+          recorded_by: string | null
+          summary: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision_id: string
+          id?: string
+          impact_financial?: number | null
+          impact_qualitative?: string | null
+          lessons_learned?: string | null
+          measured_at?: string
+          metrics?: Json | null
+          outcome_status: string
+          recorded_by?: string | null
+          summary: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          decision_id?: string
+          id?: string
+          impact_financial?: number | null
+          impact_qualitative?: string | null
+          lessons_learned?: string | null
+          measured_at?: string
+          metrics?: Json | null
+          outcome_status?: string
+          recorded_by?: string | null
+          summary?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_outcomes_decision_id_fkey"
             columns: ["decision_id"]
             isOneToOne: false
             referencedRelation: "decisions"
