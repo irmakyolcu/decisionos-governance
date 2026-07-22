@@ -2103,6 +2103,57 @@ export type Database = {
           },
         ]
       }
+      note_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          id: string
+          mime_type: string | null
+          note_id: string
+          size_bytes: number | null
+          storage_path: string
+          uploaded_by: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          note_id: string
+          size_bytes?: number | null
+          storage_path: string
+          uploaded_by: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          note_id?: string
+          size_bytes?: number | null
+          storage_path?: string
+          uploaded_by?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_attachments_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "company_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_attachments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
