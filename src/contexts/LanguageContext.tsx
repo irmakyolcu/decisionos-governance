@@ -151,6 +151,12 @@ const dict: Dict = {
     tr: 'Şirketinizin önümüzdeki on yıl güveneceği beyni inşa edin.',
   },
   'cta.button': { en: 'Build Your Company Brain', tr: 'Şirket Beyninizi Oluşturun' },
+
+  // Misc
+  'src.meetings': { en: 'Meetings', tr: 'Toplantılar' },
+  'src.docs': { en: 'Docs', tr: 'Belgeler' },
+  'footer.tagline': { en: 'The Company Brain Platform', tr: 'Şirket Beyni Platformu' },
+  'demo.header': { en: 'DecisionOS — Product Demo', tr: 'DecisionOS — Ürün Demosu' },
 };
 
 interface Ctx {
