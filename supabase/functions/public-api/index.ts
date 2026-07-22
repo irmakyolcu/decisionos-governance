@@ -29,6 +29,7 @@ interface KeyRow {
   role: Role;
   scopes: string[];
   revoked_at: string | null;
+  created_by: string;
 }
 
 const admin = createClient(
