@@ -62,9 +62,9 @@ Deno.serve(async (req) => {
       content_text: truncated,
       mime_type: ct,
       source_kind: 'api',
-      source_url: target.toString(),
       confidentiality,
       process_status: 'indexed',
+      metadata: { url: target.toString(), method, fetched_at: new Date().toISOString() },
     }).select().single();
     if (docErr) return json({ error: docErr.message }, 400);
 
