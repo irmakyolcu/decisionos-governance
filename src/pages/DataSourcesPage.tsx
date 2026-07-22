@@ -165,9 +165,14 @@ export default function DataSourcesPage() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">{d.title}</div>
-                  <div className="text-[10px] text-muted-foreground">{d.confidentiality} · {d.process_status}</div>
+                  <div className="text-[10px] text-muted-foreground">{d.confidentiality} · {d.process_status} · {d.mime_type || '—'}</div>
                 </div>
-                <Badge variant="outline" className="text-[10px]">{d.source_kind}</Badge>
+                <Badge variant="outline" className="text-[10px]">{d.source_kind || 'upload'}</Badge>
+                {d.file_path && (
+                  <Button size="sm" variant="ghost" onClick={() => reingest(d.id)} className="gap-1">
+                    <Sparkles className="h-3 w-3" /> AI çıkar
+                  </Button>
+                )}
               </Card>
             ))}
           </div>
