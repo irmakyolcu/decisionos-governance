@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import {
   StickyNote, Plus, Search, Trash2, Pin, PinOff, Pencil, AlertTriangle,
+  Paperclip, FileText, Download, Loader2, X,
 } from 'lucide-react';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { supabase } from '@/integrations/supabase/client';
