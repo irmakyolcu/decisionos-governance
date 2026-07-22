@@ -467,3 +467,114 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
     </div>
   );
 }
+
+function macroColor(level?: string) {
+  const l = (level || '').toLowerCase();
+  if (l === 'unfavorable') return 'bg-red-500/10 text-red-700 border-red-500/40';
+  if (l === 'cautious') return 'bg-orange-500/10 text-orange-700 border-orange-500/40';
+  if (l === 'supportive' || l === 'favorable') return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/40';
+  return 'bg-muted text-muted-foreground border-border';
+}
+
+function outlookBadge(o?: string) {
+  const s = (o || '').toLowerCase();
+  if (s === 'positive') return { cls: 'text-emerald-700 border-emerald-500/40', label: 'Pozitif görünüm' };
+  if (s === 'negative') return { cls: 'text-red-700 border-red-500/40', label: 'Negatif görünüm' };
+  if (s === 'mixed') return { cls: 'text-amber-700 border-amber-500/40', label: 'Karışık görünüm' };
+  return { cls: '', label: 'Stabil görünüm' };
+}
+
+function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?: string }) {
+  const ob = outlookBadge(m.outlook);
+  const ind = m.indicators || {};
+  const risks: any[] = Array.isArray(m.risks) ? m.risks : [];
+  const opps: any[] = Array.isArray(m.opportunities) ? m.opportunities : [];
+  const sources: any[] = Array.isArray(m.sources) ? m.sources : [];
+  return (
+    <Card className={isLatest ? 'border-primary/40' : ''}>
+      <CardContent className="py-4 space-y-3">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            {m.macro_score != null && (
+              <div className="text-center">
+                <div className="text-2xl font-bold tabular-nums">{Number(m.macro_score).toFixed(0)}</div>
+                <div className="text-[10px] uppercase text-muted-foreground">/100 makro</div>
+              </div>
+            )}
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {m.macro_level && <Badge variant="outline" className={macroColor(m.macro_level)}>{m.macro_level}</Badge>}
+                <Badge variant="outline" className={ob.cls}>{ob.label}</Badge>
+                {isLatest && <Badge variant="secondary" className="text-[10px]">En güncel</Badge>}
+                {m.sector && <Badge variant="secondary" className="text-[10px]">{m.sector}</Badge>}
+              </div>
+              {m.headline && <p className="text-sm font-medium mt-1">{m.headline}</p>}
+              {Array.isArray(m.geographies) && m.geographies.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">🌍 {m.geographies.join(', ')}</p>
+              )}
+            </div>
+          </div>
+          <span className="text-[11px] text-muted-foreground text-right">
+            {author ?? 'AI'} · {new Date(m.created_at).toLocaleString('tr-TR')}<br />
+            {m.trigger_reason}
+          </span>
+        </div>
+
+        {m.commentary && <p className="text-sm text-muted-foreground">{m.commentary}</p>}
+
+        {m.geopolitical_notes && (
+          <div className="text-xs bg-amber-500/5 border border-amber-500/30 rounded p-2">
+            <span className="font-semibold">Jeopolitik:</span> {m.geopolitical_notes}
+          </div>
+        )}
+
+        {Object.keys(ind).length > 0 && (
+          <div className="grid sm:grid-cols-2 gap-2 text-xs">
+            {Object.entries(ind).map(([k, v]) => (
+              <div key={k} className="rounded border p-2 bg-muted/30">
+                <p className="text-[10px] uppercase text-muted-foreground">{k.replace(/_/g, ' ')}</p>
+                <p>{String(v)}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {(risks.length > 0 || opps.length > 0) && (
+          <div className="grid sm:grid-cols-2 gap-3">
+            {risks.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold flex items-center gap-1 mb-1"><AlertTriangle className="h-3 w-3 text-red-600" />Riskler</p>
+                <ul className="space-y-1">
+                  {risks.map((r, i) => (
+                    <li key={i} className="text-xs rounded border bg-red-500/5 border-red-500/20 p-2">
+                      <span className="font-medium">{r.title}</span>
+                      {r.severity && <Badge variant="outline" className="ml-1 text-[9px] py-0">{r.severity}</Badge>}
+                      {r.detail && <p className="text-muted-foreground mt-0.5">{r.detail}</p>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {opps.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold flex items-center gap-1 mb-1"><Lightbulb className="h-3 w-3 text-emerald-600" />Fırsatlar</p>
+                <ul className="space-y-1">
+                  {opps.map((r, i) => (
+                    <li key={i} className="text-xs rounded border bg-emerald-500/5 border-emerald-500/20 p-2">
+                      <span className="font-medium">{r.title}</span>
+                      {r.detail && <p className="text-muted-foreground mt-0.5">{r.detail}</p>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {sources.length > 0 && (
+          <p className="text-[11px] text-muted-foreground">Referans alanları: {sources.map((s: any) => typeof s === 'string' ? s : (s?.title || '')).filter(Boolean).join(' · ')}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
