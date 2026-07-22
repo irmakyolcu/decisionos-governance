@@ -114,7 +114,7 @@ export default function DataSourcesPage() {
             <DialogHeader><DialogTitle>Upload Knowledge</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-              <div><Label>File (PDF/DOCX/TXT/CSV)</Label><Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
+              <div><Label>Dosya (PDF, DOCX, XLSX, CSV, TXT, resim, ses, vb.)</Label><Input type="file" accept={ACCEPTS} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
               <div><Label>Or paste content</Label><Textarea rows={5} value={form.content_text} onChange={(e) => setForm({ ...form, content_text: e.target.value })} /></div>
               <div><Label>Confidentiality</Label>
                 <Select value={form.confidentiality} onValueChange={(v) => setForm({ ...form, confidentiality: v })}>
