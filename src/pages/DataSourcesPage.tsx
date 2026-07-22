@@ -35,8 +35,9 @@ export default function DataSourcesPage() {
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({ title: '', content_text: '', confidentiality: 'internal', mime_type: 'text/plain' });
   const [file, setFile] = useState<File | null>(null);
-
-  const load = async () => {
+  const [apiOpen, setApiOpen] = useState(false);
+  const [apiFetching, setApiFetching] = useState(false);
+  const [apiForm, setApiForm] = useState({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
     if (!workspace) return;
     const { data: s } = await supabase.from('data_sources').select('*').eq('workspace_id', workspace.id);
     setSources(s ?? []);
