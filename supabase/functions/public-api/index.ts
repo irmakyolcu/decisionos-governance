@@ -47,7 +47,7 @@ async function authenticate(req: Request): Promise<KeyRow | Response> {
   const hash = await sha256Hex(raw);
   const { data, error } = await admin
     .from('api_keys')
-    .select('id, workspace_id, role, scopes, revoked_at')
+    .select('id, workspace_id, role, scopes, revoked_at, created_by')
     .eq('key_hash', hash)
     .is('revoked_at', null)
     .maybeSingle();
