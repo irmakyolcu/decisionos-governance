@@ -107,6 +107,54 @@ export default function DataSourcesPage() {
     load();
   };
 
+  const fetchApi = async () => {
+    if (!workspace || !apiForm.url) return;
+    setApiFetching(true);
+    try {
+      let headers: Record<string, string> = {};
+      if (apiForm.headers.trim()) {
+        try { headers = JSON.parse(apiForm.headers); } catch { throw new Error('Headers geçerli JSON değil'); }
+      }
+      const body = apiForm.body.trim() ? apiForm.body : undefined;
+      const { data, error } = await supabase.functions.invoke('fetch-api-source', {
+        body: {
+          workspace_id: workspace.id,
+          title: apiForm.title || undefined,
+          url: apiForm.url,
+          method: apiForm.method,
+          headers,
+          body,
+          confidentiality: apiForm.confidentiality,
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast({ title: 'API çekildi', description: `${(data as any).length} karakter indekslendi.` });
+      setApiOpen(false);
+      setApiForm({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+      load();
+    } catch (e: any) {
+      toast({ title: 'API çekilemedi', description: e.message, variant: 'destructive' });
+    } finally { setApiFetching(false); }
+  };
+
+  const refreshApi = async (source: any) => {
+    const cfg = source.config || {};
+    if (!cfg.url) return toast({ title: 'URL yok', variant: 'destructive' });
+    setApiFetching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-api-source', {
+        body: { workspace_id: workspace!.id, title: source.label, url: cfg.url, method: cfg.method || 'GET' },
+      });
+      if (error || (data as any)?.error) throw new Error(error?.message || (data as any).error);
+      toast({ title: 'Yenilendi' });
+      load();
+    } catch (e: any) {
+      toast({ title: 'Hata', description: e.message, variant: 'destructive' });
+    } finally { setApiFetching(false); }
+  };
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
