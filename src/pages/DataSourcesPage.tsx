@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Database, FileText, Loader2 } from 'lucide-react';
+import { Upload, Database, FileText, Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+const ACCEPTS = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.md,.json,.xml,.log,.rtf,.html,.htm,.png,.jpg,.jpeg,.webp,.gif,.tiff,.mp3,.wav,.m4a,.ogg';
 
 const CONNECTORS = [
   { kind: 'gmail', label: 'Gmail' }, { kind: 'outlook', label: 'Outlook' },
