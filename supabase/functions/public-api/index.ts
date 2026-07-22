@@ -121,7 +121,7 @@ async function handleLessons(req: Request, key: KeyRow) {
       title: String(body.title).slice(0, 500),
       content: body.content ? String(body.content).slice(0, 10000) : '',
       summary: body.summary ? String(body.summary).slice(0, 1000) : null,
-      kind: 'lesson',
+      tags: ['lesson'],
       confidentiality: 'internal',
       created_by: key.created_by,
     }).select().single();
