@@ -46,8 +46,6 @@ export default function DecisionDetailPage() {
   async function load() {
     if (!id || !workspace) return;
     setLoading(true);
-    const [{ data: d }, { data: ev }, { data: hist }, { data: ras }] = await Promise.all([
-      db.from('decisions').select('*').eq('id', id).maybeSingle(),
     const [{ data: d }, { data: ev }, { data: hist }, { data: ras }, { data: macAll }] = await Promise.all([
       db.from('decisions').select('*').eq('id', id).maybeSingle(),
       db.from('decision_evidence').select('*').eq('decision_id', id).order('created_at', { ascending: false }),
