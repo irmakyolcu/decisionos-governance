@@ -29,8 +29,10 @@ export default function DecisionDetailPage() {
   const [evidence, setEvidence] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [assessments, setAssessments] = useState<any[]>([]);
+  const [macros, setMacros] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Map<string, any>>(new Map());
   const [assessing, setAssessing] = useState(false);
+  const [macroAssessing, setMacroAssessing] = useState(false);
 
   const [form, setForm] = useState({
     title: '', description: '', problem_statement: '', budget: 0, risk_level: 'Medium', status: 'Draft',
