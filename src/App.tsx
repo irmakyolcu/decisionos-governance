@@ -70,6 +70,7 @@ import CompanyTimelinePage from "./pages/CompanyTimelinePage";
 import GlossaryPage from "./pages/GlossaryPage";
 import LessonDecisionLinksPage from "./pages/LessonDecisionLinksPage";
 import LinkAuditPage from "./pages/LinkAuditPage";
+import CompanyNotesPage from "./pages/CompanyNotesPage";
 
 const queryClient = new QueryClient();
 
