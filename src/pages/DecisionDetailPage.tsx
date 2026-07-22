@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Lock, Save, Trash2, Plus, History, FileText, ShieldCheck, Sparkles, TrendingUp, TrendingDown, Minus, Loader2, Gauge } from 'lucide-react';
+import { ArrowLeft, Lock, Save, Trash2, Plus, History, FileText, ShieldCheck, Sparkles, TrendingUp, TrendingDown, Minus, Loader2, Gauge, Globe2, AlertTriangle, Lightbulb } from 'lucide-react';
 import { toast } from 'sonner';
 
 const db = supabase as any;
