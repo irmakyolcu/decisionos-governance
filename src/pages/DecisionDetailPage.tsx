@@ -113,6 +113,21 @@ export default function DecisionDetailPage() {
     load();
   }
 
+  async function runMacroAssessment(reason: string = 'manual') {
+    if (!id) return;
+    setMacroAssessing(true);
+    const { data, error } = await supabase.functions.invoke('decision-macro-assess', {
+      body: { decision_id: id, trigger_reason: reason },
+    });
+    setMacroAssessing(false);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error || error?.message || 'Makro değerlendirme başarısız');
+      return;
+    }
+    toast.success('Makro/jeopolitik değerlendirme kaydedildi');
+    load();
+  }
+
   if (loading) return <div className="p-6 space-y-3"><Skeleton className="h-8 w-64" /><Skeleton className="h-64 w-full" /></div>;
   if (!decision) return <div className="p-6"><p className="text-muted-foreground">Karar bulunamadı.</p><Link to="/decisions/list" className="text-primary text-sm">← Geri</Link></div>;
 
