@@ -257,6 +257,9 @@ export default function DecisionDetailPage() {
           ))}
         </TabsContent>
 
+        <TabsContent value="context" className="mt-4">
+          <ContextOutcomePanel decisionId={decision.id} workspaceId={decision.workspace_id} canWrite={!locked} />
+        </TabsContent>
 
         <TabsContent value="sources" className="mt-4">
           <EvidencePanel decisionId={decision.id} workspaceId={decision.workspace_id} evidence={evidence} onChange={load} />
