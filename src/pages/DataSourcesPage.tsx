@@ -162,7 +162,7 @@ export default function DataSourcesPage() {
     setApiFetching(true);
     try {
       const { data, error } = await supabase.functions.invoke('fetch-api-source', {
-        body: { workspace_id: workspace!.id, title: source.label, url: cfg.url, method: cfg.method || 'GET' },
+        body: { workspace_id: workspace!.id, title: source.label, url: cfg.url, method: cfg.method || 'GET', auth: cfg.auth ?? null },
       });
       if (error || (data as any)?.error) throw new Error(error?.message || (data as any).error);
       toast({ title: 'Yenilendi' });
