@@ -48,20 +48,24 @@ export default function DecisionDetailPage() {
     setLoading(true);
     const [{ data: d }, { data: ev }, { data: hist }, { data: ras }] = await Promise.all([
       db.from('decisions').select('*').eq('id', id).maybeSingle(),
+    const [{ data: d }, { data: ev }, { data: hist }, { data: ras }, { data: macAll }] = await Promise.all([
+      db.from('decisions').select('*').eq('id', id).maybeSingle(),
       db.from('decision_evidence').select('*').eq('decision_id', id).order('created_at', { ascending: false }),
       db.from('decision_history').select('*').eq('decision_id', id).order('created_at', { ascending: false }),
       db.from('decision_risk_assessments').select('*').eq('decision_id', id).order('created_at', { ascending: false }),
+      db.from('decision_macro_assessments').select('*').eq('decision_id', id).order('created_at', { ascending: false }),
     ]);
     if (!d) { setLoading(false); return; }
     setDecision(d);
     setEvidence(ev ?? []);
     setHistory(hist ?? []);
     setAssessments(ras ?? []);
+    setMacros(macAll ?? []);
     setForm({
       title: d.title ?? '', description: d.description ?? '', problem_statement: d.problem_statement ?? '',
       budget: Number(d.budget ?? 0), risk_level: d.risk_level ?? 'Medium', status: d.status ?? 'Draft',
     });
-    const ids = new Set<string>([d.created_by, ...(hist ?? []).map((h: any) => h.changed_by).filter(Boolean), ...(ras ?? []).map((r: any) => r.triggered_by).filter(Boolean)]);
+    const ids = new Set<string>([d.created_by, ...(hist ?? []).map((h: any) => h.changed_by).filter(Boolean), ...(ras ?? []).map((r: any) => r.triggered_by).filter(Boolean), ...(macAll ?? []).map((r: any) => r.triggered_by).filter(Boolean)]);
     const { data: pr } = await db.from('profiles').select('user_id, display_name').in('user_id', Array.from(ids));
     setProfiles(new Map((pr ?? []).map((p: any) => [p.user_id, p])));
     setLoading(false);
