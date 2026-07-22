@@ -404,7 +404,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-border py-10 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} DecisionOS — The Company Brain Platform
+        © {new Date().getFullYear()} DecisionOS — {t('footer.tagline')}
       </footer>
 
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
