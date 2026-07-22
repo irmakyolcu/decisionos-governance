@@ -261,6 +261,61 @@ export default function DataSourcesPage() {
                     <Textarea rows={3} value={apiForm.body} onChange={(e) => setApiForm({ ...apiForm, body: e.target.value })} className="font-mono text-xs" />
                   </div>
                 )}
+                <div className="border rounded-md p-3 space-y-2 bg-muted/30">
+                  <Label className="text-xs uppercase tracking-wide">Kimlik Doğrulama</Label>
+                  <Select value={apiForm.authType} onValueChange={(v: any) => setApiForm({ ...apiForm, authType: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Yok (Public)</SelectItem>
+                      <SelectItem value="bearer">Bearer Token (OAuth / JWT)</SelectItem>
+                      <SelectItem value="api_key">API Key</SelectItem>
+                      <SelectItem value="basic">Basic Auth</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {apiForm.authType === 'bearer' && (
+                    <div>
+                      <Label className="text-xs">Access / Bearer Token</Label>
+                      <Input type="password" value={apiForm.authToken} onChange={(e) => setApiForm({ ...apiForm, authToken: e.target.value })} placeholder="eyJhbGciOi... veya ya29..." className="font-mono text-xs" />
+                      <p className="text-[10px] text-muted-foreground mt-1">İsteğe <code>Authorization: Bearer &lt;token&gt;</code> olarak eklenir.</p>
+                    </div>
+                  )}
+                  {apiForm.authType === 'api_key' && (
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-[1fr_110px] gap-2">
+                        <div>
+                          <Label className="text-xs">Key adı</Label>
+                          <Input value={apiForm.apiKeyName} onChange={(e) => setApiForm({ ...apiForm, apiKeyName: e.target.value })} placeholder="X-API-Key" className="font-mono text-xs" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Konum</Label>
+                          <Select value={apiForm.apiKeyLocation} onValueChange={(v: any) => setApiForm({ ...apiForm, apiKeyLocation: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="header">Header</SelectItem>
+                              <SelectItem value="query">Query</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Key değeri</Label>
+                        <Input type="password" value={apiForm.apiKeyValue} onChange={(e) => setApiForm({ ...apiForm, apiKeyValue: e.target.value })} className="font-mono text-xs" />
+                      </div>
+                    </div>
+                  )}
+                  {apiForm.authType === 'basic' && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs">Kullanıcı adı</Label>
+                        <Input value={apiForm.basicUser} onChange={(e) => setApiForm({ ...apiForm, basicUser: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Parola</Label>
+                        <Input type="password" value={apiForm.basicPass} onChange={(e) => setApiForm({ ...apiForm, basicPass: e.target.value })} />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <div><Label>Confidentiality</Label>
                   <Select value={apiForm.confidentiality} onValueChange={(v) => setApiForm({ ...apiForm, confidentiality: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
