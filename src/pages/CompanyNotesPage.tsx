@@ -278,7 +278,7 @@ export default function CompanyNotesPage() {
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {pinned.map((n) => (
-                  <NoteCard key={n.id} note={n} onPin={togglePin} onEdit={openEdit} onDelete={remove} />
+                  <NoteCard key={n.id} note={n} workspaceId={workspace!.id} onPin={togglePin} onEdit={openEdit} onDelete={remove} />
                 ))}
               </div>
             </div>
