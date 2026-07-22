@@ -2529,6 +2529,62 @@ export type Database = {
           },
         ]
       }
+      report_schedules: {
+        Row: {
+          active: boolean
+          cadence: string
+          created_at: string
+          created_by: string
+          format: string
+          id: string
+          last_run_at: string | null
+          name: string
+          next_run_at: string | null
+          recipient_email: string
+          scope: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          active?: boolean
+          cadence?: string
+          created_at?: string
+          created_by: string
+          format?: string
+          id?: string
+          last_run_at?: string | null
+          name: string
+          next_run_at?: string | null
+          recipient_email: string
+          scope?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          active?: boolean
+          cadence?: string
+          created_at?: string
+          created_by?: string
+          format?: string
+          id?: string
+          last_run_at?: string | null
+          name?: string
+          next_run_at?: string | null
+          recipient_email?: string
+          scope?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_schedules_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risks: {
         Row: {
           affected_entity_id: string | null
