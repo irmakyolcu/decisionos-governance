@@ -1447,6 +1447,78 @@ export type Database = {
           },
         ]
       }
+      decision_risk_assessments: {
+        Row: {
+          commentary: string
+          comparison_note: string | null
+          confidence: number | null
+          created_at: string
+          decision_id: string
+          id: string
+          model: string | null
+          previous_score: number | null
+          risk_level: string
+          risk_score: number
+          score_delta: number | null
+          snapshot: Json | null
+          trigger_reason: string | null
+          triggered_by: string | null
+          verdict: string | null
+          workspace_id: string
+        }
+        Insert: {
+          commentary: string
+          comparison_note?: string | null
+          confidence?: number | null
+          created_at?: string
+          decision_id: string
+          id?: string
+          model?: string | null
+          previous_score?: number | null
+          risk_level: string
+          risk_score: number
+          score_delta?: number | null
+          snapshot?: Json | null
+          trigger_reason?: string | null
+          triggered_by?: string | null
+          verdict?: string | null
+          workspace_id: string
+        }
+        Update: {
+          commentary?: string
+          comparison_note?: string | null
+          confidence?: number | null
+          created_at?: string
+          decision_id?: string
+          id?: string
+          model?: string | null
+          previous_score?: number | null
+          risk_level?: string
+          risk_score?: number
+          score_delta?: number | null
+          snapshot?: Json | null
+          trigger_reason?: string | null
+          triggered_by?: string | null
+          verdict?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_risk_assessments_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_risk_assessments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_roles: {
         Row: {
           assigned_by: string | null
