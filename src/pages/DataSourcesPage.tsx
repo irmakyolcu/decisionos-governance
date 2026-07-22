@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Database, FileText, Loader2 } from 'lucide-react';
+import { Upload, Database, FileText, Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+const ACCEPTS = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.md,.json,.xml,.log,.rtf,.html,.htm,.png,.jpg,.jpeg,.webp,.gif,.tiff,.mp3,.wav,.m4a,.ogg';
 
 const CONNECTORS = [
   { kind: 'gmail', label: 'Gmail' }, { kind: 'outlook', label: 'Outlook' },
@@ -60,7 +62,7 @@ export default function DataSourcesPage() {
         title: form.title, file_path: filePath, content_text: contentText,
         mime_type: file?.type || form.mime_type,
         confidentiality: form.confidentiality as any,
-        process_status: 'indexed',
+        process_status: contentText ? 'indexed' : (filePath ? 'processing' : 'indexed'),
       }).select().single();
       if (error) throw error;
 
@@ -72,13 +74,25 @@ export default function DataSourcesPage() {
           confidentiality: form.confidentiality as any,
           source_date: new Date().toISOString(),
         });
+      } else if (doc && filePath) {
+        // Trigger AI extraction in background
+        supabase.functions.invoke('ingest-document', { body: { document_id: doc.id } })
+          .then(() => load())
+          .catch(() => void 0);
       }
-      toast({ title: 'Uploaded', description: 'Document indexed into your Company Brain.' });
+      toast({ title: 'Yüklendi', description: contentText ? 'Doküman indekslendi.' : 'Doküman yüklendi; AI ile içerik çıkarılıyor…' });
       setUploadOpen(false); setFile(null); setForm({ title: '', content_text: '', confidentiality: 'internal', mime_type: 'text/plain' });
       load();
     } catch (e: any) {
       toast({ title: 'Upload failed', description: e.message, variant: 'destructive' });
     } finally { setUploading(false); }
+  };
+
+  const reingest = async (id: string) => {
+    toast({ title: 'AI çıkarımı başladı', description: 'Bir kaç saniye sürebilir.' });
+    const { error } = await supabase.functions.invoke('ingest-document', { body: { document_id: id } });
+    if (error) toast({ title: 'Hata', description: error.message, variant: 'destructive' });
+    else { toast({ title: 'Bitti', description: 'İçerik güncellendi.' }); load(); }
   };
 
   const addConnector = async (kind: string, label: string) => {
@@ -100,7 +114,7 @@ export default function DataSourcesPage() {
             <DialogHeader><DialogTitle>Upload Knowledge</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-              <div><Label>File (PDF/DOCX/TXT/CSV)</Label><Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
+              <div><Label>Dosya (PDF, DOCX, XLSX, CSV, TXT, resim, ses, vb.)</Label><Input type="file" accept={ACCEPTS} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
               <div><Label>Or paste content</Label><Textarea rows={5} value={form.content_text} onChange={(e) => setForm({ ...form, content_text: e.target.value })} /></div>
               <div><Label>Confidentiality</Label>
                 <Select value={form.confidentiality} onValueChange={(v) => setForm({ ...form, confidentiality: v })}>
@@ -151,9 +165,14 @@ export default function DataSourcesPage() {
                 <FileText className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">{d.title}</div>
-                  <div className="text-[10px] text-muted-foreground">{d.confidentiality} · {d.process_status}</div>
+                  <div className="text-[10px] text-muted-foreground">{d.confidentiality} · {d.process_status} · {d.mime_type || '—'}</div>
                 </div>
-                <Badge variant="outline" className="text-[10px]">{d.source_kind}</Badge>
+                <Badge variant="outline" className="text-[10px]">{d.source_kind || 'upload'}</Badge>
+                {d.file_path && (
+                  <Button size="sm" variant="ghost" onClick={() => reingest(d.id)} className="gap-1">
+                    <Sparkles className="h-3 w-3" /> AI çıkar
+                  </Button>
+                )}
               </Card>
             ))}
           </div>

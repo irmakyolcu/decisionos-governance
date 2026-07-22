@@ -1,7 +1,7 @@
 import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
-  BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound,
+  BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -47,6 +47,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
     label: 'Admin',
     items: [
       { title: 'Data Sources', url: '/data-sources', icon: Database },
+      { title: 'Raporlar', url: '/reports', icon: FileBarChart },
       { title: 'Team', url: '/team', icon: Users },
       { title: 'Admin & Permissions', url: '/admin', icon: Shield },
       { title: 'Security Audit', url: '/security-audit', icon: ShieldCheck },

@@ -34,6 +34,7 @@ import TwinOnboardingPage from "./pages/TwinOnboardingPage";
 import TrustPage from "./pages/TrustPage";
 import VoiceAssistantPage from "./pages/VoiceAssistantPage";
 import ApiKeysPage from "./pages/ApiKeysPage";
+import ReportsPage from "./pages/ReportsPage";
 import NotFound from "./pages/NotFound";
 import ExecutiveDashboardPage from "./pages/ExecutiveDashboardPage";
 import ApprovalCenterPage from "./pages/ApprovalCenterPage";
@@ -155,6 +156,7 @@ function ProtectedRoutes() {
         <Route path="/team" element={<TeamPage />} />
         <Route path="/trust" element={<TrustPage />} />
         <Route path="/api-keys" element={<ApiKeysPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
