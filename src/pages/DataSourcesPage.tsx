@@ -37,7 +37,13 @@ export default function DataSourcesPage() {
   const [file, setFile] = useState<File | null>(null);
   const [apiOpen, setApiOpen] = useState(false);
   const [apiFetching, setApiFetching] = useState(false);
-  const [apiForm, setApiForm] = useState({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+  const [apiForm, setApiForm] = useState({
+    title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal',
+    authType: 'none' as 'none' | 'bearer' | 'api_key' | 'basic',
+    authToken: '',
+    apiKeyName: 'X-API-Key', apiKeyValue: '', apiKeyLocation: 'header' as 'header' | 'query',
+    basicUser: '', basicPass: '',
+  });
 
   const load = async () => {
     if (!workspace) return;
@@ -116,6 +122,12 @@ export default function DataSourcesPage() {
         try { headers = JSON.parse(apiForm.headers); } catch { throw new Error('Headers geçerli JSON değil'); }
       }
       const body = apiForm.body.trim() ? apiForm.body : undefined;
+      let auth: any = null;
+      if (apiForm.authType === 'bearer' && apiForm.authToken) auth = { type: 'bearer', token: apiForm.authToken };
+      else if (apiForm.authType === 'api_key' && apiForm.apiKeyName && apiForm.apiKeyValue)
+        auth = { type: 'api_key', key_name: apiForm.apiKeyName, key_value: apiForm.apiKeyValue, location: apiForm.apiKeyLocation };
+      else if (apiForm.authType === 'basic' && apiForm.basicUser)
+        auth = { type: 'basic', username: apiForm.basicUser, password: apiForm.basicPass };
       const { data, error } = await supabase.functions.invoke('fetch-api-source', {
         body: {
           workspace_id: workspace.id,
@@ -125,13 +137,19 @@ export default function DataSourcesPage() {
           headers,
           body,
           confidentiality: apiForm.confidentiality,
+          auth,
         },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       toast({ title: 'API çekildi', description: `${(data as any).length} karakter indekslendi.` });
       setApiOpen(false);
-      setApiForm({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+      setApiForm({
+        title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal',
+        authType: 'none', authToken: '',
+        apiKeyName: 'X-API-Key', apiKeyValue: '', apiKeyLocation: 'header',
+        basicUser: '', basicPass: '',
+      });
       load();
     } catch (e: any) {
       toast({ title: 'API çekilemedi', description: e.message, variant: 'destructive' });
@@ -144,7 +162,7 @@ export default function DataSourcesPage() {
     setApiFetching(true);
     try {
       const { data, error } = await supabase.functions.invoke('fetch-api-source', {
-        body: { workspace_id: workspace!.id, title: source.label, url: cfg.url, method: cfg.method || 'GET' },
+        body: { workspace_id: workspace!.id, title: source.label, url: cfg.url, method: cfg.method || 'GET', auth: cfg.auth ?? null },
       });
       if (error || (data as any)?.error) throw new Error(error?.message || (data as any).error);
       toast({ title: 'Yenilendi' });
@@ -243,6 +261,61 @@ export default function DataSourcesPage() {
                     <Textarea rows={3} value={apiForm.body} onChange={(e) => setApiForm({ ...apiForm, body: e.target.value })} className="font-mono text-xs" />
                   </div>
                 )}
+                <div className="border rounded-md p-3 space-y-2 bg-muted/30">
+                  <Label className="text-xs uppercase tracking-wide">Kimlik Doğrulama</Label>
+                  <Select value={apiForm.authType} onValueChange={(v: any) => setApiForm({ ...apiForm, authType: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Yok (Public)</SelectItem>
+                      <SelectItem value="bearer">Bearer Token (OAuth / JWT)</SelectItem>
+                      <SelectItem value="api_key">API Key</SelectItem>
+                      <SelectItem value="basic">Basic Auth</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {apiForm.authType === 'bearer' && (
+                    <div>
+                      <Label className="text-xs">Access / Bearer Token</Label>
+                      <Input type="password" value={apiForm.authToken} onChange={(e) => setApiForm({ ...apiForm, authToken: e.target.value })} placeholder="eyJhbGciOi... veya ya29..." className="font-mono text-xs" />
+                      <p className="text-[10px] text-muted-foreground mt-1">İsteğe <code>Authorization: Bearer &lt;token&gt;</code> olarak eklenir.</p>
+                    </div>
+                  )}
+                  {apiForm.authType === 'api_key' && (
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-[1fr_110px] gap-2">
+                        <div>
+                          <Label className="text-xs">Key adı</Label>
+                          <Input value={apiForm.apiKeyName} onChange={(e) => setApiForm({ ...apiForm, apiKeyName: e.target.value })} placeholder="X-API-Key" className="font-mono text-xs" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Konum</Label>
+                          <Select value={apiForm.apiKeyLocation} onValueChange={(v: any) => setApiForm({ ...apiForm, apiKeyLocation: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="header">Header</SelectItem>
+                              <SelectItem value="query">Query</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Key değeri</Label>
+                        <Input type="password" value={apiForm.apiKeyValue} onChange={(e) => setApiForm({ ...apiForm, apiKeyValue: e.target.value })} className="font-mono text-xs" />
+                      </div>
+                    </div>
+                  )}
+                  {apiForm.authType === 'basic' && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs">Kullanıcı adı</Label>
+                        <Input value={apiForm.basicUser} onChange={(e) => setApiForm({ ...apiForm, basicUser: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Parola</Label>
+                        <Input type="password" value={apiForm.basicPass} onChange={(e) => setApiForm({ ...apiForm, basicPass: e.target.value })} />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <div><Label>Confidentiality</Label>
                   <Select value={apiForm.confidentiality} onValueChange={(v) => setApiForm({ ...apiForm, confidentiality: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -257,7 +330,7 @@ export default function DataSourcesPage() {
                 <Button onClick={fetchApi} disabled={apiFetching || !apiForm.url} className="w-full">
                   {apiFetching ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Çekiliyor…</> : 'Çek ve İndeksle'}
                 </Button>
-                <p className="text-[10px] text-muted-foreground">Yanıt metin olarak alınır, ilk 200KB indekslenir. Özel/iç ağ adresleri engellenmiştir.</p>
+                <p className="text-[10px] text-muted-foreground">Yanıt metin olarak alınır, ilk 200KB indekslenir. Özel/iç ağ adresleri engellenmiştir. Kimlik doğrulama bilgileri yenileme için workspace kapsamında şifrelenmiş olarak saklanır.</p>
               </div>
             </DialogContent>
           </Dialog>
@@ -271,7 +344,7 @@ export default function DataSourcesPage() {
                 <Globe className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">{s.label}</div>
-                  <div className="text-[10px] text-muted-foreground truncate">{s.config?.method || 'GET'} · {s.config?.url}</div>
+                  <div className="text-[10px] text-muted-foreground truncate">{s.config?.method || 'GET'} · {s.config?.url} {s.config?.auth?.type && s.config.auth.type !== 'none' ? `· 🔐 ${s.config.auth.type}` : ''}</div>
                 </div>
                 <Badge variant="outline" className="text-[10px]">{s.status}</Badge>
                 <Button size="sm" variant="ghost" onClick={() => refreshApi(s)} disabled={apiFetching} className="gap-1">

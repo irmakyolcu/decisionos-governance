@@ -16,13 +16,35 @@ Deno.serve(async (req) => {
     if (authErr || !claims?.claims) return json({ error: 'Unauthorized' }, 401);
     const userId = claims.claims.sub;
 
-    const { workspace_id, title, url, method = 'GET', headers = {}, body, confidentiality = 'internal' } = await req.json();
+    const { workspace_id, title, url, method = 'GET', headers = {}, body, confidentiality = 'internal', auth } = await req.json();
     if (!workspace_id || !url) return json({ error: 'workspace_id and url required' }, 400);
+
+    // Build auth headers from structured auth object
+    const authHeaders: Record<string, string> = {};
+    if (auth && typeof auth === 'object') {
+      if (auth.type === 'bearer' && auth.token) {
+        authHeaders['Authorization'] = `Bearer ${auth.token}`;
+      } else if (auth.type === 'api_key' && auth.key_name && auth.key_value) {
+        if (auth.location === 'query') {
+          // handled below when building URL
+        } else {
+          authHeaders[auth.key_name] = auth.key_value;
+        }
+      } else if (auth.type === 'basic' && auth.username != null) {
+        const encoded = btoa(`${auth.username}:${auth.password ?? ''}`);
+        authHeaders['Authorization'] = `Basic ${encoded}`;
+      }
+    }
 
     // Validate URL
     let target: URL;
     try { target = new URL(url); } catch { return json({ error: 'invalid url' }, 400); }
     if (!['http:', 'https:'].includes(target.protocol)) return json({ error: 'only http(s) allowed' }, 400);
+    // API key in query string
+    if (auth && auth.type === 'api_key' && auth.location === 'query' && auth.key_name && auth.key_value) {
+      target.searchParams.set(auth.key_name, auth.key_value);
+    }
+
     // Block private/link-local ranges (basic SSRF guard)
     const host = target.hostname;
     if (
@@ -42,7 +64,7 @@ Deno.serve(async (req) => {
     try {
       resp = await fetch(target.toString(), {
         method,
-        headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers },
+        headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers, ...authHeaders },
         body: body && method !== 'GET' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
         signal: controller.signal,
       });
@@ -77,10 +99,10 @@ Deno.serve(async (req) => {
       source_date: new Date().toISOString(),
     });
 
-    // Also register as a data_source for visibility
+    // Also register as a data_source for visibility (auth stored for refresh; workspace-RLS protected)
     await admin.from('data_sources').insert({
       workspace_id, created_by: userId, kind: 'api', label: finalTitle,
-      status: 'connected', config: { url: target.toString(), method },
+      status: 'connected', config: { url, method, auth: auth ?? null },
     });
 
     return json({ ok: true, document_id: doc.id, length: truncated.length, content_type: ct });
