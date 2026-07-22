@@ -154,6 +154,7 @@ function ProtectedRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/trust" element={<TrustPage />} />
+        <Route path="/api-keys" element={<ApiKeysPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
