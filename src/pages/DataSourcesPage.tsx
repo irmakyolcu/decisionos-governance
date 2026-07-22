@@ -122,6 +122,12 @@ export default function DataSourcesPage() {
         try { headers = JSON.parse(apiForm.headers); } catch { throw new Error('Headers geçerli JSON değil'); }
       }
       const body = apiForm.body.trim() ? apiForm.body : undefined;
+      let auth: any = null;
+      if (apiForm.authType === 'bearer' && apiForm.authToken) auth = { type: 'bearer', token: apiForm.authToken };
+      else if (apiForm.authType === 'api_key' && apiForm.apiKeyName && apiForm.apiKeyValue)
+        auth = { type: 'api_key', key_name: apiForm.apiKeyName, key_value: apiForm.apiKeyValue, location: apiForm.apiKeyLocation };
+      else if (apiForm.authType === 'basic' && apiForm.basicUser)
+        auth = { type: 'basic', username: apiForm.basicUser, password: apiForm.basicPass };
       const { data, error } = await supabase.functions.invoke('fetch-api-source', {
         body: {
           workspace_id: workspace.id,
@@ -131,13 +137,19 @@ export default function DataSourcesPage() {
           headers,
           body,
           confidentiality: apiForm.confidentiality,
+          auth,
         },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       toast({ title: 'API çekildi', description: `${(data as any).length} karakter indekslendi.` });
       setApiOpen(false);
-      setApiForm({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+      setApiForm({
+        title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal',
+        authType: 'none', authToken: '',
+        apiKeyName: 'X-API-Key', apiKeyValue: '', apiKeyLocation: 'header',
+        basicUser: '', basicPass: '',
+      });
       load();
     } catch (e: any) {
       toast({ title: 'API çekilemedi', description: e.message, variant: 'destructive' });
