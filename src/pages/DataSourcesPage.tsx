@@ -330,7 +330,7 @@ export default function DataSourcesPage() {
                 <Button onClick={fetchApi} disabled={apiFetching || !apiForm.url} className="w-full">
                   {apiFetching ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Çekiliyor…</> : 'Çek ve İndeksle'}
                 </Button>
-                <p className="text-[10px] text-muted-foreground">Yanıt metin olarak alınır, ilk 200KB indekslenir. Özel/iç ağ adresleri engellenmiştir.</p>
+                <p className="text-[10px] text-muted-foreground">Yanıt metin olarak alınır, ilk 200KB indekslenir. Özel/iç ağ adresleri engellenmiştir. Kimlik doğrulama bilgileri yenileme için workspace kapsamında şifrelenmiş olarak saklanır.</p>
               </div>
             </DialogContent>
           </Dialog>
