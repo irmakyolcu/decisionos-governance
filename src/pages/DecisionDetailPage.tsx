@@ -236,6 +236,26 @@ export default function DecisionDetailPage() {
           ))}
         </TabsContent>
 
+        <TabsContent value="macro" className="mt-4 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              Sektör, ulusal + küresel ekonomi, savaş / yaptırım / enerji / enflasyon / kur gibi makro etkenlerin bu karara etkisi. Append-only.
+            </p>
+            <Button size="sm" onClick={() => runMacroAssessment('manual')} disabled={macroAssessing}>
+              {macroAssessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Analiz ediliyor…</> : <><Globe2 className="h-4 w-4 mr-2" />Makro değerlendirme al</>}
+            </Button>
+          </div>
+          {macros.length === 0 && (
+            <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">
+              Henüz makro değerlendirme yok. "Makro değerlendirme al" ile ilkini oluştur.
+            </CardContent></Card>
+          )}
+          {macros.map((m, idx) => (
+            <MacroCard key={m.id} m={m} isLatest={idx === 0} author={profiles.get(m.triggered_by)?.display_name} />
+          ))}
+        </TabsContent>
+
+
         <TabsContent value="sources" className="mt-4">
           <EvidencePanel decisionId={decision.id} workspaceId={decision.workspace_id} evidence={evidence} onChange={load} />
         </TabsContent>
