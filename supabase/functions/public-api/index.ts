@@ -107,7 +107,7 @@ async function handleLessons(req: Request, key: KeyRow) {
   if (req.method === 'GET') {
     const denied = requireScope(key, 'lessons:read', 'viewer');
     if (denied) return denied;
-    const { data, error } = await admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id).eq('kind', 'lesson').order('created_at', { ascending: false }).limit(100);
+    const { data, error } = await admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(100);
     if (error) return json({ error: error.message }, 400);
     return json({ data });
   }
