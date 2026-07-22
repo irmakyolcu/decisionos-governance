@@ -37,7 +37,13 @@ export default function DataSourcesPage() {
   const [file, setFile] = useState<File | null>(null);
   const [apiOpen, setApiOpen] = useState(false);
   const [apiFetching, setApiFetching] = useState(false);
-  const [apiForm, setApiForm] = useState({ title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal' });
+  const [apiForm, setApiForm] = useState({
+    title: '', url: '', method: 'GET', headers: '', body: '', confidentiality: 'internal',
+    authType: 'none' as 'none' | 'bearer' | 'api_key' | 'basic',
+    authToken: '',
+    apiKeyName: 'X-API-Key', apiKeyValue: '', apiKeyLocation: 'header' as 'header' | 'query',
+    basicUser: '', basicPass: '',
+  });
 
   const load = async () => {
     if (!workspace) return;
