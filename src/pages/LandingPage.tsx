@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Brain, ArrowRight, Sparkles, Mail, MessageSquare, Calendar, FileText,
-  Database, Server, StickyNote, Users, ShieldCheck, TrendingUp, Target,
-  Layers, GitBranch, DollarSign, Megaphone, UserCog, Scale, Cog, Check, X,
-  Zap, Network, LineChart, Play,
+  Database, Server, StickyNote, Users, ShieldCheck, Github, Cloud,
+  DollarSign, Scale, UserCog, Cog, Check, X, Zap, Network, LineChart, Play,
+  Layers, Fingerprint, KeyRound, Gavel, UserCheck, ScrollText, GitBranch,
+  BadgeCheck, Eye, Activity, BrainCircuit, Building2, Briefcase, Crown,
 } from 'lucide-react';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -15,58 +16,59 @@ export default function LandingPage() {
   const { t } = useLanguage();
   const [demoOpen, setDemoOpen] = useState(false);
 
-
   const sources = [
     { icon: Mail, label: 'Gmail' },
+    { icon: Mail, label: 'Outlook' },
     { icon: MessageSquare, label: 'Slack' },
     { icon: Users, label: 'Teams' },
-    { icon: Calendar, label: t('src.meetings') },
-    { icon: FileText, label: t('src.docs') },
+    { icon: Cloud, label: 'Drive' },
+    { icon: FileText, label: 'M365' },
+    { icon: StickyNote, label: 'Notion' },
+    { icon: FileText, label: 'Confluence' },
     { icon: Database, label: 'CRM' },
     { icon: Server, label: 'ERP' },
-    { icon: StickyNote, label: 'Notion' },
+    { icon: Github, label: 'GitHub' },
+    { icon: Calendar, label: t('src.meetings') },
   ];
 
-  const brainInputs: Array<{ key: string }> = [
-    { key: 'brain.in.emails' },
-    { key: 'brain.in.meetings' },
-    { key: 'brain.in.slack' },
-    { key: 'brain.in.crm' },
-    { key: 'brain.in.calendar' },
-    { key: 'brain.in.erp' },
-  ];
-  const brainOutputs = ['brain.out.execs', 'brain.out.employees', 'brain.out.agents'];
+  const l2Features = ['l2.f1', 'l2.f2', 'l2.f3', 'l2.f4', 'l2.f5'];
 
-  const cosCards = [
-    { icon: Target, key: 'brief', accent: 'from-primary/20 to-primary/5' },
-    { icon: Sparkles, key: 'action', accent: 'from-info/20 to-info/5' },
-    { icon: ShieldCheck, key: 'risk', accent: 'from-warning/20 to-warning/5' },
-    { icon: GitBranch, key: 'similar', accent: 'from-success/20 to-success/5' },
-    { icon: Users, key: 'stake', accent: 'from-primary/20 to-primary/5' },
-    { icon: LineChart, key: 'conf', accent: 'from-info/20 to-info/5' },
-  ];
-
-  const memory = [
-    { icon: TrendingUp, key: 'd1' },
-    { icon: Users, key: 'd2' },
-    { icon: DollarSign, key: 'd3' },
+  const trustCards = [
+    { icon: Fingerprint, key: 'l3.c1' },
+    { icon: KeyRound, key: 'l3.c2' },
+    { icon: Gavel, key: 'l3.c3' },
+    { icon: UserCheck, key: 'l3.c4' },
+    { icon: ScrollText, key: 'l3.c5' },
+    { icon: GitBranch, key: 'l3.c6' },
+    { icon: BadgeCheck, key: 'l3.c7' },
+    { icon: Eye, key: 'l3.c8' },
+    { icon: Activity, key: 'l3.c9' },
+    { icon: Brain, key: 'l3.c10' },
   ];
 
   const agents = [
-    { icon: DollarSign, key: 'sales' },
-    { icon: LineChart, key: 'finance' },
-    { icon: Megaphone, key: 'marketing' },
-    { icon: UserCog, key: 'hr' },
-    { icon: Scale, key: 'legal' },
-    { icon: Cog, key: 'ops' },
+    { icon: Crown, key: 'l4.ceo' },
+    { icon: DollarSign, key: 'l4.finance' },
+    { icon: LineChart, key: 'l4.sales' },
+    { icon: Scale, key: 'l4.legal' },
+    { icon: UserCog, key: 'l4.hr' },
+    { icon: Cog, key: 'l4.ops' },
   ];
 
-  const others = ['why.o1', 'why.o2', 'why.o3', 'why.o4', 'why.o5'];
-  const ours = ['why.u1', 'why.u2', 'why.u3', 'why.u4', 'why.u5'];
-  const now = [
-    { icon: Sparkles, key: 'c1' },
-    { icon: Network, key: 'c2' },
-    { icon: Zap, key: 'c3' },
+  const pillars = [
+    { icon: Brain, key: 'remember' },
+    { icon: BrainCircuit, key: 'reason' },
+    { icon: ShieldCheck, key: 'govern' },
+    { icon: Network, key: 'act' },
+  ];
+
+  const trad = ['cmp.t1', 'cmp.t2', 'cmp.t3', 'cmp.t4', 'cmp.t5'];
+  const us = ['cmp.u1', 'cmp.u2', 'cmp.u3', 'cmp.u4', 'cmp.u5'];
+
+  const enterprise = [
+    { icon: Users, key: 'emp' },
+    { icon: Briefcase, key: 'mgr' },
+    { icon: Network, key: 'ai' },
   ];
 
   return (
@@ -90,9 +92,9 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="relative">
-        {/* ambient glow */}
         <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 h-[520px] w-[820px] rounded-full bg-primary/10 blur-[120px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] [background-size:32px_32px] opacity-20" />
         </div>
 
         <div className="max-w-6xl mx-auto px-6 pt-28 pb-24 text-center animate-fade-in">
@@ -100,9 +102,11 @@ export default function LandingPage() {
             <Sparkles className="h-3 w-3 text-primary" /> {t('hero.badge')}
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] max-w-5xl mx-auto">
-            {t('hero.title')}
+            <span className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+              {t('hero.title')}
+            </span>
           </h1>
-          <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             {t('hero.subtitle')}
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -114,222 +118,136 @@ export default function LandingPage() {
             </Button>
           </div>
 
-
-
-
-          {/* Hero illustration: systems → brain */}
-          <div className="relative mt-20 mx-auto max-w-4xl">
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 opacity-90">
-              {sources.map(({ icon: Icon, label }) => (
+          {/* Hero stack preview */}
+          <div className="relative mt-24 mx-auto max-w-5xl">
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { icon: Database, k: 'l1.name' },
+                { icon: BrainCircuit, k: 'l2.name' },
+                { icon: ShieldCheck, k: 'l3.name' },
+                { icon: Network, k: 'l4.name' },
+              ].map(({ icon: Icon, k }, i) => (
                 <div
-                  key={label}
-                  className="group flex flex-col items-center gap-2 p-3 rounded-xl border border-border bg-card/60 backdrop-blur hover-scale"
+                  key={k}
+                  className="group relative rounded-xl border border-border bg-card/60 backdrop-blur p-4 hover-scale animate-fade-in"
+                  style={{ animationDelay: `${i * 100}ms` }}
                 >
-                  <Icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <span className="text-[10px] text-muted-foreground">{label}</span>
+                  <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+                  <Icon className="h-5 w-5 text-primary mb-2 mx-auto" />
+                  <div className="text-[11px] font-medium text-muted-foreground">{t(k)}</div>
                 </div>
               ))}
-            </div>
-            <div className="flex justify-center my-6">
-              <div className="h-14 w-px bg-gradient-to-b from-border to-primary/60" />
-            </div>
-            <div className="mx-auto inline-flex items-center gap-3 px-6 py-4 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 to-primary/5 backdrop-blur shadow-enterprise">
-              <Brain className="h-6 w-6 text-primary" />
-              <span className="font-semibold">{t('brain.core')}</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 01 — Problem */}
-      <Section tag={t('problem.tag')}>
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-              {t('problem.title')}
-            </h2>
-            <p className="mt-6 text-lg text-muted-foreground">{t('problem.body1')}</p>
-            <p className="mt-3 text-lg text-muted-foreground">{t('problem.body2')}</p>
-          </div>
-          <div className="relative h-[360px]">
-            {sources.map(({ icon: Icon, label }, i) => {
-              const positions = [
-                'top-0 left-2', 'top-4 right-6', 'top-24 left-16', 'top-20 right-2',
-                'bottom-24 left-0', 'bottom-16 right-12', 'bottom-2 left-24', 'bottom-6 right-24',
-              ];
-              return (
+      {/* The Enterprise AI Stack */}
+      <Section tag={t('stack.tag')}>
+        <div className="max-w-3xl">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('stack.title')}</h2>
+          <p className="mt-6 text-lg text-muted-foreground">{t('stack.body')}</p>
+        </div>
+
+        <div className="mt-16 space-y-6">
+          {/* Layer 1 */}
+          <StackLayer index="01" icon={Database} title={t('l1.name')} description={t('l1.desc')}>
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-12 gap-2">
+              {sources.map(({ icon: Icon, label }, i) => (
                 <div
-                  key={label}
-                  className={`absolute ${positions[i]} flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card/70 backdrop-blur text-xs shadow-sm animate-fade-in`}
-                  style={{ animationDelay: `${i * 80}ms`, transform: `rotate(${(i % 2 ? 1 : -1) * (2 + i)}deg)` }}
+                  key={label + i}
+                  className="group flex flex-col items-center gap-1 p-2 rounded-lg border border-border bg-background/60 backdrop-blur"
                 >
-                  <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                  {label}
+                  <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <span className="text-[9px] text-muted-foreground truncate max-w-full">{label}</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </Section>
+              ))}
+            </div>
+            <div className="mt-6 flex justify-center">
+              <FlowArrow />
+            </div>
+          </StackLayer>
 
-      {/* 02 — Company Brain */}
-      <Section tag={t('brain.tag')}>
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('brain.title')}</h2>
-          <p className="mt-6 text-lg text-muted-foreground">{t('brain.body')}</p>
-        </div>
+          {/* Layer 2 */}
+          <StackLayer index="02" icon={BrainCircuit} title={t('l2.name')} description={t('l2.desc')}>
+            <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-2">
+              {l2Features.map((k) => (
+                <div key={k} className="px-3 py-2 rounded-lg border border-border bg-background/60 text-xs text-center">
+                  {t(k)}
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 flex justify-center">
+              <FlowArrow />
+            </div>
+          </StackLayer>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-6 items-center">
-          <div className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">{t('brain.inputs')}</div>
-            {brainInputs.map((s) => (
-              <div key={s.key} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
-                <span>{t(s.key)}</span>
-                <ArrowRight className="h-3.5 w-3.5 text-primary" />
-              </div>
-            ))}
-          </div>
+          {/* Layer 3 */}
+          <StackLayer index="03" icon={ShieldCheck} title={t('l3.name')} description={t('l3.desc')}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              {trustCards.map(({ icon: Icon, key }) => (
+                <div key={key} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-background/60">
+                  <Icon className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <span className="text-[11px] font-medium">{t(key)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 flex justify-center">
+              <FlowArrow />
+            </div>
+          </StackLayer>
 
-          <div className="flex justify-center">
+          {/* Layer 4 */}
+          <StackLayer index="04" icon={Network} title={t('l4.name')} description={t('l4.desc')}>
             <div className="relative">
-              <div aria-hidden className="absolute inset-0 -m-8 rounded-full bg-primary/20 blur-3xl animate-pulse" />
-              <div className="relative h-48 w-48 rounded-full border border-primary/40 bg-gradient-to-br from-primary/20 to-transparent flex flex-col items-center justify-center backdrop-blur">
-                <Brain className="h-12 w-12 text-primary mb-2" />
-                <div className="text-sm font-semibold text-center px-4">{t('brain.core')}</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                {agents.map(({ icon: Icon, key }, i) => (
+                  <div
+                    key={key}
+                    className="relative flex items-center gap-2 px-3 py-2 rounded-lg border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent"
+                  >
+                    <div aria-hidden className="absolute inset-x-2 -top-px h-px bg-primary/50 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
+                    <Icon className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-xs font-medium">{t(key)}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3 md:text-right">{t('brain.outputs')}</div>
-            {brainOutputs.map((k) => (
-              <div key={k} className="px-4 py-3 rounded-lg border border-border bg-card text-sm flex items-center justify-between">
-                <ArrowRight className="h-3.5 w-3.5 text-primary" />
-                <span>{t(k)}</span>
-              </div>
-            ))}
-          </div>
+          </StackLayer>
         </div>
       </Section>
 
-      {/* 03 — Chief of Staff */}
-      <Section tag={t('cos.tag')}>
-        <div className="max-w-3xl">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('cos.title')}</h2>
-          <p className="mt-6 text-lg text-muted-foreground">{t('cos.body')}</p>
-        </div>
-
-        <div className="mt-14 rounded-2xl border border-border bg-card/60 backdrop-blur p-6 md:p-8 shadow-enterprise">
-          <div className="grid md:grid-cols-3 gap-4">
-            {cosCards.map(({ icon: Icon, key, accent }) => (
-              <div
-                key={key}
-                className={`group relative overflow-hidden rounded-xl border border-border bg-gradient-to-br ${accent} p-5 hover-scale`}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-lg bg-background/70 border border-border flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="font-semibold text-sm">{t(`cos.${key}`)}</div>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t(`cos.${key}.body`)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* 04 — Decision Memory */}
-      <Section tag={t('mem.tag')}>
-        <div className="max-w-3xl">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('mem.title')}</h2>
-          <p className="mt-6 text-lg text-muted-foreground">{t('mem.body')}</p>
-        </div>
-
-        <div className="mt-14 relative">
-          <div aria-hidden className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
-          <div className="space-y-6">
-            {memory.map(({ icon: Icon, key }, i) => (
-              <div key={key} className={`relative flex items-center gap-4 ${i % 2 ? 'md:flex-row-reverse' : ''}`}>
-                <div className="hidden md:block flex-1" />
-                <div className="relative z-10 h-10 w-10 rounded-full border border-primary/40 bg-background flex items-center justify-center shrink-0">
-                  <Icon className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 rounded-xl border border-border bg-card p-5">
-                  <div className="font-semibold">{t(`mem.${key}`)}</div>
-                  <div className="text-sm text-success mt-1">{t(`mem.${key}.out`)}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* 05 — Multi Agent */}
-      <Section tag={t('agents.tag')}>
-        <div className="max-w-3xl">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('agents.title')}</h2>
-          <p className="mt-6 text-lg text-muted-foreground">{t('agents.body')}</p>
-        </div>
-
-        <div className="mt-14 relative flex justify-center">
-          <div className="relative w-full max-w-3xl aspect-[3/2]">
-            {/* central brain */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              <div className="h-24 w-24 rounded-full border border-primary/40 bg-gradient-to-br from-primary/20 to-transparent flex items-center justify-center backdrop-blur">
-                <Brain className="h-8 w-8 text-primary" />
-              </div>
-            </div>
-            {agents.map(({ icon: Icon, key }, i) => {
-              const angle = (i / agents.length) * Math.PI * 2 - Math.PI / 2;
-              const rx = 42, ry = 38;
-              const x = 50 + rx * Math.cos(angle);
-              const y = 50 + ry * Math.sin(angle);
-              return (
-                <div
-                  key={key}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 animate-fade-in"
-                  style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${i * 100}ms` }}
-                >
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card/80 backdrop-blur shadow-sm">
-                    <Icon className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-medium whitespace-nowrap">{t(`agents.${key}`)}</span>
-                  </div>
-                </div>
-              );
-            })}
-            {/* connecting lines */}
-            <svg aria-hidden className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {agents.map((_, i) => {
-                const angle = (i / agents.length) * Math.PI * 2 - Math.PI / 2;
-                const x = 50 + 42 * Math.cos(angle);
-                const y = 50 + 38 * Math.sin(angle);
-                return (
-                  <line
-                    key={i}
-                    x1="50" y1="50" x2={x} y2={y}
-                    stroke="hsl(var(--primary) / 0.3)" strokeWidth="0.2" strokeDasharray="1 1"
-                  />
-                );
-              })}
-            </svg>
-          </div>
-        </div>
-      </Section>
-
-      {/* 06 — Why DecisionOS */}
+      {/* Why DecisionOS — 4 pillars */}
       <Section tag={t('why.tag')}>
         <div className="max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('why.title')}</h2>
         </div>
+        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {pillars.map(({ icon: Icon, key }) => (
+            <div key={key} className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 hover-scale">
+              <div aria-hidden className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+              <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
+                <Icon className="h-5 w-5 text-primary" />
+              </div>
+              <div className="text-2xl font-bold tracking-tight">{t(`why.${key}`)}</div>
+              <div className="text-sm text-muted-foreground mt-1">{t(`why.${key}.sub`)}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
 
+      {/* Competitor positioning */}
+      <Section tag={t('cmp.tag')}>
+        <div className="max-w-3xl">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('cmp.title')}</h2>
+        </div>
         <div className="mt-14 grid md:grid-cols-2 gap-6">
           <div className="rounded-2xl border border-border bg-card p-8">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-6">{t('why.others')}</div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-6">{t('cmp.trad')}</div>
             <ul className="space-y-4">
-              {others.map((k) => (
+              {trad.map((k) => (
                 <li key={k} className="flex items-center gap-3 text-muted-foreground">
-                  <div className="h-6 w-6 rounded-full border border-border flex items-center justify-center">
+                  <div className="h-6 w-6 rounded-full border border-border flex items-center justify-center shrink-0">
                     <X className="h-3 w-3" />
                   </div>
                   {t(k)}
@@ -338,11 +256,11 @@ export default function LandingPage() {
             </ul>
           </div>
           <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/10 to-transparent p-8 shadow-enterprise">
-            <div className="text-xs uppercase tracking-wider text-primary mb-6">{t('why.us')}</div>
+            <div className="text-xs uppercase tracking-wider text-primary mb-6">{t('cmp.us')}</div>
             <ul className="space-y-4">
-              {ours.map((k) => (
+              {us.map((k) => (
                 <li key={k} className="flex items-center gap-3 font-medium">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+                  <div className="h-6 w-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
                     <Check className="h-3 w-3 text-primary" />
                   </div>
                   {t(k)}
@@ -353,42 +271,30 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 07 — Why Now */}
-      <Section tag={t('now.tag')}>
+      {/* Enterprise Value */}
+      <Section tag={t('ent.tag')}>
         <div className="max-w-3xl">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('now.title')}</h2>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('ent.title')}</h2>
         </div>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
-          {now.map(({ icon: Icon, key }) => (
+          {enterprise.map(({ icon: Icon, key }) => (
             <div key={key} className="rounded-2xl border border-border bg-card p-8 hover-scale">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
                 <Icon className="h-6 w-6 text-primary" />
               </div>
-              <div className="text-xl font-semibold mb-2">{t(`now.${key}`)}</div>
-              <p className="text-muted-foreground">{t(`now.${key}.body`)}</p>
+              <div className="text-xl font-semibold mb-2">{t(`ent.${key}`)}</div>
+              <p className="text-muted-foreground">{t(`ent.${key}.body`)}</p>
             </div>
           ))}
         </div>
       </Section>
 
-      {/* 08 — Vision */}
-      <section className="max-w-5xl mx-auto px-6 py-32 text-center">
-        <div className="text-xs uppercase tracking-wider text-primary mb-8">{t('vision.tag')}</div>
-        <div className="space-y-3 text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-          <div className="text-muted-foreground/60">{t('vision.l1')}</div>
-          <div className="text-muted-foreground/80">{t('vision.l2')}</div>
-          <div className="bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">
-            {t('vision.l3')}
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
+      <section className="max-w-7xl mx-auto px-6 pt-24 pb-24">
         <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/15 via-card to-card p-12 md:p-20 text-center">
           <div aria-hidden className="absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-[600px] rounded-full bg-primary/20 blur-3xl" />
           <div className="relative">
-            <Layers className="h-10 w-10 text-primary mx-auto mb-6" />
+            <Building2 className="h-10 w-10 text-primary mx-auto mb-6" />
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
               {t('cta.title')}
             </h2>
@@ -403,8 +309,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-10 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} DecisionOS — {t('footer.tagline')}
+      <footer className="border-t border-border py-14">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
+              <Brain className="h-3 w-3 text-primary-foreground" />
+            </div>
+            <span className="font-bold tracking-tight">DecisionOS</span>
+          </div>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {t('footer.message')}
+          </p>
+          <div className="mt-6 text-xs text-muted-foreground">
+            © {new Date().getFullYear()} DecisionOS — {t('footer.tagline')}
+          </div>
+        </div>
       </footer>
 
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
@@ -438,7 +357,7 @@ export default function LandingPage() {
               {[
                 { icon: Brain, k: 'demo.f1' },
                 { icon: ShieldCheck, k: 'demo.f2' },
-                { icon: LineChart, k: 'demo.f3' },
+                { icon: Network, k: 'demo.f3' },
               ].map(({ icon: Icon, k }) => (
                 <div key={k} className="rounded-lg border border-border bg-background/50 p-3">
                   <Icon className="h-4 w-4 text-primary mb-2" />
@@ -453,7 +372,6 @@ export default function LandingPage() {
   );
 }
 
-
 function Section({ tag, children }: { tag: string; children: React.ReactNode }) {
   return (
     <section className="border-t border-border/60">
@@ -462,5 +380,43 @@ function Section({ tag, children }: { tag: string; children: React.ReactNode }) 
         {children}
       </div>
     </section>
+  );
+}
+
+function StackLayer({
+  index, icon: Icon, title, description, children,
+}: {
+  index: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative rounded-2xl border border-border bg-card/60 backdrop-blur p-6 md:p-8 shadow-enterprise overflow-hidden">
+      <div aria-hidden className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+      <div className="grid md:grid-cols-[280px_1fr] gap-6 md:gap-10">
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Icon className="h-5 w-5 text-primary" />
+            </div>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Layer {index}</div>
+          </div>
+          <div className="text-xl md:text-2xl font-bold tracking-tight">{title}</div>
+          <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{description}</p>
+        </div>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function FlowArrow() {
+  return (
+    <div className="relative h-8 w-px">
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/60 to-transparent" />
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-primary animate-pulse" />
+    </div>
   );
 }
