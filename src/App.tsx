@@ -53,6 +53,7 @@ import IntegrationDetailPage from "./pages/IntegrationDetailPage";
 
 import DecisionRolesPage from "./pages/DecisionRolesPage";
 import LandingPage from "./pages/LandingPage";
+import BookDemoPage from "./pages/BookDemoPage";
 import AskDecisionOSPage from "./pages/AskDecisionOSPage";
 import CompanyBrainPage from "./pages/CompanyBrainPage";
 import ClientsPage from "./pages/ClientsPage";
