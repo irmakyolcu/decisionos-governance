@@ -1,7 +1,7 @@
 import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
-  BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote,
+  BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote, Search,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -25,6 +25,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Memory Hub', url: '/memory', icon: Brain },
       { title: 'Structured Memory', url: '/memory/structured', icon: BookOpen },
       { title: 'Decision Memory', url: '/memory/decisions', icon: GitBranch },
+      { title: 'Retrospektif Arama', url: '/memory/retrospective', icon: Search },
       { title: 'Lessons Learned', url: '/memory/lessons', icon: Lightbulb },
       { title: 'Lessons ↔ Decisions', url: '/memory/links', icon: Link2 },
       { title: 'Link Audit Trail', url: '/memory/link-audit', icon: History },
