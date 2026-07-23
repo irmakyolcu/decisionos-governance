@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Search, Filter, Calendar, TrendingUp, TrendingDown, Minus,
   Building2, DollarSign, AlertTriangle, CheckCircle2, XCircle,
-  Clock, ExternalLink, History, Sparkles, Loader2,
+  Clock, ExternalLink, History, Sparkles,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
