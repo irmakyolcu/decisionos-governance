@@ -53,6 +53,7 @@ import IntegrationDetailPage from "./pages/IntegrationDetailPage";
 
 import DecisionRolesPage from "./pages/DecisionRolesPage";
 import LandingPage from "./pages/LandingPage";
+import BookDemoPage from "./pages/BookDemoPage";
 import AskDecisionOSPage from "./pages/AskDecisionOSPage";
 import CompanyBrainPage from "./pages/CompanyBrainPage";
 import ClientsPage from "./pages/ClientsPage";
@@ -190,6 +191,7 @@ const App = () => (
             <WorkspaceProvider>
               <Routes>
                 <Route path="/landing" element={<LandingPage />} />
+                <Route path="/book-demo" element={<BookDemoPage />} />
                 <Route path="/auth" element={<AuthRoute />} />
                 <Route path="/invite" element={<InviteRoute />} />
                 <Route path="/trust" element={<TrustPage />} />

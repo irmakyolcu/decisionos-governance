@@ -113,9 +113,11 @@ export default function LandingPage() {
             <Link to="/auth">
               <Button size="lg" className="gap-2 h-12 px-6">{t('hero.cta')} <ArrowRight className="h-4 w-4" /></Button>
             </Link>
-            <Button size="lg" variant="outline" className="h-12 px-6 gap-2" onClick={() => setDemoOpen(true)}>
-              <Play className="h-4 w-4" /> {t('hero.demo')}
-            </Button>
+            <Link to="/book-demo">
+              <Button size="lg" variant="outline" className="h-12 px-6 gap-2">
+                <Calendar className="h-4 w-4" /> {t('hero.demo')}
+              </Button>
+            </Link>
           </div>
 
           {/* Hero stack preview */}
