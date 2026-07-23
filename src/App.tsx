@@ -72,6 +72,7 @@ import GlossaryPage from "./pages/GlossaryPage";
 import LessonDecisionLinksPage from "./pages/LessonDecisionLinksPage";
 import LinkAuditPage from "./pages/LinkAuditPage";
 import CompanyNotesPage from "./pages/CompanyNotesPage";
+import RetrospectivePage from "./pages/RetrospectivePage";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ function ProtectedRoutes() {
         <Route path="/memory/links" element={<LessonDecisionLinksPage />} />
         <Route path="/memory/notes" element={<CompanyNotesPage />} />
         <Route path="/memory/link-audit" element={<LinkAuditPage />} />
+        <Route path="/memory/retrospective" element={<RetrospectivePage />} />
         <Route path="/reviews" element={<PostDecisionReviewsPage />} />
         <Route path="/agent-performance" element={<AgentPerformancePage />} />
         <Route path="/anomalies" element={<AnomalyDetectionPage />} />
