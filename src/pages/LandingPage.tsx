@@ -11,6 +11,7 @@ import {
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import demoVideo from '@/assets/decisionos-demo.mp4.asset.json';
 
 export default function LandingPage() {
   const { t } = useLanguage();
