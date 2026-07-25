@@ -11,6 +11,7 @@ import {
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import demoVideo from '@/assets/decisionos-demo.mp4.asset.json';
 
 export default function LandingPage() {
   const { t } = useLanguage();
@@ -144,7 +145,43 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* The Enterprise AI Stack */}
+      {/* Demo video */}
+      <section className="border-t border-border/60">
+        <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="text-xs uppercase tracking-wider text-primary mb-4">{t('demo.header')}</div>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">{t('demo.title')}</h2>
+            <p className="mt-4 text-muted-foreground">{t('demo.body')}</p>
+          </div>
+
+          <div className="relative mt-12 rounded-2xl border border-border bg-card/60 backdrop-blur p-2 shadow-enterprise">
+            <div aria-hidden className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+            <video
+              className="w-full aspect-video rounded-xl bg-background"
+              src={demoVideo.url}
+              controls
+              playsInline
+              muted
+              autoPlay
+              loop
+              preload="metadata"
+            />
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/auth">
+              <Button size="lg" className="gap-2 h-12 px-6">{t('hero.cta')} <ArrowRight className="h-4 w-4" /></Button>
+            </Link>
+            <Link to="/book-demo">
+              <Button size="lg" variant="outline" className="h-12 px-6 gap-2">
+                <Calendar className="h-4 w-4" /> {t('hero.demo')}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
       <Section tag={t('stack.tag')}>
         <div className="max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{t('stack.title')}</h2>
