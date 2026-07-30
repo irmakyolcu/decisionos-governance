@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Building2, Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import posthog from '@/lib/posthog';
 
 export default function OnboardingPage() {
   const [companyName, setCompanyName] = useState('');
@@ -56,6 +57,8 @@ export default function OnboardingPage() {
       .from('profiles')
       .update({ workspace_id: ws.id })
       .eq('user_id', user.id);
+
+    posthog.capture('workspace_created', { workspace_id: ws.id });
 
     // Wait briefly for visual effect
     await new Promise((r) => setTimeout(r, 1500));

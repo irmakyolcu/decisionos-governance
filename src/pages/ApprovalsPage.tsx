@@ -8,6 +8,7 @@ import { usePermissions } from '@/lib/permissions';
 import { ReadOnlyNotice } from '@/components/PermissionGate';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import posthog from '@/lib/posthog';
 
 export default function ApprovalsPage() {
   const { decisions, loading, approveDecision, updateStatus } = useDecisions();
@@ -24,17 +25,29 @@ export default function ApprovalsPage() {
 
   const handleApprove = async () => {
     if (!selected) return;
-    try { await approveDecision(selected.id); toast({ title: 'Karar onaylandı' }); }
+    try {
+      await approveDecision(selected.id);
+      posthog.capture('decision_approved', { decision_id: selected.id, risk_level: selected.riskLevel });
+      toast({ title: 'Karar onaylandı' });
+    }
     catch (e: any) { toast({ title: 'Onaylanamadı', description: e.message, variant: 'destructive' }); }
   };
   const handleReject = async () => {
     if (!selected) return;
-    try { await updateStatus(selected.id, 'Rejected'); toast({ title: 'Reddedildi' }); }
+    try {
+      await updateStatus(selected.id, 'Rejected');
+      posthog.capture('decision_rejected', { decision_id: selected.id, risk_level: selected.riskLevel });
+      toast({ title: 'Reddedildi' });
+    }
     catch (e: any) { toast({ title: 'Hata', description: e.message, variant: 'destructive' }); }
   };
   const handleEscalate = async () => {
     if (!selected) return;
-    try { await updateStatus(selected.id, 'Escalated'); toast({ title: 'Board\'a yükseltildi' }); }
+    try {
+      await updateStatus(selected.id, 'Escalated');
+      posthog.capture('decision_escalated', { decision_id: selected.id, risk_level: selected.riskLevel });
+      toast({ title: 'Board\'a yükseltildi' });
+    }
     catch (e: any) { toast({ title: 'Hata', description: e.message, variant: 'destructive' }); }
   };
 

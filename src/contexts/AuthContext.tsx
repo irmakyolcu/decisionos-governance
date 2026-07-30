@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
+import posthog from '@/lib/posthog';
 
 interface AuthContextType {
   session: Session | null;
@@ -26,17 +27,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
+      if (session?.user) {
+        posthog.identify(session.user.id, { email: session.user.email });
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+      if (session?.user) {
+        posthog.identify(session.user.id, { email: session.user.email });
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signOut = async () => {
+    posthog.reset();
     await supabase.auth.signOut();
   };
 

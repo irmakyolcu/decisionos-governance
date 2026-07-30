@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { useProposals } from '@/hooks/useProposals';
 import { useToast } from '@/hooks/use-toast';
+import posthog from '@/lib/posthog';
 
 export function CreateProposalDialog({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -28,6 +29,10 @@ export function CreateProposalDialog({ trigger }: { trigger?: React.ReactNode })
         description: description.trim(),
         budget: Number(budget) || 0,
         department: department.trim(),
+      });
+      posthog.capture('proposal_submitted', {
+        has_budget: Number(budget) > 0,
+        has_department: department.trim().length > 0,
       });
       toast({ title: 'Öneri sunuldu', description: title });
       setOpen(false);
