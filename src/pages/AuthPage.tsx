@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import posthog from '@/lib/posthog';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,12 +18,15 @@ export default function AuthPage() {
     setLoading(true);
 
     if (isLogin) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         toast({ title: 'Giriş hatası', description: error.message, variant: 'destructive' });
+      } else if (data.user) {
+        posthog.identify(data.user.id);
+        posthog.capture('user_logged_in', { method: 'email' });
       }
     } else {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -33,6 +37,10 @@ export default function AuthPage() {
       if (error) {
         toast({ title: 'Kayıt hatası', description: error.message, variant: 'destructive' });
       } else {
+        if (data.user) {
+          posthog.identify(data.user.id);
+          posthog.capture('user_signed_up', { method: 'email' });
+        }
         toast({ title: 'Kayıt başarılı', description: 'Yönlendiriliyorsunuz...' });
       }
     }
@@ -40,6 +48,7 @@ export default function AuthPage() {
   };
 
   const handleGoogleAuth = async () => {
+    posthog.capture('user_logged_in', { method: 'google' });
     const result = await lovable.auth.signInWithOAuth('google', {
       redirect_uri: window.location.origin,
     });

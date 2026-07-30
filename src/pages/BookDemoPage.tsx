@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import posthog from '@/lib/posthog';
 import { Brain, ArrowLeft, Calendar, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -83,6 +84,10 @@ export default function BookDemoPage() {
       // silent — lead capture table is optional
     }
 
+    posthog.capture('demo_requested', {
+      company_size: parsed.data.companySize,
+      role: parsed.data.role,
+    });
     setSuccess(true);
     setSubmitting(false);
     toast({ title: 'Thanks!', description: 'Redirecting you to the calendar…' });
