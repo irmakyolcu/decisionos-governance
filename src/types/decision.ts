@@ -108,6 +108,10 @@ export interface Meeting {
   decisions: Decision[];
   isApproved: boolean;
   approvedAt?: Date;
+  source?: string;
+  summary?: string;
+  transcript?: string;
+  actionItems?: string[];
 }
 
 export interface Proposal {
