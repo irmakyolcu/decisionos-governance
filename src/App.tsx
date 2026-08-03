@@ -12,6 +12,7 @@ import DecisionSpacesPage from "./pages/DecisionSpacesPage";
 import ProposalsPage from "./pages/ProposalsPage";
 import ApprovalsPage from "./pages/ApprovalsPage";
 import MeetingsPage from "./pages/MeetingsPage";
+import MeetingSourcesPage from "./pages/MeetingSourcesPage";
 import DecisionsPage from "./pages/DecisionsPage";
 import DecisionRecordsPage from "./pages/DecisionRecordsPage";
 import AIEvaluationPage from "./pages/AIEvaluationPage";
@@ -151,6 +152,7 @@ function ProtectedRoutes() {
         <Route path="/proposals" element={<ProposalsPage />} />
         <Route path="/approvals" element={<ApprovalsPage />} />
         <Route path="/meetings" element={<MeetingsPage />} />
+        <Route path="/meeting-sources" element={<MeetingSourcesPage />} />
         <Route path="/decisions" element={<DecisionReviewPage />} />
         <Route path="/decisions/list" element={<DecisionsPage />} />
         <Route path="/decisions/list/:id" element={<DecisionDetailPage />} />
