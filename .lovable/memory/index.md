@@ -18,3 +18,4 @@ Post-approval records are locked/immutable. Comments are append-only.
 - [Meeting Records](mem://features/meetings) — Exec/Board sessions, agenda linking, and file uploads
 - [RBAC Permissions](mem://features/permissions) — usePermissions hook, PermissionGate, action gating per workspace role
 - [Multi-Tenant](mem://features/multi-tenant) — Workspace isolation, roles, invite system, onboarding flow
+- [Team Invite Email](mem://features/team-invite-email) — Invites produce links only; email sending deferred by user decision
