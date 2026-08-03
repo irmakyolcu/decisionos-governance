@@ -2951,6 +2951,7 @@ export type Database = {
           category: string
           created_at: string | null
           created_by: string
+          department: string | null
           due_date: string | null
           evidence: Json | null
           id: string
@@ -2970,6 +2971,7 @@ export type Database = {
           category: string
           created_at?: string | null
           created_by: string
+          department?: string | null
           due_date?: string | null
           evidence?: Json | null
           id?: string
@@ -2989,6 +2991,7 @@ export type Database = {
           category?: string
           created_at?: string | null
           created_by?: string
+          department?: string | null
           due_date?: string | null
           evidence?: Json | null
           id?: string
