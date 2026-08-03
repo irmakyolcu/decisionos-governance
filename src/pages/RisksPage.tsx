@@ -50,20 +50,20 @@ export default function RisksPage() {
     deptFilter === 'all' ? true : deptFilter === 'unassigned' ? !r.department : r.department === deptFilter
   );
 
+  type DeptStat = { name: string; total: number; low: number; medium: number; high: number; critical: number; weight: number };
   const openRows = rows.filter((r) => r.status !== 'resolved' && r.status !== 'dismissed' && r.department);
-  const deptSummary = Array.from(
-    openRows.reduce((map, r) => {
-      const cur = map.get(r.department) ?? { name: r.department as string, total: 0, low: 0, medium: 0, high: 0, critical: 0, weight: 0 };
-      cur.total += 1;
-      cur[r.severity as 'low' | 'medium' | 'high' | 'critical'] += 1;
-      cur.weight += SEV_WEIGHT[r.severity] ?? 1;
-      map.set(r.department, cur);
-      return map;
-    }, new Map<string, { name: string; total: number; low: number; medium: number; high: number; critical: number; weight: number }>())
-      .values()
-  )
+  const deptMap = new Map<string, DeptStat>();
+  for (const r of openRows) {
+    const cur: DeptStat = deptMap.get(r.department) ?? { name: r.department as string, total: 0, low: 0, medium: 0, high: 0, critical: 0, weight: 0 };
+    cur.total += 1;
+    cur[r.severity as 'low' | 'medium' | 'high' | 'critical'] += 1;
+    cur.weight += SEV_WEIGHT[r.severity] ?? 1;
+    deptMap.set(r.department, cur);
+  }
+  const deptSummary = Array.from(deptMap.values())
     .map((d) => ({ ...d, exposure: d.weight / d.total }))
     .sort((a, b) => b.exposure - a.exposure || b.total - a.total);
+
 
   return (
     <div className="space-y-6">
