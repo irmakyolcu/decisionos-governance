@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useMeetings } from '@/hooks/useMeetings';
 import { useDecisions } from '@/hooks/useDecisions';
 import { StatusBadge } from '@/components/StatusBadge';
-import { Calendar, MapPin, Users, Clock, GitBranch, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, GitBranch, ChevronRight, Plug, Sparkles, ListChecks } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { Decision } from '@/types/decision';
 import { MeetingRecordings } from '@/components/MeetingRecordings';
 import { CreateMeetingDialog } from '@/components/CreateMeetingDialog';
@@ -36,9 +38,16 @@ export default function MeetingsPage() {
           <h1 className="page-title">Meeting Records</h1>
           <p className="page-description">Board and executive meeting logs with linked decisions.</p>
         </div>
-        <PermissionGate permission="createDecision">
-          <CreateMeetingDialog />
-        </PermissionGate>
+        <div className="flex items-center gap-2">
+          <Link to="/meeting-sources">
+            <Button variant="outline" size="sm">
+              <Plug className="h-4 w-4 mr-2" /> Kaynaklardan içe aktar
+            </Button>
+          </Link>
+          <PermissionGate permission="createDecision">
+            <CreateMeetingDialog />
+          </PermissionGate>
+        </div>
       </div>
 
       {loading ? (
@@ -91,7 +100,46 @@ export default function MeetingsPage() {
                     <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Chairperson:</span> {selectedMeeting.chairperson.name} ({selectedMeeting.chairperson.role})</p>
                   </div>
                 )}
+
+                {selectedMeeting.source && selectedMeeting.source !== 'manual' && (
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Kaynak: <span className="font-medium text-foreground">{selectedMeeting.source}</span> üzerinden içe aktarıldı
+                  </p>
+                )}
               </div>
+
+              {(selectedMeeting.summary || (selectedMeeting.actionItems?.length ?? 0) > 0) && (
+                <div className="enterprise-card p-6 space-y-4">
+                  {selectedMeeting.summary && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <h3 className="font-semibold text-foreground text-sm">AI Toplantı Özeti</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground whitespace-pre-line">{selectedMeeting.summary}</p>
+                    </div>
+                  )}
+                  {(selectedMeeting.actionItems?.length ?? 0) > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <ListChecks className="h-4 w-4 text-primary" />
+                        <h3 className="font-semibold text-foreground text-sm">Aksiyon Maddeleri</h3>
+                      </div>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {selectedMeeting.actionItems!.map((a, i) => (
+                          <li key={i} className="text-sm text-muted-foreground">{a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {selectedMeeting.transcript && (
+                    <details className="text-sm">
+                      <summary className="cursor-pointer text-muted-foreground">Ham not / transkript</summary>
+                      <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-muted/50 p-3 text-xs text-muted-foreground">{selectedMeeting.transcript}</pre>
+                    </details>
+                  )}
+                </div>
+              )}
 
               <div className="enterprise-card">
                 <div className="p-4 border-b border-border">

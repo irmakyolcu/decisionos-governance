@@ -85,7 +85,11 @@ export function useMeetings() {
         decisions: [], // populated by caller if needed
         isApproved: m.is_approved,
         approvedAt: m.approved_at ? new Date(m.approved_at) : undefined,
-      };
+        source: (m.source ?? 'manual') as string,
+        summary: (m.summary ?? undefined) as string | undefined,
+        transcript: (m.transcript ?? undefined) as string | undefined,
+        actionItems: Array.isArray(m.action_items) ? (m.action_items as string[]) : [],
+      } as any;
     });
 
     setMeetings(mapped);

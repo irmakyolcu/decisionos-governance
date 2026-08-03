@@ -496,6 +496,50 @@ export type Database = {
           },
         ]
       }
+      app_user_connections: {
+        Row: {
+          connected_at: string | null
+          connection_key: string | null
+          connector_id: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          connected_at?: string | null
+          connection_key?: string | null
+          connector_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          connected_at?: string | null
+          connection_key?: string | null
+          connector_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_user_connections_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_events: {
         Row: {
           action_id: string | null
@@ -2247,44 +2291,62 @@ export type Database = {
       }
       meetings: {
         Row: {
+          action_items: Json
           approved_at: string | null
           chairperson_id: string | null
           created_at: string
           date: string
           end_time: string
+          external_ref: string | null
           id: string
+          imported_at: string | null
           is_approved: boolean
           location: string
+          source: string
           start_time: string
+          summary: string | null
           title: string
+          transcript: string | null
           updated_at: string
           workspace_id: string
         }
         Insert: {
+          action_items?: Json
           approved_at?: string | null
           chairperson_id?: string | null
           created_at?: string
           date: string
           end_time?: string
+          external_ref?: string | null
           id?: string
+          imported_at?: string | null
           is_approved?: boolean
           location?: string
+          source?: string
           start_time?: string
+          summary?: string | null
           title: string
+          transcript?: string | null
           updated_at?: string
           workspace_id: string
         }
         Update: {
+          action_items?: Json
           approved_at?: string | null
           chairperson_id?: string | null
           created_at?: string
           date?: string
           end_time?: string
+          external_ref?: string | null
           id?: string
+          imported_at?: string | null
           is_approved?: boolean
           location?: string
+          source?: string
           start_time?: string
+          summary?: string | null
           title?: string
+          transcript?: string | null
           updated_at?: string
           workspace_id?: string
         }
