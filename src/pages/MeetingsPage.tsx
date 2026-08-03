@@ -36,9 +36,16 @@ export default function MeetingsPage() {
           <h1 className="page-title">Meeting Records</h1>
           <p className="page-description">Board and executive meeting logs with linked decisions.</p>
         </div>
-        <PermissionGate permission="createDecision">
-          <CreateMeetingDialog />
-        </PermissionGate>
+        <div className="flex items-center gap-2">
+          <Link to="/meeting-sources">
+            <Button variant="outline" size="sm">
+              <Plug className="h-4 w-4 mr-2" /> Kaynaklardan içe aktar
+            </Button>
+          </Link>
+          <PermissionGate permission="createDecision">
+            <CreateMeetingDialog />
+          </PermissionGate>
+        </div>
       </div>
 
       {loading ? (
