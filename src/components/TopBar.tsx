@@ -1,13 +1,16 @@
-import { Search, User, LogOut, Shield, CheckCircle, Eye } from 'lucide-react';
+import { Search, User, LogOut, Shield, CheckCircle, Eye, Loader2 } from 'lucide-react';
 import { NotificationsBell } from '@/components/NotificationsBell';
 import { LanguageToggle } from '@/components/LanguageToggle';
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { supabase } from '@/integrations/supabase/client';
+
+type SearchHit = { id: string; title: string; kind: string; href: string };
+
 
 const ROLE_BADGE = {
   admin: { label: 'Admin', icon: Shield, className: 'bg-destructive/10 text-destructive border-destructive/20' },
