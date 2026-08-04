@@ -32,11 +32,16 @@ Deno.serve(async (req) => {
       bundle.knowledge = ki ?? [];
     }
     if (scope === 'decisions' || scope === 'all') {
-      const { data } = await admin.from('decisions').select('title,description,status,risk_level,budget,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
-      bundle.decisions = data ?? [];
-      const decIds = (data ?? []).map((d: any) => d.title);
+      const { data } = await admin.from('decisions').select('id,title,description,status,risk_level,budget,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
+      bundle.decisions = (data ?? []).map(({ id: _id, ...rest }: any) => rest);
+      const decIds = (data ?? []).map((d: any) => d.id);
       if (decIds.length) {
-        const { data: aiE } = await admin.from('ai_evaluations').select('summary,expected_roi,break_even_months,decision_id').limit(50);
+        // Scope AI evaluations strictly to this workspace's decisions
+        const { data: aiE } = await admin
+          .from('ai_evaluations')
+          .select('summary,expected_roi,break_even_months,decision_id')
+          .in('decision_id', decIds)
+          .limit(50);
         bundle.ai_evaluations = aiE ?? [];
       }
     }
