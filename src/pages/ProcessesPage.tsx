@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Workflow, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,12 +19,30 @@ export default function ProcessesPage() {
   const { toast } = useToast();
   const [rows, setRows] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', purpose: '', department: '', steps: '' });
+  const [form, setForm] = useState({ name: '', purpose: '', department: '', steps: '', owner_id: '' });
+  const [members, setMembers] = useState<{ user_id: string; display_name: string | null }[]>([]);
 
   const load = async () => {
     if (!workspace) return;
-    const { data } = await supabase.from('processes').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false });
-    setRows(data ?? []);
+    const [procR, memR] = await Promise.all([
+      supabase.from('processes').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false }),
+      supabase
+        .from('workspace_members')
+        .select('user_id, profiles:profiles!workspace_members_user_id_fkey(display_name)')
+        .eq('workspace_id', workspace.id),
+    ]);
+    setRows(procR.data ?? []);
+    setMembers(((memR.data as any[]) ?? []).map((m) => ({ user_id: m.user_id, display_name: m.profiles?.display_name ?? null })));
+  };
+
+  const memberName = (id: string | null) =>
+    (id && members.find((m) => m.user_id === id)?.display_name) || (id ? 'Unknown user' : null);
+
+  const setOwner = async (processId: string, ownerId: string | null) => {
+    const { error } = await supabase.from('processes').update({ owner_id: ownerId }).eq('id', processId);
+    if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    toast({ title: ownerId ? 'Owner assigned' : 'Owner removed' });
+    load();
   };
   useEffect(() => { load(); }, [workspace]);
 
@@ -33,9 +52,10 @@ export default function ProcessesPage() {
     const { error } = await supabase.from('processes').insert({
       workspace_id: workspace.id, created_by: user.id,
       name: form.name, purpose: form.purpose, department: form.department, steps,
+      owner_id: form.owner_id || null,
     });
     if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    setOpen(false); setForm({ name: '', purpose: '', department: '', steps: '' }); load();
+    setOpen(false); setForm({ name: '', purpose: '', department: '', steps: '', owner_id: '' }); load();
   };
 
   return (
@@ -50,6 +70,18 @@ export default function ProcessesPage() {
               <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
               <div><Label>Purpose</Label><Textarea value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} /></div>
               <div><Label>Department</Label><Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} /></div>
+              <div>
+                <Label>Owner</Label>
+                <Select value={form.owner_id || 'none'} onValueChange={(v) => setForm({ ...form, owner_id: v === 'none' ? '' : v })}>
+                  <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Unassigned</SelectItem>
+                    {members.map((m) => (
+                      <SelectItem key={m.user_id} value={m.user_id}>{m.display_name || m.user_id.slice(0, 8)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div><Label>Steps (one per line)</Label><Textarea rows={5} value={form.steps} onChange={(e) => setForm({ ...form, steps: e.target.value })} /></div>
               <Button onClick={create} className="w-full">Create</Button>
             </div>
@@ -77,6 +109,21 @@ export default function ProcessesPage() {
                   </div>
                 </div>
                 {p.purpose && <p className="text-sm text-muted-foreground mb-2">{p.purpose}</p>}
+                <div className="flex items-center gap-2 mb-2">
+                  <Label className="text-xs text-muted-foreground">Owner</Label>
+                  <Select value={p.owner_id ?? 'none'} onValueChange={(v) => setOwner(p.id, v === 'none' ? null : v)}>
+                    <SelectTrigger className="h-8 w-56 text-xs"><SelectValue placeholder="Unassigned" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Unassigned</SelectItem>
+                      {members.map((m) => (
+                        <SelectItem key={m.user_id} value={m.user_id}>{m.display_name || m.user_id.slice(0, 8)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {p.owner_id && !members.some((m) => m.user_id === p.owner_id) && (
+                    <span className="text-xs text-muted-foreground">{memberName(p.owner_id)}</span>
+                  )}
+                </div>
                 {Array.isArray(p.steps) && p.steps.length > 0 && (
                   <ol className="text-xs space-y-1 pl-4 list-decimal text-muted-foreground">
                     {p.steps.slice(0, 5).map((s: any, i: number) => <li key={i}>{s.title || s}</li>)}
