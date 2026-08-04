@@ -45,14 +45,9 @@ Deno.serve(async (req) => {
       target.searchParams.set(auth.key_name, auth.key_value);
     }
 
-    // Block private/link-local ranges (basic SSRF guard)
-    const host = target.hostname;
-    if (
-      host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' ||
-      /^10\./.test(host) || /^192\.168\./.test(host) ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-      /^169\.254\./.test(host) || host.endsWith('.local')
-    ) return json({ error: 'private hosts are not allowed' }, 400);
+    // Resolve host to IPs and reject any private/loopback/link-local destination (SSRF guard)
+    const hostCheck = await assertPublicHost(target.hostname);
+    if (hostCheck) return json({ error: hostCheck }, 400);
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: memberOk } = await admin.rpc('is_workspace_member', { _user_id: userId, _workspace_id: workspace_id });
