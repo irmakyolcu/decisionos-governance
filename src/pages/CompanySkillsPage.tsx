@@ -81,6 +81,13 @@ export default function CompanySkillsPage() {
     [next[i], next[j]] = [next[j], next[i]];
     setList(key, next);
   };
+  const reorderItem = (key: 'steps' | 'decision_rules', from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    const next = [...form[key]];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    setList(key, next);
+  };
 
   const save = async () => {
     if (!workspace || !user || !form.name.trim()) {
