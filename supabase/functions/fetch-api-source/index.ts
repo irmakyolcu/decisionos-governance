@@ -125,6 +125,80 @@ Deno.serve(async (req) => {
   }
 });
 
+function normalizeIpLiteral(host: string): string | null {
+  let h = host.trim().toLowerCase();
+  if (h.startsWith('[') && h.endsWith(']')) h = h.slice(1, -1);
+  // IPv4 dotted-quad
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return h;
+  // IPv6
+  if (h.includes(':')) return h;
+  // decimal / hex / octal encodings of an IPv4 address
+  let n: number | null = null;
+  if (/^0x[0-9a-f]+$/.test(h)) n = parseInt(h, 16);
+  else if (/^0[0-7]+$/.test(h)) n = parseInt(h, 8);
+  else if (/^\d+$/.test(h)) n = parseInt(h, 10);
+  if (n !== null && Number.isFinite(n) && n >= 0 && n <= 0xffffffff) {
+    return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.');
+  }
+  return null;
+}
+
+function isBlockedIp(ip: string): boolean {
+  let addr = ip.toLowerCase();
+  if (addr.startsWith('[') && addr.endsWith(']')) addr = addr.slice(1, -1);
+  const zone = addr.indexOf('%');
+  if (zone !== -1) addr = addr.slice(0, zone);
+
+  if (addr.includes(':')) {
+    // IPv4-mapped / embedded IPv6 (e.g. ::ffff:127.0.0.1)
+    const embedded = addr.match(/(\d{1,3}(?:\.\d{1,3}){3})$/);
+    if (embedded) return isBlockedIp(embedded[1]);
+    if (addr === '::' || addr === '::1') return true;
+    if (/^f[cd][0-9a-f]{2}:/.test(addr)) return true; // unique local fc00::/7
+    if (/^fe[89ab][0-9a-f]:/.test(addr)) return true; // link-local fe80::/10
+    return false;
+  }
+
+  const parts = addr.split('.').map((p) => parseInt(p, 10));
+  if (parts.length !== 4 || parts.some((p) => !Number.isInteger(p) || p < 0 || p > 255)) return true;
+  const [a, b] = parts;
+  if (a === 0 || a === 10 || a === 127) return true;
+  if (a === 169 && b === 254) return true; // link-local / cloud metadata
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 192 && b === 0) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+  if (a === 198 && (b === 18 || b === 19)) return true;
+  if (a >= 224) return true; // multicast / reserved
+  return false;
+}
+
+/** Returns an error message when the host resolves to a non-public address, otherwise null. */
+async function assertPublicHost(hostname: string): Promise<string | null> {
+  const host = hostname.toLowerCase().replace(/\.$/, '');
+  if (!host || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) {
+    return 'private hosts are not allowed';
+  }
+
+  const literal = normalizeIpLiteral(host);
+  if (literal) return isBlockedIp(literal) ? 'private hosts are not allowed' : null;
+
+  let addresses: string[] = [];
+  try {
+    const [v4, v6] = await Promise.allSettled([
+      Deno.resolveDns(host, 'A'),
+      Deno.resolveDns(host, 'AAAA'),
+    ]);
+    if (v4.status === 'fulfilled') addresses.push(...v4.value);
+    if (v6.status === 'fulfilled') addresses.push(...v6.value);
+  } catch {
+    return 'host could not be resolved';
+  }
+  if (addresses.length === 0) return 'host could not be resolved';
+  if (addresses.some(isBlockedIp)) return 'private hosts are not allowed';
+  return null;
+}
+
 function json(b: unknown, status = 200) {
   return new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 }
