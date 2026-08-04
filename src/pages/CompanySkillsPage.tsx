@@ -41,6 +41,7 @@ export default function CompanySkillsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<SkillForm>(emptyForm());
+  const [drag, setDrag] = useState<{ key: 'steps' | 'decision_rules'; from: number; over: number } | null>(null);
 
   const load = async () => {
     if (!workspace) return;
