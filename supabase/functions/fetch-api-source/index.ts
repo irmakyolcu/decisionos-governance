@@ -45,14 +45,9 @@ Deno.serve(async (req) => {
       target.searchParams.set(auth.key_name, auth.key_value);
     }
 
-    // Block private/link-local ranges (basic SSRF guard)
-    const host = target.hostname;
-    if (
-      host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' ||
-      /^10\./.test(host) || /^192\.168\./.test(host) ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-      /^169\.254\./.test(host) || host.endsWith('.local')
-    ) return json({ error: 'private hosts are not allowed' }, 400);
+    // Resolve host to IPs and reject any private/loopback/link-local destination (SSRF guard)
+    const hostCheck = await assertPublicHost(target.hostname);
+    if (hostCheck) return json({ error: hostCheck }, 400);
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: memberOk } = await admin.rpc('is_workspace_member', { _user_id: userId, _workspace_id: workspace_id });
@@ -62,12 +57,26 @@ Deno.serve(async (req) => {
     const t = setTimeout(() => controller.abort(), 15000);
     let resp: Response;
     try {
-      resp = await fetch(target.toString(), {
-        method,
-        headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers, ...authHeaders },
-        body: body && method !== 'GET' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
-        signal: controller.signal,
-      });
+      let current = target;
+      let hops = 0;
+      // Follow redirects manually, re-validating the destination each hop
+      for (;;) {
+        resp = await fetch(current.toString(), {
+          method,
+          headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers, ...authHeaders },
+          body: body && method !== 'GET' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
+          signal: controller.signal,
+          redirect: 'manual',
+        });
+        if (![301, 302, 303, 307, 308].includes(resp.status)) break;
+        const loc = resp.headers.get('location');
+        if (!loc || ++hops > 3) return json({ error: 'too many redirects' }, 502);
+        const next = new URL(loc, current);
+        if (!['http:', 'https:'].includes(next.protocol)) return json({ error: 'only http(s) allowed' }, 400);
+        const redirCheck = await assertPublicHost(next.hostname);
+        if (redirCheck) return json({ error: redirCheck }, 400);
+        current = next;
+      }
     } catch (e: any) {
       return json({ error: `fetch failed: ${e.message}` }, 502);
     } finally { clearTimeout(t); }
@@ -76,6 +85,9 @@ Deno.serve(async (req) => {
     const raw = await resp.text();
     if (!resp.ok) return json({ error: `Upstream ${resp.status}`, body: raw.slice(0, 500) }, 502);
     const truncated = raw.slice(0, 200000);
+
+    // Never persist credentials (query API keys, tokens, passwords)
+    const safeUrl = `${target.origin}${target.pathname}`;
 
     const finalTitle = title || `API: ${target.hostname}${target.pathname}`;
     const { data: doc, error: docErr } = await admin.from('uploaded_documents').insert({
@@ -86,7 +98,7 @@ Deno.serve(async (req) => {
       source_kind: 'api',
       confidentiality,
       process_status: 'indexed',
-      metadata: { url: target.toString(), method, fetched_at: new Date().toISOString() },
+      metadata: { url: safeUrl, method, fetched_at: new Date().toISOString() },
     }).select().single();
     if (docErr) return json({ error: docErr.message }, 400);
 
@@ -94,15 +106,17 @@ Deno.serve(async (req) => {
       workspace_id, created_by: userId, document_id: doc.id,
       title: finalTitle,
       content: truncated.slice(0, 5000),
-      summary: `Fetched from ${target.toString()}`,
+      summary: `Fetched from ${safeUrl}`,
       confidentiality,
       source_date: new Date().toISOString(),
     });
 
-    // Also register as a data_source for visibility (auth stored for refresh; workspace-RLS protected)
+    // Register as a data_source for visibility. Credentials are NOT stored:
+    // only the auth scheme is recorded so the UI can prompt for re-entry.
     await admin.from('data_sources').insert({
       workspace_id, created_by: userId, kind: 'api', label: finalTitle,
-      status: 'connected', config: { url, method, auth: auth ?? null },
+      status: 'connected',
+      config: { url: safeUrl, method, auth_type: auth?.type ?? null, credentials_stored: false },
     });
 
     return json({ ok: true, document_id: doc.id, length: truncated.length, content_type: ct });
@@ -110,6 +124,80 @@ Deno.serve(async (req) => {
     return json({ error: e.message }, 500);
   }
 });
+
+function normalizeIpLiteral(host: string): string | null {
+  let h = host.trim().toLowerCase();
+  if (h.startsWith('[') && h.endsWith(']')) h = h.slice(1, -1);
+  // IPv4 dotted-quad
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return h;
+  // IPv6
+  if (h.includes(':')) return h;
+  // decimal / hex / octal encodings of an IPv4 address
+  let n: number | null = null;
+  if (/^0x[0-9a-f]+$/.test(h)) n = parseInt(h, 16);
+  else if (/^0[0-7]+$/.test(h)) n = parseInt(h, 8);
+  else if (/^\d+$/.test(h)) n = parseInt(h, 10);
+  if (n !== null && Number.isFinite(n) && n >= 0 && n <= 0xffffffff) {
+    return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.');
+  }
+  return null;
+}
+
+function isBlockedIp(ip: string): boolean {
+  let addr = ip.toLowerCase();
+  if (addr.startsWith('[') && addr.endsWith(']')) addr = addr.slice(1, -1);
+  const zone = addr.indexOf('%');
+  if (zone !== -1) addr = addr.slice(0, zone);
+
+  if (addr.includes(':')) {
+    // IPv4-mapped / embedded IPv6 (e.g. ::ffff:127.0.0.1)
+    const embedded = addr.match(/(\d{1,3}(?:\.\d{1,3}){3})$/);
+    if (embedded) return isBlockedIp(embedded[1]);
+    if (addr === '::' || addr === '::1') return true;
+    if (/^f[cd][0-9a-f]{2}:/.test(addr)) return true; // unique local fc00::/7
+    if (/^fe[89ab][0-9a-f]:/.test(addr)) return true; // link-local fe80::/10
+    return false;
+  }
+
+  const parts = addr.split('.').map((p) => parseInt(p, 10));
+  if (parts.length !== 4 || parts.some((p) => !Number.isInteger(p) || p < 0 || p > 255)) return true;
+  const [a, b] = parts;
+  if (a === 0 || a === 10 || a === 127) return true;
+  if (a === 169 && b === 254) return true; // link-local / cloud metadata
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 192 && b === 0) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+  if (a === 198 && (b === 18 || b === 19)) return true;
+  if (a >= 224) return true; // multicast / reserved
+  return false;
+}
+
+/** Returns an error message when the host resolves to a non-public address, otherwise null. */
+async function assertPublicHost(hostname: string): Promise<string | null> {
+  const host = hostname.toLowerCase().replace(/\.$/, '');
+  if (!host || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) {
+    return 'private hosts are not allowed';
+  }
+
+  const literal = normalizeIpLiteral(host);
+  if (literal) return isBlockedIp(literal) ? 'private hosts are not allowed' : null;
+
+  let addresses: string[] = [];
+  try {
+    const [v4, v6] = await Promise.allSettled([
+      Deno.resolveDns(host, 'A'),
+      Deno.resolveDns(host, 'AAAA'),
+    ]);
+    if (v4.status === 'fulfilled') addresses.push(...v4.value);
+    if (v6.status === 'fulfilled') addresses.push(...v6.value);
+  } catch {
+    return 'host could not be resolved';
+  }
+  if (addresses.length === 0) return 'host could not be resolved';
+  if (addresses.some(isBlockedIp)) return 'private hosts are not allowed';
+  return null;
+}
 
 function json(b: unknown, status = 200) {
   return new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
