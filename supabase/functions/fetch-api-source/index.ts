@@ -57,12 +57,26 @@ Deno.serve(async (req) => {
     const t = setTimeout(() => controller.abort(), 15000);
     let resp: Response;
     try {
-      resp = await fetch(target.toString(), {
-        method,
-        headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers, ...authHeaders },
-        body: body && method !== 'GET' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
-        signal: controller.signal,
-      });
+      let current = target;
+      let hops = 0;
+      // Follow redirects manually, re-validating the destination each hop
+      for (;;) {
+        resp = await fetch(current.toString(), {
+          method,
+          headers: { Accept: 'application/json, text/*;q=0.9, */*;q=0.5', ...headers, ...authHeaders },
+          body: body && method !== 'GET' ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
+          signal: controller.signal,
+          redirect: 'manual',
+        });
+        if (![301, 302, 303, 307, 308].includes(resp.status)) break;
+        const loc = resp.headers.get('location');
+        if (!loc || ++hops > 3) return json({ error: 'too many redirects' }, 502);
+        const next = new URL(loc, current);
+        if (!['http:', 'https:'].includes(next.protocol)) return json({ error: 'only http(s) allowed' }, 400);
+        const redirCheck = await assertPublicHost(next.hostname);
+        if (redirCheck) return json({ error: redirCheck }, 400);
+        current = next;
+      }
     } catch (e: any) {
       return json({ error: `fetch failed: ${e.message}` }, 502);
     } finally { clearTimeout(t); }
@@ -71,6 +85,9 @@ Deno.serve(async (req) => {
     const raw = await resp.text();
     if (!resp.ok) return json({ error: `Upstream ${resp.status}`, body: raw.slice(0, 500) }, 502);
     const truncated = raw.slice(0, 200000);
+
+    // Never persist credentials (query API keys, tokens, passwords)
+    const safeUrl = `${target.origin}${target.pathname}`;
 
     const finalTitle = title || `API: ${target.hostname}${target.pathname}`;
     const { data: doc, error: docErr } = await admin.from('uploaded_documents').insert({
@@ -81,7 +98,7 @@ Deno.serve(async (req) => {
       source_kind: 'api',
       confidentiality,
       process_status: 'indexed',
-      metadata: { url: target.toString(), method, fetched_at: new Date().toISOString() },
+      metadata: { url: safeUrl, method, fetched_at: new Date().toISOString() },
     }).select().single();
     if (docErr) return json({ error: docErr.message }, 400);
 
@@ -89,15 +106,17 @@ Deno.serve(async (req) => {
       workspace_id, created_by: userId, document_id: doc.id,
       title: finalTitle,
       content: truncated.slice(0, 5000),
-      summary: `Fetched from ${target.toString()}`,
+      summary: `Fetched from ${safeUrl}`,
       confidentiality,
       source_date: new Date().toISOString(),
     });
 
-    // Also register as a data_source for visibility (auth stored for refresh; workspace-RLS protected)
+    // Register as a data_source for visibility. Credentials are NOT stored:
+    // only the auth scheme is recorded so the UI can prompt for re-entry.
     await admin.from('data_sources').insert({
       workspace_id, created_by: userId, kind: 'api', label: finalTitle,
-      status: 'connected', config: { url, method, auth: auth ?? null },
+      status: 'connected',
+      config: { url: safeUrl, method, auth_type: auth?.type ?? null, credentials_stored: false },
     });
 
     return json({ ok: true, document_id: doc.id, length: truncated.length, content_type: ct });
