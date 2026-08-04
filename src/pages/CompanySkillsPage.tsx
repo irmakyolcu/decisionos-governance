@@ -125,39 +125,65 @@ export default function CompanySkillsPage() {
   const renderList = (key: 'steps' | 'decision_rules', label: string, placeholder: string, addLabel: string) => (
     <div className="space-y-2">
       <Label>{label}</Label>
+      <p className="text-[11px] text-muted-foreground">Sıralamayı değiştirmek için tutamaçtan sürükleyip bırakın.</p>
       <div className="space-y-2">
-        {form[key].map((val, i) => (
-          <div key={i} className="flex items-start gap-2">
-            <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground w-10 shrink-0">
-              <GripVertical className="h-3 w-3" />
-              <span>{i + 1}</span>
+        {form[key].map((val, i) => {
+          const isDragging = drag?.key === key && drag.from === i;
+          const isOver = drag?.key === key && drag.over === i && drag.from !== i;
+          return (
+            <div
+              key={i}
+              onDragOver={(e) => {
+                if (drag?.key !== key) return;
+                e.preventDefault();
+                if (drag.over !== i) setDrag({ ...drag, over: i });
+              }}
+              onDrop={(e) => {
+                if (drag?.key !== key) return;
+                e.preventDefault();
+                reorderItem(key, drag.from, i);
+                setDrag(null);
+              }}
+              className={`flex items-start gap-2 rounded-md transition-all ${isDragging ? 'opacity-50' : ''} ${isOver ? 'ring-2 ring-primary/60' : ''}`}
+            >
+              <div
+                draggable
+                onDragStart={() => setDrag({ key, from: i, over: i })}
+                onDragEnd={() => setDrag(null)}
+                title="Sürükleyerek taşı"
+                className="mt-2 flex items-center gap-1 text-xs text-muted-foreground w-10 shrink-0 cursor-grab active:cursor-grabbing select-none"
+              >
+                <GripVertical className="h-3.5 w-3.5" />
+                <span>{i + 1}</span>
+              </div>
+              <Textarea
+                rows={2}
+                className="flex-1 min-h-[38px]"
+                placeholder={placeholder}
+                value={val}
+                onChange={(e) => updateItem(key, i, e.target.value)}
+              />
+              <div className="flex flex-col gap-1">
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveItem(key, i, -1)} disabled={i === 0}>
+                  <ArrowUp className="h-3 w-3" />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveItem(key, i, 1)} disabled={i === form[key].length - 1}>
+                  <ArrowDown className="h-3 w-3" />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => removeItem(key, i)}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
-            <Textarea
-              rows={2}
-              className="flex-1 min-h-[38px]"
-              placeholder={placeholder}
-              value={val}
-              onChange={(e) => updateItem(key, i, e.target.value)}
-            />
-            <div className="flex flex-col gap-1">
-              <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveItem(key, i, -1)} disabled={i === 0}>
-                <ArrowUp className="h-3 w-3" />
-              </Button>
-              <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveItem(key, i, 1)} disabled={i === form[key].length - 1}>
-                <ArrowDown className="h-3 w-3" />
-              </Button>
-              <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => removeItem(key, i)}>
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => addItem(key)}>
         <Plus className="h-3 w-3 mr-1" /> {addLabel}
       </Button>
     </div>
   );
+
 
   return (
     <div className="space-y-6">
