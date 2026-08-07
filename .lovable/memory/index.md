@@ -19,3 +19,4 @@ Post-approval records are locked/immutable. Comments are append-only.
 - [RBAC Permissions](mem://features/permissions) — usePermissions hook, PermissionGate, action gating per workspace role
 - [Multi-Tenant](mem://features/multi-tenant) — Workspace isolation, roles, invite system, onboarding flow
 - [Team Invite Email](mem://features/team-invite-email) — Invites produce links only; email sending deferred by user decision
+- [On-premise deployment](mem://features/on-premise) — Air-gapped Docker stack, local Ollama LLM, offline Ed25519 licensing
