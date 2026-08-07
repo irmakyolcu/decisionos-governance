@@ -1,1 +1,4 @@
-« see below »
+.env
+volumes/
+*.license
+license-signing-*.pem
