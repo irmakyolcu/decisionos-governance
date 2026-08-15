@@ -60,20 +60,19 @@ Produce JSON with shape:
 Include exactly one recommended alternative. Include all four scenarios. Include at least 2 assumptions and 2 unknowns.`;
     const startedAt = Date.now();
 
-    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Lovable-API-Key': LOVABLE_API_KEY },
-      body: JSON.stringify({
+    let aiJson: any;
+    try {
+      aiJson = await aiChatRaw({
         model,
         messages: [{ role: 'system', content: sys }, { role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
-      }),
-    });
-    if (!aiRes.ok) {
-      const txt = await aiRes.text();
-      return new Response(JSON.stringify({ error: 'AI gateway error', detail: txt }), { status: aiRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        jsonMode: true,
+      });
+    } catch (err) {
+      const status = err instanceof AiError ? err.status : 500;
+      const detail = err instanceof AiError ? err.detail : String(err);
+      return new Response(JSON.stringify({ error: 'AI error', detail }), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    const aiJson = await aiRes.json();
+
     const content = aiJson.choices?.[0]?.message?.content || '{}';
     const parsed = JSON.parse(content);
 
