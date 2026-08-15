@@ -1,5 +1,6 @@
 // Edge function: evaluate a decision with Lovable AI and store the result in ai_evaluations
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { aiChatRaw, AiError } from "../_shared/aiClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -96,8 +97,6 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY")!;
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     // Verify caller
     const authHeader = req.headers.get("Authorization") ?? "";
@@ -161,14 +160,10 @@ Options considered: ${JSON.stringify(decision.options_considered)}
 
 Be realistic and conservative. Use the budget value as basis for expected_value.`;
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+    let aiJson: any;
+    try {
+      aiJson = await aiChatRaw({
+        model: Deno.env.get("AI_CHAT_MODEL") || "google/gemini-3-flash-preview",
         messages: [
           {
             role: "system",
@@ -178,32 +173,31 @@ Be realistic and conservative. Use the budget value as basis for expected_value.
           { role: "user", content: userPrompt },
         ],
         tools: [evaluationTool],
-        tool_choice: { type: "function", function: { name: "submit_decision_evaluation" } },
-      }),
-    });
-
-    if (!aiResp.ok) {
-      const errText = await aiResp.text();
-      if (aiResp.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        toolChoice: { type: "function", function: { name: "submit_decision_evaluation" } },
+      });
+    } catch (err) {
+      if (err instanceof AiError) {
+        if (err.status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (err.status === 402) {
+          return new Response(
+            JSON.stringify({ error: "AI credits exhausted. Add credits in Settings > Workspace > Usage." }),
+            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+        console.error("AI error", err.status, err.detail);
+      } else {
+        console.error("AI error", String(err));
       }
-      if (aiResp.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Lovable AI credits exhausted. Add credits in Settings > Workspace > Usage." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-      console.error("AI gateway error", aiResp.status, errText);
       return new Response(JSON.stringify({ error: "AI evaluation failed" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    const aiJson = await aiResp.json();
     const toolCall = aiJson.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall?.function?.arguments) {
       console.error("No tool call in AI response", JSON.stringify(aiJson));

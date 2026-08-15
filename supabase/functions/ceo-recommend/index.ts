@@ -1,5 +1,6 @@
 // CEO Digital Twin — generate a structured decision recommendation grounded in the CEO profile.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { aiChatRaw, AiError } from "../_shared/aiClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -78,8 +79,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const body = await req.json();
     const { intake, ceoProfile, memory } = body ?? {};
@@ -120,42 +119,37 @@ Strategic relevance: ${intake.strategicRelevance}
 Requested by: ${intake.requestedBy}
 Deadline: ${intake.deadline ?? "—"}`;
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+    let aiJson: any;
+    try {
+      aiJson = await aiChatRaw({
+        model: Deno.env.get("AI_CHAT_MODEL") || "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: system },
           { role: "user", content: userPrompt },
         ],
         tools: [tool],
-        tool_choice: { type: "function", function: { name: "submit_ceo_recommendation" } },
-      }),
-    });
-
-    if (!aiResp.ok) {
-      const errText = await aiResp.text();
-      if (aiResp.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        toolChoice: { type: "function", function: { name: "submit_ceo_recommendation" } },
+      });
+    } catch (err) {
+      if (err instanceof AiError) {
+        if (err.status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (err.status === 402) {
+          return new Response(JSON.stringify({ error: "AI credits exhausted. Add credits in Settings → Workspace → Usage." }), {
+            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        console.error("AI error", err.status, err.detail);
+      } else {
+        console.error("AI error", String(err));
       }
-      if (aiResp.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Add credits in Settings → Workspace → Usage." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      console.error("AI gateway error", aiResp.status, errText);
       return new Response(JSON.stringify({ error: "AI recommendation failed" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    const aiJson = await aiResp.json();
     const toolCall = aiJson.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall?.function?.arguments) {
       return new Response(JSON.stringify({ error: "AI did not return structured recommendation" }), {
