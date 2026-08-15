@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
       .eq('workspace_id', decision.workspace_id).eq('user_id', user.id).maybeSingle();
     if (!membership) return json({ error: 'forbidden' }, 403);
 
-    const model = 'google/gemini-2.5-pro';
+    const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-2.5-pro';
     const sys = `Sen DecisionOS Makro Analistisin. Bir kurumsal kararı; sektör, ulusal ve küresel ekonomik durum,
 jeopolitik gerilimler (savaş, yaptırım, ticaret savaşları), enflasyon, faiz, döviz kuru, enerji fiyatları,
 tedarik zinciri, düzenleyici riskler ve talep görünümü açısından değerlendirirsin.

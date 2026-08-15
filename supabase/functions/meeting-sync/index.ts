@@ -2,6 +2,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { SUPPORTED_CONNECTORS, callAsAppUser } from '../_shared/appUserConnector.ts';
+import { aiChat, aiEnabled } from '../_shared/aiClient.ts';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -10,15 +11,12 @@ const json = (body: unknown, status = 200) =>
   });
 
 async function summarize(text: string, fallbackTitle: string) {
-  const key = Deno.env.get('LOVABLE_API_KEY');
   const empty = { title: fallbackTitle, summary: '', action_items: [] as string[] };
-  if (!key || !text.trim()) return empty;
+  if (!aiEnabled() || !text.trim()) return empty;
 
-  const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
+  let content = '{}';
+  try {
+    content = await aiChat({
       messages: [
         {
           role: 'system',
@@ -27,17 +25,14 @@ async function summarize(text: string, fallbackTitle: string) {
         },
         { role: 'user', content: text.slice(0, 20000) },
       ],
-      response_format: { type: 'json_object' },
-    }),
-  });
-
-  if (!res.ok) {
-    console.error('AI summarize failed', res.status, await res.text());
+      jsonMode: true,
+    }) || '{}';
+  } catch (err) {
+    console.error('AI summarize failed', String(err));
     return empty;
   }
-  const data = await res.json();
   try {
-    const parsed = JSON.parse(data.choices?.[0]?.message?.content ?? '{}');
+    const parsed = JSON.parse(content);
     return {
       title: parsed.title || fallbackTitle,
       summary: parsed.summary || '',

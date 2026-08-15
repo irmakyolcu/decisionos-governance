@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     // Always derive workspace_id from the decision, never trust client input
     const workspace_id = decision.workspace_id;
 
-    const model = 'google/gemini-3-flash-preview';
+    const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-3-flash-preview';
     const sys = `You are the DecisionOS Decision Agent. You prepare decisions for human leaders to approve. You do NOT execute actions. You MUST distinguish facts, assumptions, and unknowns. Output strict JSON only.`;
     const prompt = `Decision title: ${decision.title}
 Description: ${decision.description || ''}

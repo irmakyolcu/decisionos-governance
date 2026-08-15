@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       `#${i + 1} (${new Date(p.created_at).toLocaleString('tr-TR')}) — Skor ${p.risk_score}/100, Seviye: ${p.risk_level}. Yorum: ${p.commentary}`
     ).join('\n');
 
-    const model = 'google/gemini-3-flash-preview';
+    const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-3-flash-preview';
     const sys = `You are the DecisionOS Risk Analyst. You rate decision risk (0-100) and comment in Turkish.
 Rules:
 - Compare against the previous assessment when one exists.
