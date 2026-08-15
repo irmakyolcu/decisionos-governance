@@ -3,11 +3,11 @@
 // decision and stores an append-only assessment.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { aiChatRaw, AiError } from '../_shared/aiClient.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
 
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -75,20 +75,21 @@ Aşağıdaki JSON şemasında yanıt ver:
 }`;
 
     const started = Date.now();
-    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Lovable-API-Key': LOVABLE_API_KEY },
-      body: JSON.stringify({
+    let aiJson: any;
+    try {
+      aiJson = await aiChatRaw({
         model,
         messages: [{ role: 'system', content: sys }, { role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
-      }),
-    });
-    if (aiRes.status === 429) return json({ error: 'AI hız sınırı aşıldı, biraz sonra tekrar deneyin.' }, 429);
-    if (aiRes.status === 402) return json({ error: 'AI kredisi tükendi.' }, 402);
-    if (!aiRes.ok) return json({ error: 'AI gateway error', detail: await aiRes.text() }, aiRes.status);
-
-    const aiJson = await aiRes.json();
+        jsonMode: true,
+      });
+    } catch (err) {
+      if (err instanceof AiError) {
+        if (err.status === 429) return json({ error: 'AI hız sınırı aşıldı, biraz sonra tekrar deneyin.' }, 429);
+        if (err.status === 402) return json({ error: 'AI kredisi tükendi.' }, 402);
+        return json({ error: 'AI error', detail: err.detail }, err.status);
+      }
+      return json({ error: 'AI error', detail: String(err) }, 500);
+    }
     const content = aiJson.choices?.[0]?.message?.content || '{}';
     let parsed: any = {};
     try { parsed = JSON.parse(content); } catch { parsed = {}; }
