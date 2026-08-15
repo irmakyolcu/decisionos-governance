@@ -1,5 +1,6 @@
 // Speech-to-text via Lovable AI Gateway
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { aiTranscribe, AiError } from "../_shared/aiClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,9 +36,6 @@ Deno.serve(async (req) => {
     const unauth = await requireUser(req);
     if (unauth) return unauth;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not set");
-
     const form = await req.formData();
     const file = form.get("file");
     if (!(file instanceof File) || file.size < 256) {
@@ -49,25 +47,19 @@ Deno.serve(async (req) => {
     const mime = (file.type || "audio/webm").split(";")[0];
     const ext = ({ "audio/webm": "webm", "audio/mp4": "mp4", "audio/mpeg": "mp3", "audio/wav": "wav" } as Record<string, string>)[mime] ?? "webm";
 
-    const upstream = new FormData();
-    upstream.append("model", "openai/gpt-4o-mini-transcribe");
-    upstream.append("file", file, `recording.${ext}`);
-
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}` },
-      body: upstream,
-    });
-
-    if (!res.ok) {
-      const txt = await res.text();
-      return new Response(JSON.stringify({ error: txt || `Upstream ${res.status}` }), {
-        status: res.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let text = "";
+    try {
+      text = await aiTranscribe(file, `recording.${ext}`);
+    } catch (err) {
+      if (err instanceof AiError) {
+        return new Response(JSON.stringify({ error: err.detail || `Upstream ${err.status}` }), {
+          status: err.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw err;
     }
 
-    const data = await res.json();
-    return new Response(JSON.stringify({ text: data.text ?? "" }), {
+    return new Response(JSON.stringify({ text }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

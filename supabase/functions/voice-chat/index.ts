@@ -1,5 +1,6 @@
 // Conversational CEO Twin — text chat over Lovable AI Gateway
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { aiChat, AiError } from "../_shared/aiClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,9 +50,6 @@ Deno.serve(async (req) => {
     const unauth = await requireUser(req);
     if (unauth) return unauth;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not set");
-
     const { messages } = await req.json();
     if (!Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "messages array required" }), {
@@ -59,27 +57,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+    let reply = "";
+    try {
+      reply = await aiChat({
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-      }),
-    });
-
-    if (!res.ok) {
-      const txt = await res.text();
-      return new Response(JSON.stringify({ error: txt || `Upstream ${res.status}` }), {
-        status: res.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    } catch (err) {
+      if (err instanceof AiError) {
+        return new Response(JSON.stringify({ error: err.detail || `Upstream ${err.status}` }), {
+          status: err.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw err;
     }
-
-    const data = await res.json();
-    const reply = data?.choices?.[0]?.message?.content ?? "";
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

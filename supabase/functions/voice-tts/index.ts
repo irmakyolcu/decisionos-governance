@@ -1,5 +1,6 @@
 // Text-to-speech via Lovable AI Gateway (non-streaming, returns base64 MP3)
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { aiSpeech, AiError } from "../_shared/aiClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,9 +36,6 @@ Deno.serve(async (req) => {
     const unauth = await requireUser(req);
     if (unauth) return unauth;
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not set");
-
     const { text, voice = "alloy", instructions } = await req.json();
     if (!text || typeof text !== "string") {
       return new Response(JSON.stringify({ error: "text required" }), {
@@ -45,31 +43,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body: Record<string, unknown> = {
-      model: "openai/gpt-4o-mini-tts",
-      input: text.slice(0, 4000),
-      voice,
-      response_format: "mp3",
-    };
-    if (instructions) body.instructions = instructions;
-
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const txt = await res.text();
-      return new Response(JSON.stringify({ error: txt || `Upstream ${res.status}` }), {
-        status: res.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let buf: Uint8Array;
+    try {
+      buf = await aiSpeech({ text, voice, instructions });
+    } catch (err) {
+      if (err instanceof AiError) {
+        return new Response(JSON.stringify({ error: err.detail || `Upstream ${err.status}` }), {
+          status: err.status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      throw err;
     }
-
-    const buf = new Uint8Array(await res.arrayBuffer());
     // Chunked base64 to avoid stack overflow
     let binary = "";
     const chunk = 0x8000;

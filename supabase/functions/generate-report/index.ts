@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { aiChat, AiError } from '../_shared/aiClient.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -52,30 +53,22 @@ Deno.serve(async (req) => {
       bundle.audit = audit ?? [];
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) return json({ error: 'AI unavailable' }, 500);
-
     const systemPrompt = lang === 'en'
       ? 'You are an executive analyst. Produce a concise, professional markdown briefing (max ~800 words) with sections: Executive Summary, Key Metrics, Highlights, Risks & Watch Items, Recommendations. Use tables where helpful. No preamble.'
       : 'Sen bir üst düzey yönetici analistisin. Kısa, profesyonel bir markdown brifingi üret (en fazla ~800 kelime). Bölümler: Yönetici Özeti, Kilit Metrikler, Öne Çıkanlar, Riskler ve İzlenecekler, Öneriler. Uygun yerlerde tablo kullan. Girişe gerek yok.';
 
-    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+    let brief = '';
+    try {
+      brief = await aiChat({
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Scope: ${scope}\n\nData:\n${JSON.stringify(bundle).slice(0, 40000)}` },
         ],
-      }),
-    });
-    if (!aiRes.ok) {
-      const errText = await aiRes.text();
-      return json({ error: 'AI failed', details: errText, status: aiRes.status }, aiRes.status);
+      });
+    } catch (err) {
+      if (err instanceof AiError) return json({ error: 'AI failed', details: err.detail, status: err.status }, err.status);
+      return json({ error: 'AI failed', details: String(err) }, 500);
     }
-    const ai = await aiRes.json();
-    const brief = ai.choices?.[0]?.message?.content ?? '';
 
     return json({ brief, bundle, generated_at: new Date().toISOString() });
   } catch (e) {

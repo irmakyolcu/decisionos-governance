@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { aiChat, AiError } from '../_shared/aiClient.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -47,13 +48,9 @@ Deno.serve(async (req) => {
     } else if (mime === 'application/pdf' || mime.startsWith('image/')) {
       // Use Gemini multimodal to extract text
       const b64 = await blobToB64(blob);
-      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-      if (!LOVABLE_API_KEY) return json({ error: 'AI unavailable' }, 500);
-      const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
+      try {
+        extracted = await aiChat({
+          model: Deno.env.get('AI_VISION_MODEL') || undefined,
           messages: [{
             role: 'user',
             content: [
@@ -63,14 +60,11 @@ Deno.serve(async (req) => {
                 : { type: 'image_url', image_url: { url: `data:${mime};base64,${b64}` } },
             ],
           }],
-        }),
-      });
-      if (!aiRes.ok) {
-        const errText = await aiRes.text();
-        return json({ error: 'AI extract failed', details: errText, status: aiRes.status }, aiRes.status);
+        });
+      } catch (err) {
+        if (err instanceof AiError) return json({ error: 'AI extract failed', details: err.detail, status: err.status }, err.status);
+        return json({ error: 'AI extract failed', details: String(err) }, 500);
       }
-      const ai = await aiRes.json();
-      extracted = ai.choices?.[0]?.message?.content ?? '';
     } else {
       // Fallback: try text decode
       try { extracted = await blob.text(); } catch { extracted = ''; }

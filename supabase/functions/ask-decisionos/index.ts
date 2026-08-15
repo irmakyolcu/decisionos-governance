@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { aiChat, AiError } from "../_shared/aiClient.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -70,28 +71,17 @@ Deno.serve(async (req) => {
       { role: "user", content: `Company context:\n${contextBlock}\n\nQuestion: ${question}` },
     ];
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY")!,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages,
-        response_format: { type: "json_object" },
-      }),
-    });
-
-    if (!aiRes.ok) {
-      const errText = await aiRes.text();
-      if (aiRes.status === 429) return json({ error: "rate_limited", detail: errText }, 429);
-      if (aiRes.status === 402) return json({ error: "credits_exhausted", detail: errText }, 402);
-      return json({ error: "ai_error", detail: errText }, 500);
+    let raw = "{}";
+    try {
+      raw = await aiChat({ messages: messages as any, jsonMode: true }) || "{}";
+    } catch (err) {
+      if (err instanceof AiError) {
+        if (err.status === 429) return json({ error: "rate_limited", detail: err.detail }, 429);
+        if (err.status === 402) return json({ error: "credits_exhausted", detail: err.detail }, 402);
+        return json({ error: "ai_error", detail: err.detail }, 500);
+      }
+      return json({ error: "ai_error", detail: String(err) }, 500);
     }
-
-    const aiData = await aiRes.json();
-    const raw = aiData.choices?.[0]?.message?.content ?? "{}";
     let parsed: any;
     try { parsed = JSON.parse(raw); }
     catch { parsed = { answer: raw, confidence: 0.5, citations: [], suggested_action: "" }; }

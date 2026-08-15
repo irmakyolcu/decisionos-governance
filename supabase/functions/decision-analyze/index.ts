@@ -2,10 +2,10 @@
 // Never executes external actions.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { aiChatRaw, AiError } from '../_shared/aiClient.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     // Always derive workspace_id from the decision, never trust client input
     const workspace_id = decision.workspace_id;
 
-    const model = 'google/gemini-3-flash-preview';
+    const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-3-flash-preview';
     const sys = `You are the DecisionOS Decision Agent. You prepare decisions for human leaders to approve. You do NOT execute actions. You MUST distinguish facts, assumptions, and unknowns. Output strict JSON only.`;
     const prompt = `Decision title: ${decision.title}
 Description: ${decision.description || ''}
@@ -60,20 +60,19 @@ Produce JSON with shape:
 Include exactly one recommended alternative. Include all four scenarios. Include at least 2 assumptions and 2 unknowns.`;
     const startedAt = Date.now();
 
-    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Lovable-API-Key': LOVABLE_API_KEY },
-      body: JSON.stringify({
+    let aiJson: any;
+    try {
+      aiJson = await aiChatRaw({
         model,
         messages: [{ role: 'system', content: sys }, { role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
-      }),
-    });
-    if (!aiRes.ok) {
-      const txt = await aiRes.text();
-      return new Response(JSON.stringify({ error: 'AI gateway error', detail: txt }), { status: aiRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        jsonMode: true,
+      });
+    } catch (err) {
+      const status = err instanceof AiError ? err.status : 500;
+      const detail = err instanceof AiError ? err.detail : String(err);
+      return new Response(JSON.stringify({ error: 'AI error', detail }), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    const aiJson = await aiRes.json();
+
     const content = aiJson.choices?.[0]?.message?.content || '{}';
     const parsed = JSON.parse(content);
 
