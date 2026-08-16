@@ -296,7 +296,7 @@ const IMPORTABLE: Record<string, { table: string; scope: string; map: Mapper }> 
       title: String(r.title).slice(0, 500),
       description: r.description ? String(r.description).slice(0, 5000) : '',
       problem_statement: r.problem_statement ? String(r.problem_statement).slice(0, 5000) : '',
-      budget: typeof r.budget === 'number' ? r.budget : null,
+      budget: typeof r.budget === 'number' ? r.budget : 0,
       risk_level: r.risk_level ?? 'Medium',
       status: 'Draft',
       options_considered: Array.isArray(r.options_considered) ? r.options_considered : [],
