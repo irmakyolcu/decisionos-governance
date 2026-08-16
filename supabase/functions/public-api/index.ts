@@ -407,8 +407,6 @@ Deno.serve(async (req) => {
       ],
       exportable_entities: ['decisions', 'knowledge', 'processes', 'process_links', 'projects', 'clients', 'risks', 'meetings', 'audit'],
       importable_entities: ['decisions', 'knowledge', 'processes', 'risks'],
-      _endpoints_end: [
-      ],
     });
   }
 
