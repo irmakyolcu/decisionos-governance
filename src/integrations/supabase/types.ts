@@ -2695,6 +2695,64 @@ export type Database = {
           },
         ]
       }
+      process_links: {
+        Row: {
+          created_at: string
+          created_by: string
+          from_process_id: string
+          id: string
+          note: string | null
+          relation: Database["public"]["Enums"]["process_relation"]
+          to_process_id: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          from_process_id: string
+          id?: string
+          note?: string | null
+          relation?: Database["public"]["Enums"]["process_relation"]
+          to_process_id: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          from_process_id?: string
+          id?: string
+          note?: string | null
+          relation?: Database["public"]["Enums"]["process_relation"]
+          to_process_id?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_links_from_process_id_fkey"
+            columns: ["from_process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "process_links_to_process_id_fkey"
+            columns: ["to_process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "process_links_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       processes: {
         Row: {
           confidentiality:
@@ -3524,6 +3582,7 @@ export type Database = {
         | "warn"
         | "block"
         | "escalate"
+      process_relation: "next_step" | "depends_on" | "subprocess" | "related"
       procon_type: "pro" | "con"
       proposal_status: "Submitted" | "Under Review" | "Approved" | "Rejected"
       risk_level: "Low" | "Medium" | "High" | "Critical"
@@ -3737,6 +3796,7 @@ export const Constants = {
         "block",
         "escalate",
       ],
+      process_relation: ["next_step", "depends_on", "subprocess", "related"],
       procon_type: ["pro", "con"],
       proposal_status: ["Submitted", "Under Review", "Approved", "Rejected"],
       risk_level: ["Low", "Medium", "High", "Critical"],
