@@ -88,6 +88,22 @@ export default function TwinOnboardingPage() {
     navigate('/decision-intake');
   };
 
+  const exitFlow = () => {
+    auditStep(step, [
+      {
+        kind: 'interrupted',
+        label: `Adım ${step} tamamlanmadan akıştan çıkıldı`,
+        detail: 'Kullanıcı Twin kurulumunu yarıda bırakıp panele döndü; kalan adımlar kaydedilmedi.',
+      },
+    ]);
+    toast({
+      title: `Adım ${step}: akıştan çıkış kaydedildi`,
+      description: 'Denetim raporu iç denetim defterine yazıldı.',
+      variant: 'destructive',
+    });
+    navigate('/');
+  };
+
   const StepIcon = STEPS[step - 1].icon;
 
   return (
