@@ -3,16 +3,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTable } from '@/hooks/useGovernance';
 import { NavLink } from '@/components/NavLink';
 import { Download, Lock, ShieldCheck, History, EyeOff } from 'lucide-react';
-import { downloadStepAudits } from '@/lib/stepAudit';
+import { downloadStepAudits, downloadRows, auditEventToRow } from '@/lib/stepAudit';
+
+const ALL = '__all__';
 
 export default function InternalAuditPage() {
   const { rows } = useTable<any>('audit_events');
   const [q, setQ] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [eventType, setEventType] = useState(ALL);
+  const [flow, setFlow] = useState(ALL);
+
+  const eventTypeOptions = useMemo(
+    () => [...new Set(rows.map((r) => r.event_type).filter(Boolean))].sort(),
+    [rows],
+  );
+  const flowOptions = useMemo(
+    () => [...new Set(rows.map((r) => (r.after_state as any)?.flow).filter(Boolean))].sort(),
+    [rows],
+  );
 
   const filtered = useMemo(
     () =>
@@ -21,10 +35,14 @@ export default function InternalAuditPage() {
         if (q && !text.includes(q.toLowerCase())) return false;
         if (from && new Date(r.created_at) < new Date(from)) return false;
         if (to && new Date(r.created_at) > new Date(`${to}T23:59:59`)) return false;
+        if (eventType !== ALL && r.event_type !== eventType) return false;
+        if (flow !== ALL && (r.after_state as any)?.flow !== flow) return false;
         return true;
       }),
-    [rows, q, from, to],
+    [rows, q, from, to, eventType, flow],
   );
+
+  const auditReportRows = useMemo(() => filtered.map(auditEventToRow), [filtered]);
 
   const byType = useMemo(() => {
     const m = new Map<string, number>();
@@ -64,17 +82,12 @@ export default function InternalAuditPage() {
     [filtered],
   );
 
-  function exportCsv() {
-    const headers = ['created_at', 'event_type', 'decision_id', 'action_id', 'actor_user_id', 'reason'];
-    const csv = [headers.join(',')]
-      .concat(filtered.map((r) => headers.map((h) => JSON.stringify(r[h] ?? '')).join(',')))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'ic-denetim-ledger.csv';
-    a.click();
-  }
+  const exportQuery = [
+    'entities=audit',
+    eventType !== ALL ? `event_type=${encodeURIComponent(eventType)}` : '',
+    flow !== ALL ? `flow=${encodeURIComponent(flow)}` : '',
+    from ? `since=${from}` : '',
+  ].filter(Boolean).join('&');
 
 
   return (
@@ -92,13 +105,57 @@ export default function InternalAuditPage() {
         <div className="flex flex-wrap gap-2">
           <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
           <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+          <Select value={eventType} onValueChange={setEventType}>
+            <SelectTrigger className="w-56"><SelectValue placeholder="Olay türü" /></SelectTrigger>
+            <SelectContent className="max-h-72">
+              <SelectItem value={ALL}>Tüm olay türleri</SelectItem>
+              {eventTypeOptions.map((t) => (
+                <SelectItem key={t} value={t} className="font-mono text-xs">{t}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={flow} onValueChange={setFlow}>
+            <SelectTrigger className="w-48"><SelectValue placeholder="Akış" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Tüm akışlar</SelectItem>
+              {flowOptions.map((f) => (
+                <SelectItem key={f} value={f}>{f}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Input placeholder="Filtrele…" value={q} onChange={(e) => setQ(e.target.value)} className="w-56" />
-          <Button variant="outline" onClick={exportCsv}>
-            <Download className="h-4 w-4 mr-2" />
-            CSV
-          </Button>
         </div>
       </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Denetim defteri raporu</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {auditReportRows.length} olay — seçili olay türü ve akış filtreleriyle. Aynı şema dışa aktarım uç noktasında:{' '}
+            <code className="text-xs">GET /v1/export?{exportQuery}&amp;format=json|csv</code>
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!auditReportRows.length}
+              onClick={() => downloadRows(auditReportRows as any, 'json', 'audit', 'ic-denetim-raporu')}
+            >
+              <Download className="h-4 w-4 mr-2" /> JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!auditReportRows.length}
+              onClick={() => downloadRows(auditReportRows as any, 'csv', 'audit', 'ic-denetim-raporu')}
+            >
+              <Download className="h-4 w-4 mr-2" /> CSV
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="pb-2">
