@@ -160,6 +160,44 @@ export default function ApiKeysPage() {
         </CardContent>
       </Card>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader><CardTitle className="text-sm">Dışarı Veri Aktarımı (Export)</CardTitle></CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Karar, bilgi, süreç, proje, müşteri, risk, toplantı ve denetim kayıtlarını JSON veya CSV olarak dışa aktarır.
+              Her varlık için ilgili <code className="bg-muted px-1 rounded">*:read</code> scope'u gerekir.
+            </p>
+            <pre className="bg-muted rounded p-3 text-[11px] overflow-x-auto whitespace-pre-wrap">{`curl -H "X-API-Key: dos_..." \\
+  "${API_BASE}/v1/export?entities=decisions,knowledge&since=2026-01-01&limit=500"
+
+# Tek varlık CSV olarak
+curl -H "X-API-Key: dos_..." \\
+  "${API_BASE}/v1/export?entities=risks&format=csv" -o risks.csv`}</pre>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle className="text-sm">İçeri Veri Akışı (Import)</CardTitle></CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Toplu kayıt gönderir (maks. 500). Desteklenen varlıklar: decisions, knowledge, processes, risks.
+              <code className="bg-muted px-1 rounded ml-1">dry_run: true</code> ile yazmadan doğrulama yapabilirsiniz.
+            </p>
+            <pre className="bg-muted rounded p-3 text-[11px] overflow-x-auto whitespace-pre-wrap">{`curl -X POST -H "X-API-Key: dos_..." \\
+  -H "Content-Type: application/json" \\
+  "${API_BASE}/v1/import" -d '{
+  "entity": "decisions",
+  "dry_run": false,
+  "records": [
+    { "title": "ERP geçişi", "budget": 250000, "risk_level": "High" }
+  ]
+}'`}</pre>
+          </CardContent>
+        </Card>
+      </div>
+
+
       <Card>
         <CardHeader><CardTitle className="text-sm">Aktif Anahtarlar</CardTitle></CardHeader>
         <CardContent>
