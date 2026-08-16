@@ -202,6 +202,17 @@ export default function TwinOnboardingPage() {
         </CardContent>
       </Card>
 
+      {reports.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
+            Adım denetim raporları
+          </h2>
+          {reports.map((r) => (
+            <StepAuditReportCard key={r.step} report={r} />
+          ))}
+        </div>
+      )}
+
       <p className="text-center text-xs text-muted-foreground">
         Skip and explore — <button className="text-primary hover:underline" onClick={() => navigate('/')}>go to dashboard</button>
       </p>
