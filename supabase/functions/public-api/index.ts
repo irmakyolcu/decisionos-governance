@@ -294,8 +294,8 @@ const IMPORTABLE: Record<string, { table: string; scope: string; map: Mapper }> 
     map: (r, key) => !r.title ? 'title is required' : ({
       workspace_id: key.workspace_id, created_by: key.created_by,
       title: String(r.title).slice(0, 500),
-      description: r.description ? String(r.description).slice(0, 5000) : null,
-      problem_statement: r.problem_statement ? String(r.problem_statement).slice(0, 5000) : null,
+      description: r.description ? String(r.description).slice(0, 5000) : '',
+      problem_statement: r.problem_statement ? String(r.problem_statement).slice(0, 5000) : '',
       budget: typeof r.budget === 'number' ? r.budget : null,
       risk_level: r.risk_level ?? 'Medium',
       status: 'Draft',
@@ -318,22 +318,32 @@ const IMPORTABLE: Record<string, { table: string; scope: string; map: Mapper }> 
     map: (r, key) => !r.name ? 'name is required' : ({
       workspace_id: key.workspace_id, created_by: key.created_by,
       name: String(r.name).slice(0, 300),
-      description: r.description ? String(r.description).slice(0, 5000) : null,
+      purpose: r.purpose ? String(r.purpose).slice(0, 5000) : (r.description ? String(r.description).slice(0, 5000) : null),
       department: r.department ? String(r.department).slice(0, 120) : null,
+      steps: Array.isArray(r.steps) ? r.steps.slice(0, 100) : [],
+      confidentiality: r.confidentiality ?? 'internal',
     }),
   },
   risks: {
     table: 'risks', scope: 'risks:write',
-    map: (r, key) => !r.title ? 'title is required' : ({
-      workspace_id: key.workspace_id, created_by: key.created_by,
-      title: String(r.title).slice(0, 300),
-      description: r.description ? String(r.description).slice(0, 5000) : null,
-      severity: r.severity ?? 'medium',
-      status: r.status ?? 'new',
-      department: r.department ? String(r.department).slice(0, 120) : null,
-    }),
+    map: (r, key) => {
+      const summary = r.summary ?? r.title;
+      if (!summary) return 'summary (or title) is required';
+      if (!r.category) return 'category is required';
+      return {
+        workspace_id: key.workspace_id, created_by: key.created_by,
+        category: String(r.category).slice(0, 120),
+        summary: String(summary).slice(0, 1000),
+        why_it_matters: r.why_it_matters ? String(r.why_it_matters).slice(0, 5000) : null,
+        recommended_action: r.recommended_action ? String(r.recommended_action).slice(0, 5000) : null,
+        severity: r.severity ?? 'medium',
+        status: r.status ?? 'new',
+        department: r.department ? String(r.department).slice(0, 120) : null,
+      };
+    },
   },
 };
+
 
 async function handleImport(req: Request, key: KeyRow) {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
