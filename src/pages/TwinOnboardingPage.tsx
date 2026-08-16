@@ -33,10 +33,56 @@ export default function TwinOnboardingPage() {
   ]);
   const [firstRequest, setFirstRequest] = useState('');
 
-  const next = () => setStep((s) => Math.min(4, s + 1));
+  const { workspace } = useWorkspace();
+  const [reports, setReports] = useState<StepAuditReport[]>([]);
+
+  const auditStep = (s: number): StepAuditReport => {
+    const findings: StepAuditCheck[] = [];
+    if (s === 1) {
+      const filled = priorities.filter((p) => p.trim()).length;
+      if (filled === 0) findings.push({ kind: 'interrupted', label: 'CEO önceliği girilmedi', detail: 'Twin ağırlıklandırma yapamaz; adım boş tamamlandı.' });
+      else if (filled < 3) findings.push({ kind: 'missing', label: `Yalnızca ${filled} öncelik girildi`, detail: 'Önerilen minimum 3 öncelik.' });
+      const uniq = new Set(priorities.map((p) => p.trim().toLowerCase()).filter(Boolean)).size;
+      if (uniq !== filled) findings.push({ kind: 'error', label: 'Yinelenen öncelik tespit edildi', detail: 'Aynı öncelik birden fazla kez girilmiş.' });
+    }
+    if (s === 2) {
+      const lines = pastDecisions.split('\n').map((l) => l.trim()).filter(Boolean);
+      if (lines.length === 0) findings.push({ kind: 'interrupted', label: 'Geçmiş karar girilmedi', detail: 'Operating logic üretilemez.' });
+      else if (lines.length < 3) findings.push({ kind: 'missing', label: `${lines.length} geçmiş karar girildi`, detail: 'Önerilen minimum 3 karar.' });
+      if (pastDecisions.length > 0 && pastDecisions.length < 40) findings.push({ kind: 'error', label: 'Karar açıklamaları çok kısa', detail: 'Bağlam olmadan AI çıkarımı güvenilir değil.' });
+    }
+    if (s === 3) {
+      const empty = rules.filter((r) => !r.condition.trim()).length;
+      if (rules.length === 0) findings.push({ kind: 'interrupted', label: 'Delegasyon kuralı yok', detail: 'Eskalasyon akışı tanımsız kaldı.' });
+      if (empty > 0) findings.push({ kind: 'error', label: `${empty} kuralın koşulu boş`, detail: 'Boş koşullar değerlendirilemez.' });
+      if (!rules.some((r) => r.level === 'Needs CEO approval' || r.level === 'Escalate immediately'))
+        findings.push({ kind: 'missing', label: 'CEO onayı gerektiren kural yok', detail: 'Yüksek etkili kararlar için eskalasyon eksik.' });
+    }
+    if (s === 4) {
+      if (!firstRequest.trim()) findings.push({ kind: 'missing', label: 'İlk karar talebi girilmedi', detail: 'Twin ilk önerisini üretemeyecek.' });
+      else if (firstRequest.trim().length < 25) findings.push({ kind: 'missing', label: 'Talep bağlamı yetersiz', detail: 'Daha fazla detay öneri kalitesini artırır.' });
+    }
+    const report = buildStepAudit('Twin Onboarding', s, STEPS[s - 1].title, findings);
+    setReports((prevR) => [...prevR.filter((r) => r.step !== s), report].sort((a, b) => a.step - b.step));
+    void recordStepAudit(workspace?.id, report);
+    return report;
+  };
+
+  const next = () => {
+    const report = auditStep(step);
+    if (report.status === 'blocked') {
+      toast({
+        title: `Adım ${step} denetimi: kesinti`,
+        description: 'Denetim raporu oluşturuldu; eksikler kayıt altına alındı.',
+        variant: 'destructive',
+      });
+    }
+    setStep((s) => Math.min(4, s + 1));
+  };
   const prev = () => setStep((s) => Math.max(1, s - 1));
 
   const finish = () => {
+    auditStep(4);
     localStorage.setItem(TWIN_ONBOARDING_KEY, '1');
     toast({ title: 'CEO Digital Twin is active', description: 'Your judgment layer is now powering recommendations.' });
     navigate('/decision-intake');
