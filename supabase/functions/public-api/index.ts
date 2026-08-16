@@ -265,6 +265,35 @@ function flattenStepAudits(rows: Record<string, any>[]) {
   });
 }
 
+/** Flatten internal audit ledger rows into a report-friendly shape (keeps internal fields). */
+function flattenAuditEvents(rows: Record<string, any>[]) {
+  return rows.map((r) => {
+    const p = (r.after_state ?? {}) as Record<string, any>;
+    return {
+      id: r.id,
+      recorded_at: r.created_at,
+      event_type: r.event_type ?? null,
+      flow: p.flow ?? null,
+      step: p.step ?? null,
+      step_title: p.stepTitle ?? null,
+      status: p.status ?? null,
+      actor_user_id: r.actor_user_id ?? null,
+      decision_id: r.decision_id ?? null,
+      action_id: r.action_id ?? null,
+      reason: r.reason ?? null,
+      before_state: r.before_state ?? null,
+      after_state: r.after_state ?? null,
+    };
+  });
+}
+
+/** `event_type=a,b*` — comma separated, `*` suffix means prefix match. */
+function matchesEventType(value: string, patterns: string[]) {
+  if (!patterns.length) return true;
+  const v = value.toLowerCase();
+  return patterns.some((p) => (p.endsWith('*') ? v.startsWith(p.slice(0, -1)) : v === p));
+}
+
 function toCsv(rows: Record<string, unknown>[]) {
   if (!rows.length) return '';
   const cols = Array.from(new Set(rows.flatMap((r) => Object.keys(r))));
