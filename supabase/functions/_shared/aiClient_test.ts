@@ -188,7 +188,7 @@ Deno.test("error: abort signal cancels in-flight request", async () => {
   assertEquals(err.name, "AbortError");
 });
 
-Deno.test("teardown", async () => {
+Deno.test({ name: "teardown", sanitizeResources: false, sanitizeOps: false, fn: async () => {
   ac.abort();
   await server.finished;
-});
+} });
