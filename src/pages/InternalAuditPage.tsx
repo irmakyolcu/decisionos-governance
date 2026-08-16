@@ -82,17 +82,12 @@ export default function InternalAuditPage() {
     [filtered],
   );
 
-  function exportCsv() {
-    const headers = ['created_at', 'event_type', 'decision_id', 'action_id', 'actor_user_id', 'reason'];
-    const csv = [headers.join(',')]
-      .concat(filtered.map((r) => headers.map((h) => JSON.stringify(r[h] ?? '')).join(',')))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'ic-denetim-ledger.csv';
-    a.click();
-  }
+  const exportQuery = [
+    'entities=audit',
+    eventType !== ALL ? `event_type=${encodeURIComponent(eventType)}` : '',
+    flow !== ALL ? `flow=${encodeURIComponent(flow)}` : '',
+    from ? `since=${from}` : '',
+  ].filter(Boolean).join('&');
 
 
   return (
