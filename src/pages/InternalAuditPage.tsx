@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTable } from '@/hooks/useGovernance';
 import { NavLink } from '@/components/NavLink';
 import { Download, Lock, ShieldCheck, History, EyeOff } from 'lucide-react';
+import { downloadStepAudits } from '@/lib/stepAudit';
 
 export default function InternalAuditPage() {
   const { rows } = useTable<any>('audit_events');
