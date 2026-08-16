@@ -116,7 +116,10 @@ function ProtectedRoutes() {
         <Route path="/approvals-center" element={<ApprovalCenterPage />} />
         <Route path="/execution" element={<ExecutionCenterPage />} />
         <Route path="/policies" element={<PoliciesPage />} />
-        <Route path="/audit" element={<AuditLedgerPage />} />
+        <Route path="/audit" element={<Navigate to="/audit/internal" replace />} />
+        <Route path="/audit/internal" element={<InternalAuditPage />} />
+        <Route path="/audit/external" element={<ExternalAuditPage />} />
+        <Route path="/audit/ledger" element={<AuditLedgerPage />} />
         <Route path="/security-audit" element={<SecurityAuditPage />} />
         <Route path="/decisions/:id" element={<DecisionRoomPage />} />
         <Route path="/decision-twin" element={<DecisionTwinPage />} />
