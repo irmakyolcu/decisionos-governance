@@ -105,11 +105,25 @@ export default function InternalAuditPage() {
         <div className="flex flex-wrap gap-2">
           <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
           <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+          <Select value={eventType} onValueChange={setEventType}>
+            <SelectTrigger className="w-56"><SelectValue placeholder="Olay türü" /></SelectTrigger>
+            <SelectContent className="max-h-72">
+              <SelectItem value={ALL}>Tüm olay türleri</SelectItem>
+              {eventTypeOptions.map((t) => (
+                <SelectItem key={t} value={t} className="font-mono text-xs">{t}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={flow} onValueChange={setFlow}>
+            <SelectTrigger className="w-48"><SelectValue placeholder="Akış" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Tüm akışlar</SelectItem>
+              {flowOptions.map((f) => (
+                <SelectItem key={f} value={f}>{f}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Input placeholder="Filtrele…" value={q} onChange={(e) => setQ(e.target.value)} className="w-56" />
-          <Button variant="outline" onClick={exportCsv}>
-            <Download className="h-4 w-4 mr-2" />
-            CSV
-          </Button>
         </div>
       </div>
 
