@@ -51,7 +51,7 @@ cd decisionos-offline-1.0.0
 2. `scripts/generate-keys.sh` ile tüm gizli anahtarları üretir ve `.env` yazar
 3. Yerel LLM ağırlıklarını `volumes/ollama` içine kopyalar
 4. Stack'i ayağa kaldırır (`docker compose up -d`)
-5. 36 veritabanı migration'ını sırayla ve idempotent şekilde uygular
+5. Tüm veritabanı migration'larını (bu sürümde 38 adet) sırayla ve idempotent uygular
 6. Lisans durumunu kontrol eder
 
 Kurulum bittiğinde uygulama `http://<sunucu-ip>:8080` adresinde çalışır.
