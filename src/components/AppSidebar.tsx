@@ -2,6 +2,7 @@ import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
   BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote, Search, CalendarRange,
+  Lock, Building, FileCheck,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -44,6 +45,14 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Processes', url: '/processes', icon: Workflow },
       { title: 'Company Skills', url: '/skills', icon: Zap },
       { title: 'Risks & Alerts', url: '/risks', icon: AlertTriangle },
+    ],
+  },
+  {
+    label: 'Denetim',
+    items: [
+      { title: 'İç Denetim', url: '/audit/internal', icon: Lock },
+      { title: 'Dış Denetim', url: '/audit/external', icon: Building },
+      { title: 'Uyum Raporları', url: '/compliance', icon: FileCheck },
     ],
   },
   {
