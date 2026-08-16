@@ -249,7 +249,7 @@ export default function TwinOnboardingPage() {
 
 
       <p className="text-center text-xs text-muted-foreground">
-        Skip and explore — <button className="text-primary hover:underline" onClick={() => navigate('/')}>go to dashboard</button>
+        Skip and explore — <button className="text-primary hover:underline" onClick={exitFlow}>go to dashboard</button>
       </p>
     </div>
   );
