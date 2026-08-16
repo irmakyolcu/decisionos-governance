@@ -99,6 +99,36 @@ export default function InternalAuditPage() {
         </div>
       </div>
 
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Adım denetim raporları</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {stepAuditRows.length} otomatik adım raporu — eksik bilgi, yakalanan hata ve kesilen akış özetleri.
+            Aynı şema dışa aktarım uç noktasında da mevcut: <code className="text-xs">GET /v1/export?entities=step_audits&amp;format=json|csv</code>
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!stepAuditRows.length}
+              onClick={() => downloadStepAudits(stepAuditRows as any, 'json', 'adim-denetim-raporlari')}
+            >
+              <Download className="h-4 w-4 mr-2" /> JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!stepAuditRows.length}
+              onClick={() => downloadStepAudits(stepAuditRows as any, 'csv', 'adim-denetim-raporlari')}
+            >
+              <Download className="h-4 w-4 mr-2" /> CSV
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
