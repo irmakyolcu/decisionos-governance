@@ -36,8 +36,8 @@ export default function TwinOnboardingPage() {
   const { workspace } = useWorkspace();
   const [reports, setReports] = useState<StepAuditReport[]>([]);
 
-  const auditStep = (s: number): StepAuditReport => {
-    const findings: StepAuditCheck[] = [];
+  const auditStep = (s: number, extra: StepAuditCheck[] = []): StepAuditReport => {
+    const findings: StepAuditCheck[] = [...extra];
     if (s === 1) {
       const filled = priorities.filter((p) => p.trim()).length;
       if (filled === 0) findings.push({ kind: 'interrupted', label: 'CEO önceliği girilmedi', detail: 'Twin ağırlıklandırma yapamaz; adım boş tamamlandı.' });
@@ -86,6 +86,22 @@ export default function TwinOnboardingPage() {
     localStorage.setItem(TWIN_ONBOARDING_KEY, '1');
     toast({ title: 'CEO Digital Twin is active', description: 'Your judgment layer is now powering recommendations.' });
     navigate('/decision-intake');
+  };
+
+  const exitFlow = () => {
+    auditStep(step, [
+      {
+        kind: 'interrupted',
+        label: `Adım ${step} tamamlanmadan akıştan çıkıldı`,
+        detail: 'Kullanıcı Twin kurulumunu yarıda bırakıp panele döndü; kalan adımlar kaydedilmedi.',
+      },
+    ]);
+    toast({
+      title: `Adım ${step}: akıştan çıkış kaydedildi`,
+      description: 'Denetim raporu iç denetim defterine yazıldı.',
+      variant: 'destructive',
+    });
+    navigate('/');
   };
 
   const StepIcon = STEPS[step - 1].icon;
@@ -233,7 +249,7 @@ export default function TwinOnboardingPage() {
 
 
       <p className="text-center text-xs text-muted-foreground">
-        Skip and explore — <button className="text-primary hover:underline" onClick={() => navigate('/')}>go to dashboard</button>
+        Skip and explore — <button className="text-primary hover:underline" onClick={exitFlow}>go to dashboard</button>
       </p>
     </div>
   );
