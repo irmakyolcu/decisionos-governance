@@ -248,6 +248,9 @@ Deno.serve(async (req) => {
         'POST /v1/knowledge          scope=knowledge:write',
         'GET  /v1/notifications      scope=notifications:read',
         'GET  /v1/audit              scope=audit:read',
+        'GET  /v1/processes          scope=processes:read',
+        'GET  /v1/process-links      scope=processes:read (?from_process_id=&limit=)',
+        'POST /v1/process-links      scope=processes:write {from_process_id,to_process_id,relation,note}',
       ],
     });
   }
