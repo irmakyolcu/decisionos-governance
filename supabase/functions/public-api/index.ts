@@ -422,6 +422,8 @@ Deno.serve(async (req) => {
     if (path === '/v1/audit') return await handleReadOnly(req, auth, 'audit_events', 'audit:read');
     if (path === '/v1/processes') return await handleReadOnly(req, auth, 'processes', 'processes:read');
     if (path === '/v1/process-links' || path === '/v1/process-links/') return await handleProcessLinks(req, auth);
+    if (path === '/v1/export' || path === '/v1/export/') return await handleExport(req, auth);
+    if (path === '/v1/import' || path === '/v1/import/') return await handleImport(req, auth);
     return json({ error: 'Not found', path }, 404);
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : 'Server error' }, 500);
