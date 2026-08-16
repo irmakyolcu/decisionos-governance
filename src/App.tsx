@@ -42,6 +42,8 @@ import ApprovalCenterPage from "./pages/ApprovalCenterPage";
 import ExecutionCenterPage from "./pages/ExecutionCenterPage";
 import PoliciesPage from "./pages/PoliciesPage";
 import AuditLedgerPage from "./pages/AuditLedgerPage";
+import InternalAuditPage from "./pages/InternalAuditPage";
+import ExternalAuditPage from "./pages/ExternalAuditPage";
 import DecisionRoomPage from "./pages/DecisionRoomPage";
 import DecisionTwinPage from "./pages/DecisionTwinPage";
 import StructuredMemoryPage from "./pages/StructuredMemoryPage";
