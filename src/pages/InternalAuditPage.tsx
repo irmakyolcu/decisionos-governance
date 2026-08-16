@@ -175,7 +175,7 @@ export default function InternalAuditPage() {
           </p>
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+              <thead className="bg-muted/50 text-xs tracking-wide text-muted-foreground">
                 <tr>
                   {Object.keys(summaryRow).map((k) => (
                     <th key={k} className="px-3 py-2 text-left font-medium whitespace-nowrap">{k}</th>
