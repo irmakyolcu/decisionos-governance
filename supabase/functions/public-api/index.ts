@@ -158,6 +158,65 @@ async function handleKnowledge(req: Request, key: KeyRow) {
   return json({ error: 'Method not allowed' }, 405);
 }
 
+const RELATIONS = ['next_step', 'depends_on', 'subprocess', 'related'];
+
+async function handleProcessLinks(req: Request, key: KeyRow) {
+  if (req.method === 'GET') {
+    const denied = requireScope(key, 'processes:read', 'viewer');
+    if (denied) return denied;
+    const url = new URL(req.url);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') ?? '100'), 200);
+    const fromId = url.searchParams.get('from_process_id');
+    let q = admin
+      .from('process_links')
+      .select('*')
+      .eq('workspace_id', key.workspace_id)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (fromId) q = q.eq('from_process_id', fromId);
+    const { data, error } = await q;
+    if (error) return json({ error: error.message }, 400);
+    return json({ data });
+  }
+  if (req.method === 'POST') {
+    const denied = requireScope(key, 'processes:write', 'writer');
+    if (denied) return denied;
+    const body = await req.json().catch(() => null);
+    const from = body?.from_process_id;
+    const to = body?.to_process_id;
+    const relation = body?.relation ?? 'related';
+    if (typeof from !== 'string' || typeof to !== 'string')
+      return json({ error: 'from_process_id and to_process_id are required' }, 400);
+    if (from === to) return json({ error: 'A process cannot link to itself' }, 400);
+    if (!RELATIONS.includes(relation))
+      return json({ error: `relation must be one of: ${RELATIONS.join(', ')}` }, 400);
+
+    const { data: procs, error: procErr } = await admin
+      .from('processes')
+      .select('id')
+      .eq('workspace_id', key.workspace_id)
+      .in('id', [from, to]);
+    if (procErr) return json({ error: procErr.message }, 400);
+    if ((procs?.length ?? 0) !== 2) return json({ error: 'Process not found in workspace' }, 404);
+
+    const { data, error } = await admin
+      .from('process_links')
+      .insert({
+        workspace_id: key.workspace_id,
+        created_by: key.created_by,
+        from_process_id: from,
+        to_process_id: to,
+        relation,
+        note: body?.note ? String(body.note).slice(0, 1000) : null,
+      })
+      .select()
+      .single();
+    if (error) return json({ error: error.message }, 400);
+    return json({ data }, 201);
+  }
+  return json({ error: 'Method not allowed' }, 405);
+}
+
 async function handleReadOnly(req: Request, key: KeyRow, table: string, scope: string) {
   if (req.method !== 'GET') return json({ error: 'Read-only endpoint' }, 405);
   const denied = requireScope(key, scope, 'viewer');
