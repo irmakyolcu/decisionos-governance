@@ -148,3 +148,59 @@ export function downloadStepAudits(rows: StepAuditRow[], format: 'json' | 'csv',
   a.click();
   URL.revokeObjectURL(url);
 }
+
+/** Flattened internal audit ledger row — identical to the `audit` entity of GET /v1/export. */
+export type AuditReportRow = {
+  id: string | null;
+  recorded_at: string | null;
+  event_type: string | null;
+  flow: string | null;
+  step: number | null;
+  step_title: string | null;
+  status: string | null;
+  actor_user_id: string | null;
+  decision_id: string | null;
+  action_id: string | null;
+  reason: string | null;
+};
+
+export function auditEventToRow(r: any): AuditReportRow {
+  const p = (r.after_state ?? {}) as any;
+  return {
+    id: r.id ?? null,
+    recorded_at: r.created_at ?? null,
+    event_type: r.event_type ?? null,
+    flow: p.flow ?? null,
+    step: p.step ?? null,
+    step_title: p.stepTitle ?? null,
+    status: p.status ?? null,
+    actor_user_id: r.actor_user_id ?? null,
+    decision_id: r.decision_id ?? null,
+    action_id: r.action_id ?? null,
+    reason: r.reason ?? null,
+  };
+}
+
+/** Generic download for any flattened export row set (same shape as the export endpoint). */
+export function downloadRows(
+  rows: Record<string, unknown>[],
+  format: 'json' | 'csv',
+  entity: string,
+  filename = entity,
+) {
+  const body =
+    format === 'csv'
+      ? stepAuditsToCsv(rows as any)
+      : JSON.stringify(
+          { exported_at: new Date().toISOString(), entity, count: rows.length, data: { [entity]: rows } },
+          null,
+          2,
+        );
+  const blob = new Blob([body], { type: format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}.${format}`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
