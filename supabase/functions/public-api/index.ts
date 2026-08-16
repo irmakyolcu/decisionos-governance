@@ -289,18 +289,27 @@ async function handleExport(req: Request, key: KeyRow) {
   if (unknown.length) return json({ error: `Unknown entities: ${unknown.join(', ')}`, available: Object.keys(EXPORTABLE) }, 400);
   if (format === 'csv' && requested.length !== 1) return json({ error: 'CSV export supports exactly one entity' }, 400);
 
+  const flowFilter = url.searchParams.get('flow');
   const out: Record<string, unknown[]> = {};
   for (const name of requested) {
     const { table, scope } = EXPORTABLE[name];
     const denied = requireScope(key, scope, 'viewer');
     if (denied) return denied;
+    const isStepAudit = name === 'step_audits';
     let q = admin.from(table).select('*').eq('workspace_id', key.workspace_id)
       .order('created_at', { ascending: false }).limit(limit);
-    if (since) q = q.gte('updated_at', since);
+    if (isStepAudit) q = q.like('event_type', 'step.audit.%');
+    if (since) q = q.gte(isStepAudit || table === 'audit_events' ? 'created_at' : 'updated_at', since);
     const { data, error } = await q;
     if (error) return json({ error: `${name}: ${error.message}` }, 400);
-    out[name] = data ?? [];
+    let rows = (data ?? []) as Record<string, any>[];
+    if (isStepAudit) {
+      rows = flattenStepAudits(rows);
+      if (flowFilter) rows = rows.filter((r) => String(r.flow ?? '').toLowerCase() === flowFilter.toLowerCase());
+    }
+    out[name] = rows;
   }
+
 
   if (format === 'csv') {
     const name = requested[0];
