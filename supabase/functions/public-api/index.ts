@@ -237,7 +237,33 @@ const EXPORTABLE: Record<string, { table: string; scope: string }> = {
   risks: { table: 'risks', scope: 'risks:read' },
   meetings: { table: 'meetings', scope: 'meetings:read' },
   audit: { table: 'audit_events', scope: 'audit:read' },
+  step_audits: { table: 'audit_events', scope: 'audit:read' },
 };
+
+/** Flatten step-audit ledger rows into a tabular, report-friendly shape. */
+function flattenStepAudits(rows: Record<string, any>[]) {
+  return rows.map((r) => {
+    const p = (r.after_state ?? {}) as Record<string, any>;
+    const names = (arr: any[]) => (Array.isArray(arr) ? arr.map((f) => f?.label).filter(Boolean).join(' | ') : '');
+    return {
+      id: r.id,
+      recorded_at: r.created_at,
+      completed_at: p.completedAt ?? null,
+      flow: p.flow ?? null,
+      step: p.step ?? null,
+      step_title: p.stepTitle ?? null,
+      status: p.status ?? String(r.event_type ?? '').replace('step.audit.', ''),
+      missing_count: Array.isArray(p.missing) ? p.missing.length : 0,
+      error_count: Array.isArray(p.errors) ? p.errors.length : 0,
+      interrupted_count: Array.isArray(p.interrupted) ? p.interrupted.length : 0,
+      missing: names(p.missing),
+      errors: names(p.errors),
+      interrupted: names(p.interrupted),
+      summary: r.reason ?? null,
+      actor_user_id: r.actor_user_id ?? null,
+    };
+  });
+}
 
 function toCsv(rows: Record<string, unknown>[]) {
   if (!rows.length) return '';
