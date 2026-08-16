@@ -74,6 +74,11 @@ cd decisionos-offline-1.0.0
 ./scripts/install.sh
 ```
 
+Script çalışır çalışmaz, hiçbir işlem yapmadan önce baştan sona uygulayacağı
+6 adımı, tahmini süreyi ve lisans için gereken `DEPLOYMENT_ID` bilgisini
+ekrana yazar ve onay ister. Otomatik (etkileşimsiz) kurulum için:
+`DECISIONOS_ASSUME_YES=true ./scripts/install.sh`
+
 `install.sh` sırasıyla şunları yapar:
 
 1. Container imajlarını `docker load` ile yükler
