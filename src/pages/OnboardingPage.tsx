@@ -78,6 +78,9 @@ export default function OnboardingPage() {
             <p className="text-muted-foreground text-sm">
               <span className="font-medium text-foreground">{companyName}</span> için her şey hazırlanıyor.
             </p>
+            <p className="text-muted-foreground text-xs mt-2">
+              Sonraki adım: Digital Twin kurulumu
+            </p>
           </div>
           <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
         </div>
