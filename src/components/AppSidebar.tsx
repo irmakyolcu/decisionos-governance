@@ -2,6 +2,7 @@ import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
   BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote, Search, CalendarRange,
+  Lock, Building, FileCheck,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
