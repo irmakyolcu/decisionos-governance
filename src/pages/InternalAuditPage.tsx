@@ -36,6 +36,33 @@ export default function InternalAuditPage() {
     [filtered],
   );
 
+  const stepAuditRows = useMemo(
+    () =>
+      filtered
+        .filter((r) => String(r.event_type ?? '').startsWith('step.audit.'))
+        .map((r) => {
+          const p = (r.after_state ?? {}) as any;
+          const names = (a: unknown) => (Array.isArray(a) ? a.map((f: any) => f?.label).filter(Boolean).join(' | ') : '');
+          return {
+            id: r.id,
+            recorded_at: r.created_at,
+            completed_at: p.completedAt ?? null,
+            flow: p.flow ?? null,
+            step: p.step ?? null,
+            step_title: p.stepTitle ?? null,
+            status: p.status ?? String(r.event_type).replace('step.audit.', ''),
+            missing_count: Array.isArray(p.missing) ? p.missing.length : 0,
+            error_count: Array.isArray(p.errors) ? p.errors.length : 0,
+            interrupted_count: Array.isArray(p.interrupted) ? p.interrupted.length : 0,
+            missing: names(p.missing),
+            errors: names(p.errors),
+            interrupted: names(p.interrupted),
+            summary: r.reason ?? null,
+          };
+        }),
+    [filtered],
+  );
+
   function exportCsv() {
     const headers = ['created_at', 'event_type', 'decision_id', 'action_id', 'actor_user_id', 'reason'];
     const csv = [headers.join(',')]
@@ -47,6 +74,7 @@ export default function InternalAuditPage() {
     a.download = 'ic-denetim-ledger.csv';
     a.click();
   }
+
 
   return (
     <div className="p-6 space-y-6">
