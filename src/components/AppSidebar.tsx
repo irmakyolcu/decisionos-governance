@@ -47,6 +47,14 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
     ],
   },
   {
+    label: 'Denetim',
+    items: [
+      { title: 'İç Denetim', url: '/audit/internal', icon: Lock },
+      { title: 'Dış Denetim', url: '/audit/external', icon: Building },
+      { title: 'Uyum Raporları', url: '/compliance', icon: FileCheck },
+    ],
+  },
+  {
     label: 'Admin',
     items: [
       { title: 'Data Sources', url: '/data-sources', icon: Database },
