@@ -365,13 +365,15 @@ async function handleImport(req: Request, key: KeyRow) {
   const { data, error } = await admin.from(table).insert(rows).select('id');
   if (error) return json({ error: error.message, failed: errors }, 400);
 
-  await admin.from('audit_events').insert({
+  const { error: auditErr } = await admin.from('audit_events').insert({
     workspace_id: key.workspace_id,
-    actor_id: key.created_by,
-    action: 'api.import',
-    entity_type: entity,
-    metadata: { inserted: data?.length ?? 0, invalid: errors.length, api_key_id: key.id },
-  }).then(() => {}, () => {});
+    actor_user_id: key.created_by,
+    event_type: 'api.import',
+    reason: `Imported ${data?.length ?? 0} ${entity} record(s) via public API`,
+    metadata: { entity, inserted: data?.length ?? 0, invalid: errors.length, api_key_id: key.id },
+  });
+  if (auditErr) console.error('audit_events insert failed:', auditErr.message);
+
 
   return json({ inserted: data?.length ?? 0, ids: data?.map((d: any) => d.id) ?? [], invalid: errors.length, errors }, 201);
 }
