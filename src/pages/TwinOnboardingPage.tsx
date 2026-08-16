@@ -204,14 +204,33 @@ export default function TwinOnboardingPage() {
 
       {reports.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
-            Adım denetim raporları
-          </h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
+              Adım denetim raporları
+            </h2>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => downloadStepAudits(reports.map((r) => reportToRow(r)), 'json', 'twin-onboarding-step-audits')}
+              >
+                JSON
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => downloadStepAudits(reports.map((r) => reportToRow(r)), 'csv', 'twin-onboarding-step-audits')}
+              >
+                CSV
+              </Button>
+            </div>
+          </div>
           {reports.map((r) => (
             <StepAuditReportCard key={r.step} report={r} />
           ))}
         </div>
       )}
+
 
       <p className="text-center text-xs text-muted-foreground">
         Skip and explore — <button className="text-primary hover:underline" onClick={() => navigate('/')}>go to dashboard</button>
