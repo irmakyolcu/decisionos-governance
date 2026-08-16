@@ -82,12 +82,34 @@ export default function InternalAuditPage() {
     [filtered],
   );
 
+  /** Tüm rapor kayıtlarını tek bir veri satırına toplar. */
+  const summaryRow = useMemo(() => {
+    const flows = new Set(stepAuditRows.map((r) => r.flow).filter(Boolean));
+    const sum = (k: 'missing_count' | 'error_count' | 'interrupted_count') =>
+      stepAuditRows.reduce((a, r) => a + (r[k] ?? 0), 0);
+    const times = filtered.map((r) => r.created_at).filter(Boolean).sort();
+    return {
+      scope_event_type: eventType === ALL ? 'all' : eventType,
+      scope_flow: flow === ALL ? 'all' : flow,
+      report_count: stepAuditRows.length,
+      event_count: filtered.length,
+      flow_count: flows.size,
+      actor_count: actors,
+      missing_count: sum('missing_count'),
+      error_count: sum('error_count'),
+      interrupted_count: sum('interrupted_count'),
+      first_event_at: times[0] ?? null,
+      last_event_at: times[times.length - 1] ?? null,
+    };
+  }, [stepAuditRows, filtered, actors, eventType, flow]);
+
   const exportQuery = [
     'entities=audit',
     eventType !== ALL ? `event_type=${encodeURIComponent(eventType)}` : '',
     flow !== ALL ? `flow=${encodeURIComponent(flow)}` : '',
     from ? `since=${from}` : '',
   ].filter(Boolean).join('&');
+
 
 
   return (
@@ -126,6 +148,53 @@ export default function InternalAuditPage() {
           <Input placeholder="Filtrele…" value={q} onChange={(e) => setQ(e.target.value)} className="w-56" />
         </div>
       </div>
+
+      <Card>
+        <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-sm">Toplu rapor satırı</CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadRows([summaryRow], 'json', 'audit_summary', 'ic-denetim-ozet')}
+            >
+              <Download className="h-4 w-4 mr-2" /> JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadRows([summaryRow], 'csv', 'audit_summary', 'ic-denetim-ozet')}
+            >
+              <Download className="h-4 w-4 mr-2" /> CSV
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Seçili filtredeki tüm defter kayıtları tek bir veri satırına toplandı.
+          </p>
+          <div className="overflow-x-auto rounded-md border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-xs tracking-wide text-muted-foreground">
+                <tr>
+                  {Object.keys(summaryRow).map((k) => (
+                    <th key={k} className="px-3 py-2 text-left font-medium whitespace-nowrap">{k}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {Object.entries(summaryRow).map(([k, v]) => (
+                    <td key={k} className="px-3 py-2 whitespace-nowrap font-mono text-xs">
+                      {v === null ? '—' : String(v)}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="pb-2">
