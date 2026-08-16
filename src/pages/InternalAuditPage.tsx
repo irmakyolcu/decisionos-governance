@@ -3,16 +3,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTable } from '@/hooks/useGovernance';
 import { NavLink } from '@/components/NavLink';
 import { Download, Lock, ShieldCheck, History, EyeOff } from 'lucide-react';
-import { downloadStepAudits } from '@/lib/stepAudit';
+import { downloadStepAudits, downloadRows, auditEventToRow } from '@/lib/stepAudit';
+
+const ALL = '__all__';
 
 export default function InternalAuditPage() {
   const { rows } = useTable<any>('audit_events');
   const [q, setQ] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [eventType, setEventType] = useState(ALL);
+  const [flow, setFlow] = useState(ALL);
+
+  const eventTypeOptions = useMemo(
+    () => [...new Set(rows.map((r) => r.event_type).filter(Boolean))].sort(),
+    [rows],
+  );
+  const flowOptions = useMemo(
+    () => [...new Set(rows.map((r) => (r.after_state as any)?.flow).filter(Boolean))].sort(),
+    [rows],
+  );
 
   const filtered = useMemo(
     () =>
@@ -21,10 +35,14 @@ export default function InternalAuditPage() {
         if (q && !text.includes(q.toLowerCase())) return false;
         if (from && new Date(r.created_at) < new Date(from)) return false;
         if (to && new Date(r.created_at) > new Date(`${to}T23:59:59`)) return false;
+        if (eventType !== ALL && r.event_type !== eventType) return false;
+        if (flow !== ALL && (r.after_state as any)?.flow !== flow) return false;
         return true;
       }),
-    [rows, q, from, to],
+    [rows, q, from, to, eventType, flow],
   );
+
+  const auditReportRows = useMemo(() => filtered.map(auditEventToRow), [filtered]);
 
   const byType = useMemo(() => {
     const m = new Map<string, number>();
