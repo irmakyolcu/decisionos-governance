@@ -150,6 +150,53 @@ export default function InternalAuditPage() {
       </div>
 
       <Card>
+        <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-sm">Toplu rapor satırı</CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadRows([summaryRow], 'json', 'audit_summary', 'ic-denetim-ozet')}
+            >
+              <Download className="h-4 w-4 mr-2" /> JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadRows([summaryRow], 'csv', 'audit_summary', 'ic-denetim-ozet')}
+            >
+              <Download className="h-4 w-4 mr-2" /> CSV
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Seçili filtredeki tüm defter kayıtları tek bir veri satırına toplandı.
+          </p>
+          <div className="overflow-x-auto rounded-md border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  {Object.keys(summaryRow).map((k) => (
+                    <th key={k} className="px-3 py-2 text-left font-medium whitespace-nowrap">{k}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {Object.entries(summaryRow).map(([k, v]) => (
+                    <td key={k} className="px-3 py-2 whitespace-nowrap font-mono text-xs">
+                      {v === null ? '—' : String(v)}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Denetim defteri raporu</CardTitle>
         </CardHeader>
