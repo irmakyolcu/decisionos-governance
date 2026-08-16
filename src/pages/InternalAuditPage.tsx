@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTable } from '@/hooks/useGovernance';
 import { NavLink } from '@/components/NavLink';
 import { Download, Lock, ShieldCheck, History, EyeOff } from 'lucide-react';
+import { downloadStepAudits } from '@/lib/stepAudit';
 
 export default function InternalAuditPage() {
   const { rows } = useTable<any>('audit_events');
@@ -36,6 +37,33 @@ export default function InternalAuditPage() {
     [filtered],
   );
 
+  const stepAuditRows = useMemo(
+    () =>
+      filtered
+        .filter((r) => String(r.event_type ?? '').startsWith('step.audit.'))
+        .map((r) => {
+          const p = (r.after_state ?? {}) as any;
+          const names = (a: unknown) => (Array.isArray(a) ? a.map((f: any) => f?.label).filter(Boolean).join(' | ') : '');
+          return {
+            id: r.id,
+            recorded_at: r.created_at,
+            completed_at: p.completedAt ?? null,
+            flow: p.flow ?? null,
+            step: p.step ?? null,
+            step_title: p.stepTitle ?? null,
+            status: p.status ?? String(r.event_type).replace('step.audit.', ''),
+            missing_count: Array.isArray(p.missing) ? p.missing.length : 0,
+            error_count: Array.isArray(p.errors) ? p.errors.length : 0,
+            interrupted_count: Array.isArray(p.interrupted) ? p.interrupted.length : 0,
+            missing: names(p.missing),
+            errors: names(p.errors),
+            interrupted: names(p.interrupted),
+            summary: r.reason ?? null,
+          };
+        }),
+    [filtered],
+  );
+
   function exportCsv() {
     const headers = ['created_at', 'event_type', 'decision_id', 'action_id', 'actor_user_id', 'reason'];
     const csv = [headers.join(',')]
@@ -47,6 +75,7 @@ export default function InternalAuditPage() {
     a.download = 'ic-denetim-ledger.csv';
     a.click();
   }
+
 
   return (
     <div className="p-6 space-y-6">
@@ -70,6 +99,36 @@ export default function InternalAuditPage() {
           </Button>
         </div>
       </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Adım denetim raporları</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {stepAuditRows.length} otomatik adım raporu — eksik bilgi, yakalanan hata ve kesilen akış özetleri.
+            Aynı şema dışa aktarım uç noktasında da mevcut: <code className="text-xs">GET /v1/export?entities=step_audits&amp;format=json|csv</code>
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!stepAuditRows.length}
+              onClick={() => downloadStepAudits(stepAuditRows as any, 'json', 'adim-denetim-raporlari')}
+            >
+              <Download className="h-4 w-4 mr-2" /> JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!stepAuditRows.length}
+              onClick={() => downloadStepAudits(stepAuditRows as any, 'csv', 'adim-denetim-raporlari')}
+            >
+              <Download className="h-4 w-4 mr-2" /> CSV
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>

@@ -237,7 +237,33 @@ const EXPORTABLE: Record<string, { table: string; scope: string }> = {
   risks: { table: 'risks', scope: 'risks:read' },
   meetings: { table: 'meetings', scope: 'meetings:read' },
   audit: { table: 'audit_events', scope: 'audit:read' },
+  step_audits: { table: 'audit_events', scope: 'audit:read' },
 };
+
+/** Flatten step-audit ledger rows into a tabular, report-friendly shape. */
+function flattenStepAudits(rows: Record<string, any>[]) {
+  return rows.map((r) => {
+    const p = (r.after_state ?? {}) as Record<string, any>;
+    const names = (arr: any[]) => (Array.isArray(arr) ? arr.map((f) => f?.label).filter(Boolean).join(' | ') : '');
+    return {
+      id: r.id,
+      recorded_at: r.created_at,
+      completed_at: p.completedAt ?? null,
+      flow: p.flow ?? null,
+      step: p.step ?? null,
+      step_title: p.stepTitle ?? null,
+      status: p.status ?? String(r.event_type ?? '').replace('step.audit.', ''),
+      missing_count: Array.isArray(p.missing) ? p.missing.length : 0,
+      error_count: Array.isArray(p.errors) ? p.errors.length : 0,
+      interrupted_count: Array.isArray(p.interrupted) ? p.interrupted.length : 0,
+      missing: names(p.missing),
+      errors: names(p.errors),
+      interrupted: names(p.interrupted),
+      summary: r.reason ?? null,
+      actor_user_id: r.actor_user_id ?? null,
+    };
+  });
+}
 
 function toCsv(rows: Record<string, unknown>[]) {
   if (!rows.length) return '';
@@ -263,18 +289,27 @@ async function handleExport(req: Request, key: KeyRow) {
   if (unknown.length) return json({ error: `Unknown entities: ${unknown.join(', ')}`, available: Object.keys(EXPORTABLE) }, 400);
   if (format === 'csv' && requested.length !== 1) return json({ error: 'CSV export supports exactly one entity' }, 400);
 
+  const flowFilter = url.searchParams.get('flow');
   const out: Record<string, unknown[]> = {};
   for (const name of requested) {
     const { table, scope } = EXPORTABLE[name];
     const denied = requireScope(key, scope, 'viewer');
     if (denied) return denied;
+    const isStepAudit = name === 'step_audits';
     let q = admin.from(table).select('*').eq('workspace_id', key.workspace_id)
       .order('created_at', { ascending: false }).limit(limit);
-    if (since) q = q.gte('updated_at', since);
+    if (isStepAudit) q = q.like('event_type', 'step.audit.%');
+    if (since) q = q.gte(isStepAudit || table === 'audit_events' ? 'created_at' : 'updated_at', since);
     const { data, error } = await q;
     if (error) return json({ error: `${name}: ${error.message}` }, 400);
-    out[name] = data ?? [];
+    let rows = (data ?? []) as Record<string, any>[];
+    if (isStepAudit) {
+      rows = flattenStepAudits(rows);
+      if (flowFilter) rows = rows.filter((r) => String(r.flow ?? '').toLowerCase() === flowFilter.toLowerCase());
+    }
+    out[name] = rows;
   }
+
 
   if (format === 'csv') {
     const name = requested[0];
@@ -414,10 +449,10 @@ Deno.serve(async (req) => {
         'GET  /v1/processes          scope=processes:read',
         'GET  /v1/process-links      scope=processes:read (?from_process_id=&limit=)',
         'POST /v1/process-links      scope=processes:write {from_process_id,to_process_id,relation,note}',
-        'GET  /v1/export             (?entities=decisions,knowledge,...&format=json|csv&since=ISO&limit=) — needs read scope of each entity',
+        'GET  /v1/export             (?entities=decisions,knowledge,step_audits,...&format=json|csv&since=ISO&limit=&flow=) — needs read scope of each entity',
         'POST /v1/import             {entity, records[], dry_run?} — needs write scope of the entity',
       ],
-      exportable_entities: ['decisions', 'knowledge', 'processes', 'process_links', 'projects', 'clients', 'risks', 'meetings', 'audit'],
+      exportable_entities: ['decisions', 'knowledge', 'processes', 'process_links', 'projects', 'clients', 'risks', 'meetings', 'audit', 'step_audits'],
       importable_entities: ['decisions', 'knowledge', 'processes', 'risks'],
     });
   }
