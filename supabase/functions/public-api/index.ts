@@ -449,10 +449,8 @@ Deno.serve(async (req) => {
         'GET  /v1/processes          scope=processes:read',
         'GET  /v1/process-links      scope=processes:read (?from_process_id=&limit=)',
         'POST /v1/process-links      scope=processes:write {from_process_id,to_process_id,relation,note}',
-        'GET  /v1/export             (?entities=decisions,knowledge,...&format=json|csv&since=ISO&limit=) — needs read scope of each entity',
-        'POST /v1/import             {entity, records[], dry_run?} — needs write scope of the entity',
-      ],
-      exportable_entities: ['decisions', 'knowledge', 'processes', 'process_links', 'projects', 'clients', 'risks', 'meetings', 'audit'],
+        'GET  /v1/export             (?entities=decisions,knowledge,step_audits,...&format=json|csv&since=ISO&limit=&flow=) — needs read scope of each entity',
+
       importable_entities: ['decisions', 'knowledge', 'processes', 'risks'],
     });
   }
