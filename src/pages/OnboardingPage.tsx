@@ -61,7 +61,7 @@ export default function OnboardingPage() {
     await new Promise((r) => setTimeout(r, 1500));
 
     await refetch();
-    navigate('/', { replace: true });
+    navigate('/twin-onboarding', { replace: true });
   };
 
   if (step === 'creating') {
