@@ -129,6 +129,36 @@ export default function InternalAuditPage() {
 
       <Card>
         <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Denetim defteri raporu</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {auditReportRows.length} olay — seçili olay türü ve akış filtreleriyle. Aynı şema dışa aktarım uç noktasında:{' '}
+            <code className="text-xs">GET /v1/export?{exportQuery}&amp;format=json|csv</code>
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!auditReportRows.length}
+              onClick={() => downloadRows(auditReportRows as any, 'json', 'audit', 'ic-denetim-raporu')}
+            >
+              <Download className="h-4 w-4 mr-2" /> JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!auditReportRows.length}
+              onClick={() => downloadRows(auditReportRows as any, 'csv', 'audit', 'ic-denetim-raporu')}
+            >
+              <Download className="h-4 w-4 mr-2" /> CSV
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
           <CardTitle className="text-sm">Adım denetim raporları</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
