@@ -95,9 +95,10 @@ export default function OnboardingPage() {
           <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Building2 className="h-7 w-7 text-primary" />
           </div>
+          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Kurulum — Adım 1 / 2</p>
           <h1 className="text-2xl font-bold text-foreground mb-2">Hoş geldiniz!</h1>
           <p className="text-muted-foreground text-sm">
-            Başlamak için şirketinizin workspace'ini oluşturun.
+            Önce şirket workspace'inizi oluşturun, ardından Digital Twin kurulumuna geçelim.
           </p>
         </div>
 
