@@ -82,12 +82,34 @@ export default function InternalAuditPage() {
     [filtered],
   );
 
+  /** Tüm rapor kayıtlarını tek bir veri satırına toplar. */
+  const summaryRow = useMemo(() => {
+    const flows = new Set(stepAuditRows.map((r) => r.flow).filter(Boolean));
+    const sum = (k: 'missing_count' | 'error_count' | 'interrupted_count') =>
+      stepAuditRows.reduce((a, r) => a + (r[k] ?? 0), 0);
+    const times = filtered.map((r) => r.created_at).filter(Boolean).sort();
+    return {
+      scope_event_type: eventType === ALL ? 'all' : eventType,
+      scope_flow: flow === ALL ? 'all' : flow,
+      report_count: stepAuditRows.length,
+      event_count: filtered.length,
+      flow_count: flows.size,
+      actor_count: actors,
+      missing_count: sum('missing_count'),
+      error_count: sum('error_count'),
+      interrupted_count: sum('interrupted_count'),
+      first_event_at: times[0] ?? null,
+      last_event_at: times[times.length - 1] ?? null,
+    };
+  }, [stepAuditRows, filtered, actors, eventType, flow]);
+
   const exportQuery = [
     'entities=audit',
     eventType !== ALL ? `event_type=${encodeURIComponent(eventType)}` : '',
     flow !== ALL ? `flow=${encodeURIComponent(flow)}` : '',
     from ? `since=${from}` : '',
   ].filter(Boolean).join('&');
+
 
 
   return (
