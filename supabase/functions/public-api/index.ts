@@ -226,6 +226,157 @@ async function handleReadOnly(req: Request, key: KeyRow, table: string, scope: s
   return json({ data });
 }
 
+// ─── Data OUT: bulk export ─────────────────────────────────────────────────
+const EXPORTABLE: Record<string, { table: string; scope: string }> = {
+  decisions: { table: 'decisions', scope: 'decisions:read' },
+  knowledge: { table: 'knowledge_items', scope: 'knowledge:read' },
+  processes: { table: 'processes', scope: 'processes:read' },
+  process_links: { table: 'process_links', scope: 'processes:read' },
+  projects: { table: 'projects', scope: 'projects:read' },
+  clients: { table: 'clients', scope: 'clients:read' },
+  risks: { table: 'risks', scope: 'risks:read' },
+  meetings: { table: 'meetings', scope: 'meetings:read' },
+  audit: { table: 'audit_events', scope: 'audit:read' },
+};
+
+function toCsv(rows: Record<string, unknown>[]) {
+  if (!rows.length) return '';
+  const cols = Array.from(new Set(rows.flatMap((r) => Object.keys(r))));
+  const esc = (v: unknown) => {
+    if (v === null || v === undefined) return '';
+    const s = typeof v === 'object' ? JSON.stringify(v) : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [cols.join(','), ...rows.map((r) => cols.map((c) => esc(r[c])).join(','))].join('\n');
+}
+
+async function handleExport(req: Request, key: KeyRow) {
+  if (req.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
+  const url = new URL(req.url);
+  const requested = (url.searchParams.get('entities') ?? 'decisions')
+    .split(',').map((s) => s.trim()).filter(Boolean);
+  const format = (url.searchParams.get('format') ?? 'json').toLowerCase();
+  const since = url.searchParams.get('since');
+  const limit = Math.min(parseInt(url.searchParams.get('limit') ?? '500'), 2000);
+
+  const unknown = requested.filter((e) => !EXPORTABLE[e]);
+  if (unknown.length) return json({ error: `Unknown entities: ${unknown.join(', ')}`, available: Object.keys(EXPORTABLE) }, 400);
+  if (format === 'csv' && requested.length !== 1) return json({ error: 'CSV export supports exactly one entity' }, 400);
+
+  const out: Record<string, unknown[]> = {};
+  for (const name of requested) {
+    const { table, scope } = EXPORTABLE[name];
+    const denied = requireScope(key, scope, 'viewer');
+    if (denied) return denied;
+    let q = admin.from(table).select('*').eq('workspace_id', key.workspace_id)
+      .order('created_at', { ascending: false }).limit(limit);
+    if (since) q = q.gte('updated_at', since);
+    const { data, error } = await q;
+    if (error) return json({ error: `${name}: ${error.message}` }, 400);
+    out[name] = data ?? [];
+  }
+
+  if (format === 'csv') {
+    const name = requested[0];
+    return new Response(toCsv(out[name] as Record<string, unknown>[]), {
+      headers: { ...corsHeaders, 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="${name}.csv"` },
+    });
+  }
+  return json({ exported_at: new Date().toISOString(), workspace_id: key.workspace_id, counts: Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.length])), data: out });
+}
+
+// ─── Data IN: bulk import ──────────────────────────────────────────────────
+type Mapper = (r: Record<string, any>, key: KeyRow) => Record<string, unknown> | string;
+
+const IMPORTABLE: Record<string, { table: string; scope: string; map: Mapper }> = {
+  decisions: {
+    table: 'decisions', scope: 'decisions:write',
+    map: (r, key) => !r.title ? 'title is required' : ({
+      workspace_id: key.workspace_id, created_by: key.created_by,
+      title: String(r.title).slice(0, 500),
+      description: r.description ? String(r.description).slice(0, 5000) : null,
+      problem_statement: r.problem_statement ? String(r.problem_statement).slice(0, 5000) : null,
+      budget: typeof r.budget === 'number' ? r.budget : null,
+      risk_level: r.risk_level ?? 'Medium',
+      status: 'Draft',
+      options_considered: Array.isArray(r.options_considered) ? r.options_considered : [],
+    }),
+  },
+  knowledge: {
+    table: 'knowledge_items', scope: 'knowledge:write',
+    map: (r, key) => !r.title || !r.content ? 'title and content are required' : ({
+      workspace_id: key.workspace_id, created_by: key.created_by,
+      title: String(r.title).slice(0, 500),
+      content: String(r.content).slice(0, 20000),
+      summary: r.summary ? String(r.summary).slice(0, 1000) : String(r.content).slice(0, 300),
+      tags: Array.isArray(r.tags) ? r.tags.map(String).slice(0, 20) : [],
+      confidentiality: r.confidentiality ?? 'internal',
+    }),
+  },
+  processes: {
+    table: 'processes', scope: 'processes:write',
+    map: (r, key) => !r.name ? 'name is required' : ({
+      workspace_id: key.workspace_id, created_by: key.created_by,
+      name: String(r.name).slice(0, 300),
+      description: r.description ? String(r.description).slice(0, 5000) : null,
+      department: r.department ? String(r.department).slice(0, 120) : null,
+    }),
+  },
+  risks: {
+    table: 'risks', scope: 'risks:write',
+    map: (r, key) => !r.title ? 'title is required' : ({
+      workspace_id: key.workspace_id, created_by: key.created_by,
+      title: String(r.title).slice(0, 300),
+      description: r.description ? String(r.description).slice(0, 5000) : null,
+      severity: r.severity ?? 'medium',
+      status: r.status ?? 'new',
+      department: r.department ? String(r.department).slice(0, 120) : null,
+    }),
+  },
+};
+
+async function handleImport(req: Request, key: KeyRow) {
+  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+  const body = await req.json().catch(() => null);
+  const entity = body?.entity;
+  const records = body?.records;
+  if (typeof entity !== 'string' || !IMPORTABLE[entity])
+    return json({ error: 'Invalid entity', available: Object.keys(IMPORTABLE) }, 400);
+  if (!Array.isArray(records) || records.length === 0)
+    return json({ error: 'records must be a non-empty array' }, 400);
+  if (records.length > 500) return json({ error: 'Max 500 records per request' }, 400);
+
+  const { table, scope, map } = IMPORTABLE[entity];
+  const denied = requireScope(key, scope, 'writer');
+  if (denied) return denied;
+
+  const rows: Record<string, unknown>[] = [];
+  const errors: { index: number; error: string }[] = [];
+  records.forEach((r: unknown, i: number) => {
+    if (!r || typeof r !== 'object') { errors.push({ index: i, error: 'record must be an object' }); return; }
+    const mapped = map(r as Record<string, any>, key);
+    if (typeof mapped === 'string') errors.push({ index: i, error: mapped });
+    else rows.push(mapped);
+  });
+
+  if (body?.dry_run) return json({ dry_run: true, valid: rows.length, invalid: errors.length, errors });
+  if (!rows.length) return json({ inserted: 0, failed: errors.length, errors }, 400);
+
+  const { data, error } = await admin.from(table).insert(rows).select('id');
+  if (error) return json({ error: error.message, failed: errors }, 400);
+
+  await admin.from('audit_events').insert({
+    workspace_id: key.workspace_id,
+    actor_id: key.created_by,
+    action: 'api.import',
+    entity_type: entity,
+    metadata: { inserted: data?.length ?? 0, invalid: errors.length, api_key_id: key.id },
+  }).then(() => {}, () => {});
+
+  return json({ inserted: data?.length ?? 0, ids: data?.map((d: any) => d.id) ?? [], invalid: errors.length, errors }, 201);
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
