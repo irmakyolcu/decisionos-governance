@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, Crown, BookOpen, Network, Inbox, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
-import { buildStepAudit, recordStepAudit, type StepAuditCheck, type StepAuditReport } from '@/lib/stepAudit';
+import { buildStepAudit, recordStepAudit, downloadStepAudits, reportToRow, type StepAuditCheck, type StepAuditReport } from '@/lib/stepAudit';
 import { StepAuditReportCard } from '@/components/StepAuditReportCard';
 
 const TWIN_ONBOARDING_KEY = 'decisionos.twinOnboarded';
