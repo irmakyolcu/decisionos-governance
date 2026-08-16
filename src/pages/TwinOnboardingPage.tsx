@@ -36,8 +36,8 @@ export default function TwinOnboardingPage() {
   const { workspace } = useWorkspace();
   const [reports, setReports] = useState<StepAuditReport[]>([]);
 
-  const auditStep = (s: number): StepAuditReport => {
-    const findings: StepAuditCheck[] = [];
+  const auditStep = (s: number, extra: StepAuditCheck[] = []): StepAuditReport => {
+    const findings: StepAuditCheck[] = [...extra];
     if (s === 1) {
       const filled = priorities.filter((p) => p.trim()).length;
       if (filled === 0) findings.push({ kind: 'interrupted', label: 'CEO önceliği girilmedi', detail: 'Twin ağırlıklandırma yapamaz; adım boş tamamlandı.' });
