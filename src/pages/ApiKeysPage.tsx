@@ -17,8 +17,13 @@ const ALL_SCOPES = [
   'decisions:read', 'decisions:write',
   'lessons:read', 'lessons:write',
   'knowledge:read', 'knowledge:write',
+  'processes:read', 'processes:write',
+  'projects:read', 'clients:read',
+  'risks:read', 'risks:write',
+  'meetings:read',
   'notifications:read', 'audit:read',
 ];
+
 
 const API_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/public-api`;
 
