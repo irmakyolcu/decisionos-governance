@@ -8,7 +8,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 set -a; source ./.env; set +a
 
-MIG_DIR="../supabase/migrations"
+# In the offline bundle the SQL lives at ./supabase; in the git repo at ../supabase.
+if [ -d "./supabase/migrations" ]; then
+  MIG_DIR="./supabase/migrations"
+elif [ -d "../supabase/migrations" ]; then
+  MIG_DIR="../supabase/migrations"
+else
+  echo "No supabase/migrations directory found next to the deploy folder." >&2
+  exit 1
+fi
 PSQL=(docker compose exec -T db psql -v ON_ERROR_STOP=1 -U postgres -d "${POSTGRES_DB}")
 
 echo "Waiting for database..."
