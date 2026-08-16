@@ -45,8 +45,23 @@ done
 docker rm -f dos-ollama-pull >/dev/null
 
 echo "==> Copying deployment files"
-cp -r ./docker-compose.yml ./kong.yml ./nginx.conf ./Dockerfile ./init ./scripts ./.env.example ./INSTALL.md "$OUT/"
+cp -r ./docker-compose.yml ./kong.yml ./nginx.conf ./Dockerfile ./init ./scripts \
+      ./.env.example ./INSTALL.md ./LICENSING.md "$OUT/"
 cp -r ../supabase "$OUT/supabase"
+# The customer host never runs the vendor signing scripts.
+rm -f "$OUT/scripts/license-keygen.sh" "$OUT/scripts/license-issue.sh"
+rm -f "$OUT/supabase/functions/_shared/aiClient_test.ts"
+printf '%s\n' "$VERSION" > "$OUT/VERSION"
+
+echo "==> Verifying bundle contents"
+for req in docker-compose.yml kong.yml nginx.conf Dockerfile INSTALL.md LICENSING.md \
+           init/00-roles.sql scripts/install.sh scripts/generate-keys.sh scripts/migrate.sh \
+           scripts/license-activate.sh scripts/create-admin.sh .env.example \
+           supabase/migrations supabase/functions/license-status/index.ts \
+           supabase/functions/_shared/license.ts supabase/functions/_shared/aiClient.ts; do
+  [ -e "$OUT/$req" ] || { echo "MISSING from bundle: $req" >&2; exit 1; }
+done
+echo "    $(ls "$OUT"/supabase/migrations/*.sql | wc -l) migration(s), $(ls "$OUT"/supabase/functions | wc -l) edge function(s)"
 
 tar czf "${OUT}.tar.gz" "$OUT"
 rm -rf "$OUT"

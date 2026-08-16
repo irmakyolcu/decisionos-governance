@@ -35,6 +35,35 @@ cd deploy
 yerel LLM ağırlıkları, migration dosyaları ve kurulum scriptleri içinde.
 Bu dosyayı USB/ onaylı transfer kanalıyla müşteri sunucusuna taşıyın.
 
+### Pakete giren dosyalar
+
+`offline-bundle.sh` paketi oluşturduktan sonra aşağıdaki listeyi doğrular;
+eksik dosya varsa paketleme hata verip durur.
+
+```
+decisionos-offline-<sürüm>/
+├── VERSION
+├── docker-compose.yml, Dockerfile, kong.yml, nginx.conf
+├── .env.example                 # tüm ortam değişkenleri (generate-keys.sh doldurur)
+├── INSTALL.md, LICENSING.md
+├── init/                        # 00-roles.sql, 01-extensions.sql
+├── images/decisionos-images.tar.gz
+├── models/                      # yerel LLM ağırlıkları (ollama)
+├── scripts/
+│   ├── install.sh, generate-keys.sh, migrate.sh
+│   ├── create-admin.sh, license-activate.sh
+│   └── (license-keygen.sh ve license-issue.sh pakete GİRMEZ — sadece üretici tarafı)
+└── supabase/
+    ├── migrations/*.sql
+    └── functions/                # license-status, _shared/license.ts, _shared/aiClient.ts dahil
+```
+
+Pakete asla girmemesi gerekenler: `deploy/.env`, `volumes/`,
+`license-signing-*.pem` (üretici imza özel anahtarı) — `deploy/.gitignore`
+bunları zaten dışarıda tutar.
+
+
+
 ---
 
 ## 3. Müşteri sunucusunda kurulum
@@ -51,7 +80,7 @@ cd decisionos-offline-1.0.0
 2. `scripts/generate-keys.sh` ile tüm gizli anahtarları üretir ve `.env` yazar
 3. Yerel LLM ağırlıklarını `volumes/ollama` içine kopyalar
 4. Stack'i ayağa kaldırır (`docker compose up -d`)
-5. 36 veritabanı migration'ını sırayla ve idempotent şekilde uygular
+5. Tüm veritabanı migration'larını (bu sürümde 38 adet) sırayla ve idempotent uygular
 6. Lisans durumunu kontrol eder
 
 Kurulum bittiğinde uygulama `http://<sunucu-ip>:8080` adresinde çalışır.
