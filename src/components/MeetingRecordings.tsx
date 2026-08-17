@@ -29,6 +29,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const { workspace } = useWorkspace();
   const { can } = usePermissions();
   const canUpload = can('uploadRecording');
   const canDelete = can('deleteRecording');
