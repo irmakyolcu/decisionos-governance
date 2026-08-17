@@ -5,6 +5,7 @@ import { Upload, FileAudio, Trash2, Loader2, Play, Download } from 'lucide-react
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/lib/permissions';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 
 interface Recording {
   id: string;
