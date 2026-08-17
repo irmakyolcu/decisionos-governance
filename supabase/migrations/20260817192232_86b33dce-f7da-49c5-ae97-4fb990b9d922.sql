@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS public.workspace_members_single_bootstrap_admin;

@@ -5,6 +5,7 @@ import { Upload, FileAudio, Trash2, Loader2, Play, Download } from 'lucide-react
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/lib/permissions';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 
 interface Recording {
   id: string;
@@ -28,6 +29,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const { workspace } = useWorkspace();
   const { can } = usePermissions();
   const canUpload = can('uploadRecording');
   const canDelete = can('deleteRecording');
@@ -62,6 +64,11 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
       return;
     }
 
+    if (!user?.id || !workspace?.id) {
+      toast({ title: 'Oturum gerekli', description: 'Yükleme için çalışma alanına giriş yapın.', variant: 'destructive' });
+      return;
+    }
+
     setUploading(true);
     const filePath = `${meetingId}/${Date.now()}_${file.name}`;
 
@@ -83,7 +90,8 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
         file_path: filePath,
         file_size: file.size,
         mime_type: file.type || 'audio/mpeg',
-        uploaded_by: user?.id ?? null,
+        uploaded_by: user.id,
+        workspace_id: workspace.id,
       });
 
     if (dbError) {

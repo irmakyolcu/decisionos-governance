@@ -2252,8 +2252,8 @@ export type Database = {
           mime_type: string
           notes: string | null
           uploaded_at: string
-          uploaded_by: string | null
-          workspace_id: string | null
+          uploaded_by: string
+          workspace_id: string
         }
         Insert: {
           file_name: string
@@ -2264,8 +2264,8 @@ export type Database = {
           mime_type?: string
           notes?: string | null
           uploaded_at?: string
-          uploaded_by?: string | null
-          workspace_id?: string | null
+          uploaded_by: string
+          workspace_id: string
         }
         Update: {
           file_name?: string
@@ -2276,8 +2276,8 @@ export type Database = {
           mime_type?: string
           notes?: string | null
           uploaded_at?: string
-          uploaded_by?: string | null
-          workspace_id?: string | null
+          uploaded_by?: string
+          workspace_id?: string
         }
         Relationships: [
           {
