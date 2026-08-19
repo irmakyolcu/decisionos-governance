@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 import { useMeetings } from '@/hooks/useMeetings';
 import { useToast } from '@/hooks/use-toast';
+import posthog from '@/lib/posthog';
 
 export function CreateMeetingDialog({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -24,6 +25,7 @@ export function CreateMeetingDialog({ trigger }: { trigger?: React.ReactNode }) 
     setSubmitting(true);
     try {
       await createMeeting({ title: title.trim(), date, startTime, endTime, location: location.trim() });
+      posthog.capture('meeting_created', { has_location: location.trim().length > 0 });
       toast({ title: 'Toplantı oluşturuldu', description: title });
       setOpen(false);
       setTitle(''); setLocation('');

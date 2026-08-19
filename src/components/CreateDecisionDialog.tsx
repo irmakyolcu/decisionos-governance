@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react';
 import { useDecisions } from '@/hooks/useDecisions';
 import { useToast } from '@/hooks/use-toast';
 import type { RiskLevel } from '@/types/decision';
+import posthog from '@/lib/posthog';
 
 export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -33,6 +34,10 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
         budget: Number(budget) || 0,
         riskLevel,
         status: 'Under Review',
+      });
+      posthog.capture('decision_created', {
+        risk_level: riskLevel,
+        has_budget: Number(budget) > 0,
       });
       toast({ title: 'Karar oluşturuldu', description: title });
       setOpen(false);

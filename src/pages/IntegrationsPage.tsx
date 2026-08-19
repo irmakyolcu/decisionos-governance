@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { CATALOG, CATEGORY_LABELS, type CatalogEntry } from '@/data/integrationsCatalog';
+import posthog from '@/lib/posthog';
 
 type Integration = {
   id: string;
@@ -69,6 +70,7 @@ export default function IntegrationsPage() {
       } else {
         await supabase.from('integrations').insert(payload);
       }
+      posthog.capture('integration_connected', { provider: entry.provider, kind: entry.kind });
       toast.success(`${entry.display_name} connected (simulated)`);
       load();
     } catch (e) {
@@ -83,6 +85,7 @@ export default function IntegrationsPage() {
     if (!existing || !isAdmin) return;
     setBusyProvider(entry.provider);
     await supabase.from('integrations').update({ status: 'disconnected' }).eq('id', existing.id);
+    posthog.capture('integration_disconnected', { provider: entry.provider, kind: entry.kind });
     toast.success(`${entry.display_name} disconnected`);
     setBusyProvider(null);
     load();
