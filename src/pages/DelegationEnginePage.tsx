@@ -31,8 +31,8 @@ export default function DelegationEnginePage() {
         {levels.map((l) => (
           <Card key={l.key} className={`border ${l.cls}`}>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2 text-foreground">{l.icon}<span className="font-semibold text-sm">{l.key}</span></div>
-              <p className="text-xs text-muted-foreground">{l.desc}</p>
+              <div className="flex items-center gap-2 mb-2 text-foreground">{l.icon}<span className="font-semibold text-sm">{translate(l.key)}</span></div>
+              <p className="text-xs text-muted-foreground">{translate(l.desc)}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 {delegationRules.filter((r) => r.level === l.key).length} {translate("active rule(s)")}
               </p>

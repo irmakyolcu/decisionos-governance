@@ -49,7 +49,7 @@ export default function DecisionMemoryPage() {
         <div className="flex flex-wrap gap-2">
           <Button variant={active === 'All' ? 'default' : 'outline'} size="sm" onClick={() => setActive('All')}>{translate("All")}</Button>
           {CATS.map((c) => (
-            <Button key={c} variant={active === c ? 'default' : 'outline'} size="sm" onClick={() => setActive(c)}>{c}</Button>
+            <Button key={c} variant={active === c ? 'default' : 'outline'} size="sm" onClick={() => setActive(c)}>{translate(c)}</Button>
           ))}
         </div>
       </div>

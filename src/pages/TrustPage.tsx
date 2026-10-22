@@ -56,7 +56,7 @@ export default function TrustPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-1">{translate(s.title)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{translate(s.body)}</p>
                 </div>
               </div>
             </div>

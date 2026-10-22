@@ -1,10 +1,31 @@
 import { act, renderHook, cleanup } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { LanguageProvider, useLanguage } from './LanguageContext';
+import { LanguageProvider, useLanguage, translate, getLocale } from './LanguageContext';
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.restoreAllMocks(); });
 
 describe('language selection', () => {
+  it('preserves user input and canonical category values when switching languages', () => {
+    const userInput = 'Özgün karar açıklaması — unchanged';
+    const canonicalCategory = 'Finance';
+    const { result } = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    act(() => result.current.setLang('tr'));
+    expect(translate(userInput)).toBe(userInput);
+    expect(canonicalCategory).toBe('Finance');
+    expect(getLocale()).toBe('tr-TR');
+    act(() => result.current.setLang('en'));
+    expect(translate(userInput)).toBe(userInput);
+    expect(canonicalCategory).toBe('Finance');
+    expect(getLocale()).toBe('en-US');
+  });
+
+  it('substitutes dynamic values without translating their contents', () => {
+    const { result } = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    act(() => result.current.setLang('tr'));
+    const dynamic = 'Irmak — unchanged';
+    expect(translate('Uncatalogued {name}', { name: dynamic })).toBe('Uncatalogued Irmak — unchanged');
+    expect(translate(null)).toBe('');
+  });
   it('persists English and restores it with the matching locale', () => {
     const first = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
     act(() => first.result.current.setLang('en'));

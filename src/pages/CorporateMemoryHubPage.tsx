@@ -134,7 +134,7 @@ export default function CorporateMemoryHubPage() {
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground">{translate(s.label)}</div>
               <div className="text-2xl font-bold mt-1">{s.value}</div>
-              <div className="text-[11px] text-muted-foreground mt-1">{s.hint}</div>
+              <div className="text-[11px] text-muted-foreground mt-1">{translate(s.hint)}</div>
             </CardContent>
           </Card>
         ))}
@@ -176,8 +176,8 @@ export default function CorporateMemoryHubPage() {
                     </div>
                     <ArrowRight className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <h3 className="font-semibold mt-3">{s.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">{s.desc}</p>
+                  <h3 className="font-semibold mt-3">{translate(s.title)}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{translate(s.desc)}</p>
                 </CardContent>
               </Card>
             </Link>
