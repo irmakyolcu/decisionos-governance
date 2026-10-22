@@ -13,6 +13,7 @@ import { useLessons, type Lesson } from '@/hooks/useLessons';
 import { memoryDecisions } from '@/data/ceoTwin';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import LessonsAiInsights from '@/components/LessonsAiInsights';
 
 const CATEGORIES = ['Strategy', 'Product', 'Hiring', 'Sales', 'Ops', 'Finance', 'Partnership', 'Crisis'];
 
@@ -153,6 +154,8 @@ export default function LessonsLearnedPage() {
           </SelectContent>
         </Select>
       </CardContent></Card>
+
+      <LessonsAiInsights lessons={rows} />
 
       <div className="grid md:grid-cols-2 gap-3">
         {filtered.map((r) => {

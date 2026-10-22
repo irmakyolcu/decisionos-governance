@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage, translate } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,8 +20,8 @@ type Insights = {
 const CACHE = 'mem:lessons:ai-insights';
 
 export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
-  const { language, translate, getLocale } = useLanguage() as any;
-  const tr = language !== 'en';
+  const { lang, locale } = useLanguage();
+  const tr = lang !== 'en';
   const t = (trS: string, enS: string) => (tr ? trS : enS);
   const [data, setData] = useState<{ insights: Insights; generated_at: string } | null>(() => {
     try { return JSON.parse(localStorage.getItem(CACHE) || 'null'); } catch { return null; }
@@ -58,7 +58,7 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
       <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
         <CardTitle className="flex items-center gap-2 text-base"><Sparkles className="h-5 w-5 text-primary" /> {t('AI Önerileri', 'AI Recommendations')}</CardTitle>
         <div className="flex items-center gap-3">
-          {data && <span className="text-xs text-muted-foreground">{new Date(data.generated_at).toLocaleString(getLocale?.())}</span>}
+          {data && <span className="text-xs text-muted-foreground">{new Date(data.generated_at).toLocaleString(locale)}</span>}
           <Button size="sm" onClick={run} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
             {data ? t('Yeniden analiz et', 'Re-analyze') : t('AI analizi oluştur', 'Generate AI analysis')}
