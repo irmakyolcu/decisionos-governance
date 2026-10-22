@@ -211,10 +211,10 @@ export default function CompanyNotesPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>{translate("Kategori")}</Label>
-                  <Select value={translate(form.category)} onValueChange={(v) => setForm({ ...form, category: v })}>
+                  <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {CATEGORIES.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}
+                      {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -259,7 +259,7 @@ export default function CompanyNotesPage() {
           <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{translate("Tüm kategoriler")}</SelectItem>
-            {CATEGORIES.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
           </SelectContent>
         </Select>
       </CardContent></Card>

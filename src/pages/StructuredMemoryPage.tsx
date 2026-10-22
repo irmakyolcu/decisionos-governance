@@ -96,7 +96,7 @@ export default function StructuredMemoryPage() {
               <div><Label>{translate("Sensitivity")}</Label>
                 <Select value={form.sensitivity} onValueChange={(v) => setForm({...form, sensitivity: v})}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{SENS.map(s => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}</SelectContent>
+                  <SelectContent>{SENS.map(s => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function StructuredMemoryPage() {
           <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{translate("All sensitivities")}</SelectItem>
-            {SENS.map(s => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}
+            {SENS.map(s => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>

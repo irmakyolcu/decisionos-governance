@@ -211,7 +211,7 @@ export default function CompanySkillsPage() {
 
             <div><Label>{translate("Expected output")}</Label><Input value={form.expected_output} onChange={(e) => setForm({ ...form, expected_output: e.target.value })} /></div>
             <div><Label>{translate("Status")}</Label>
-              <Select value={translate(form.status)} onValueChange={(v) => setForm({ ...form, status: v })}>
+              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">{translate("Draft")}</SelectItem><SelectItem value="active">{translate("Active")}</SelectItem>

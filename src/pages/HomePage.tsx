@@ -110,8 +110,8 @@ export default function HomePage() {
                     <p className="text-xs text-muted-foreground mt-0.5">{translate("by")} {d.createdBy.name} · {d.createdAt.toLocaleDateString(getLocale())}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <RiskBadge level={translate(d.riskLevel)} />
-                    <StatusBadge status={translate(d.status)} />
+                    <RiskBadge level={d.riskLevel} />
+                    <StatusBadge status={d.status} />
                   </div>
                 </div>
               </div>

@@ -83,7 +83,7 @@ export default function DecisionRoomPage() {
           <h1 className="text-3xl font-bold tracking-tight mt-2">{decision.title}</h1>
           <p className="text-muted-foreground mt-1">{decision.description}</p>
           <div className="flex gap-2 mt-3">
-            <RiskBadge level={translate(decision.risk_level)} />
+            <RiskBadge level={decision.risk_level} />
             {decision.budget && <Badge variant="outline">€{Number(decision.budget).toLocaleString(getLocale())}</Badge>}
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function DecisionRoomPage() {
                   <div className="flex items-center gap-2">
                     <strong>{a.title}</strong>
                     {a.is_recommended && <Badge>{translate("Recommended")}</Badge>}
-                    <RiskBadge level={translate(a.risk_level)} />
+                    <RiskBadge level={a.risk_level} />
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">{a.description}</p>
                   <div className="grid grid-cols-4 gap-3 mt-3 text-xs">

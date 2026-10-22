@@ -24,7 +24,7 @@ export function RoleSwitcher({ currentRole, onChange }: RoleSwitcherProps) {
       <span className="text-xs text-muted-foreground font-medium">{translate("Viewing as:")}</span>
       {ALL_ROLES.map((role) => (
         <button
-          key={translate(role)}
+          key={role}
           onClick={() => onChange(role)}
           className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
             currentRole === role

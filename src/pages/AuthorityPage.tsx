@@ -27,7 +27,7 @@ export default function AuthorityPage() {
           </thead>
           <tbody>
             {authorityLimits.map((limit) => (
-              <tr key={translate(limit.role)}>
+              <tr key={limit.role}>
                 <td className="font-medium text-foreground">{translate(limit.role)}</td>
                 <td className="font-mono">{limit.maxBudgetDisplay}</td>
                 <td>

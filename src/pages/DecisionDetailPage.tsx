@@ -206,15 +206,15 @@ export default function DecisionDetailPage() {
             <div className="grid grid-cols-3 gap-3">
               <div><Label>{translate("Bütçe (€)")}</Label><Input type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} disabled={locked} /></div>
               <div><Label>Risk</Label>
-                <Select value={translate(form.risk_level)} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked}>
+                <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{RISKS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><Label>{translate("Durum")}</Label>
-                <Select value={translate(form.status)} onValueChange={(v) => setForm({ ...form, status: v })}>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{STATUSES.map(s => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}</SelectContent>
+                  <SelectContent>{STATUSES.map(s => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>

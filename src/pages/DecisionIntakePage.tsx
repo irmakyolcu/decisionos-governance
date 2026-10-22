@@ -128,16 +128,16 @@ export default function DecisionIntakePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="grid gap-2">
                   <Label>{translate("Category")}</Label>
-                  <Select value={translate(form.category)} onValueChange={(v) => update('category', v as DecisionCategory)}>
+                  <Select value={form.category} onValueChange={(v) => update('category', v as DecisionCategory)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{CATS.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}</SelectContent>
+                    <SelectContent>{CATS.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label>{translate("Urgency")}</Label>
                   <Select value={form.urgency} onValueChange={(v) => update('urgency', v as Urgency)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{URG.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}</SelectContent>
+                    <SelectContent>{URG.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               </div>
@@ -157,7 +157,7 @@ export default function DecisionIntakePage() {
                     <Label className="capitalize text-xs">{k.replace(/([A-Z])/g, ' $1')}</Label>
                     <Select value={form[k]} onValueChange={(v) => update(k, v as RiskBand)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>{RISKS.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}</SelectContent>
+                      <SelectContent>{RISKS.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                 ))}
@@ -231,10 +231,10 @@ function RecommendationCard({ intake, r, onCopy }: { intake: DecisionIntake; r: 
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <Stat label={translate("Risk level")} value={translate(r.riskLevel)} cls={riskClass(r.riskLevel)} />
+          <Stat label={translate("Risk level")} value={r.riskLevel} cls={riskClass(r.riskLevel)} />
           <Stat label={translate("CEO approval")} value={r.ceoApprovalRequired ? translate("Required") : translate("Not required")}
             cls={r.ceoApprovalRequired ? 'bg-destructive/10 text-destructive border-destructive/30' : 'bg-success/10 text-success border-success/30'} />
-          <Stat label={translate("Category")} value={translate(intake.category)} cls="bg-muted text-foreground border-border" />
+          <Stat label={translate("Category")} value={intake.category} cls="bg-muted text-foreground border-border" />
         </div>
 
         <Collapsible open={whyOpen} onOpenChange={setWhyOpen}>

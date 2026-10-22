@@ -77,7 +77,7 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
               </div>
               <div className="grid gap-2">
                 <Label>{translate("Risk Seviyesi")}</Label>
-                <Select value={translate(riskLevel)} onValueChange={(v) => setRiskLevel(v as RiskLevel)}>
+                <Select value={riskLevel} onValueChange={(v) => setRiskLevel(v as RiskLevel)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Low">{translate("Low")}</SelectItem>

@@ -69,7 +69,7 @@ export default function ApprovalsPage() {
                   <p className="font-medium text-sm text-foreground">{d.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">€{d.budget.toLocaleString(getLocale())}</p>
                   <div className="flex gap-2 mt-2">
-                    <StatusBadge status={translate(d.status)} />
+                    <StatusBadge status={d.status} />
                     {exceedsAuthority(d) && <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">{translate("Exceeds CEO limit")}</span>}
                   </div>
                 </button>
@@ -83,9 +83,9 @@ export default function ApprovalsPage() {
                 <h2 className="text-lg font-semibold text-foreground mb-2">{selected.title}</h2>
                 <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                   <div><span className="text-muted-foreground">{translate("Budget:")}</span> <span className="font-mono font-medium text-foreground">€{selected.budget.toLocaleString(getLocale())}</span></div>
-                  <div><span className="text-muted-foreground">Risk:</span> <RiskBadge level={translate(selected.riskLevel)} /></div>
+                  <div><span className="text-muted-foreground">Risk:</span> <RiskBadge level={selected.riskLevel} /></div>
                   <div><span className="text-muted-foreground">{translate("Submitted by:")}</span> <span className="text-foreground">{selected.createdBy.name}</span></div>
-                  <div><span className="text-muted-foreground">{translate("Status:")}</span> <StatusBadge status={translate(selected.status)} /></div>
+                  <div><span className="text-muted-foreground">{translate("Status:")}</span> <StatusBadge status={selected.status} /></div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mt-4">

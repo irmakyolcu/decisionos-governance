@@ -61,7 +61,7 @@ export default function ProposalsPage() {
                     </td>
                     <td className="text-muted-foreground">{p.department}</td>
                     <td className="font-mono text-sm">€{p.budget.toLocaleString(getLocale())}</td>
-                    <td><StatusBadge status={translate(p.status)} /></td>
+                    <td><StatusBadge status={p.status} /></td>
                     <td className="text-muted-foreground">{p.submittedBy.name}</td>
                     <td>
                       <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${

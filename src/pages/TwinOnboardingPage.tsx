@@ -181,12 +181,12 @@ export default function TwinOnboardingPage() {
                     <Input className="md:col-span-3" value={r.condition} onChange={(e) =>
                       setRules((arr) => arr.map((x, j) => j === i ? { ...x, condition: e.target.value } : x))} placeholder={translate("Condition")} />
                     <select className="md:col-span-2 h-10 rounded-md border border-input bg-background px-3 text-sm"
-                      value={translate(r.level)} onChange={(e) =>
+                      value={r.level} onChange={(e) =>
                         setRules((arr) => arr.map((x, j) => j === i ? { ...x, level: e.target.value } : x))}>
-                      <option>{translate("Team can decide")}</option>
-                      <option>{translate("Needs manager approval")}</option>
-                      <option>{translate("Needs CEO approval")}</option>
-                      <option>{translate("Escalate immediately")}</option>
+                      <option value="Team can decide">{translate("Team can decide")}</option>
+                      <option value="Needs manager approval">{translate("Needs manager approval")}</option>
+                      <option value="Needs CEO approval">{translate("Needs CEO approval")}</option>
+                      <option value="Escalate immediately">{translate("Escalate immediately")}</option>
                     </select>
                   </div>
                 ))}

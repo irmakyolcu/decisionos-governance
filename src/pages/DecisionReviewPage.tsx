@@ -108,8 +108,8 @@ export default function DecisionReviewPage() {
               <button key={d.id} onClick={() => setSelectedId(d.id)} className={`w-full text-left p-4 hover:bg-muted/30 transition-colors ${selected.id === d.id ? 'bg-accent' : ''}`}>
                 <p className="font-medium text-sm text-foreground">{d.title}</p>
                 <div className="flex gap-2 mt-1 items-center flex-wrap">
-                  <StatusBadge status={translate(d.status)} />
-                  <RiskBadge level={translate(d.riskLevel)} />
+                  <StatusBadge status={d.status} />
+                  <RiskBadge level={d.riskLevel} />
                   {evaluatingStates.has(d.id) && (() => {
                     const s = evaluatingStates.get(d.id)!;
                     const done = !!s.finishedAt;
@@ -146,13 +146,13 @@ export default function DecisionReviewPage() {
             })()}
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">{selected.title}</h2>
-              <StatusBadge status={translate(selected.status)} />
+              <StatusBadge status={selected.status} />
             </div>
             <div className="space-y-3 text-sm">
               <div><span className="font-medium text-foreground">{translate("Description:")}</span> <span className="text-muted-foreground">{selected.description}</span></div>
               <div><span className="font-medium text-foreground">{translate("Problem Statement:")}</span> <span className="text-muted-foreground">{selected.problemStatement}</span></div>
               <div><span className="font-medium text-foreground">{translate("Budget:")}</span> <span className="text-muted-foreground font-mono">€{selected.budget.toLocaleString(getLocale())}</span></div>
-              <div><span className="font-medium text-foreground">Risk:</span> <RiskBadge level={translate(selected.riskLevel)} /></div>
+              <div><span className="font-medium text-foreground">Risk:</span> <RiskBadge level={selected.riskLevel} /></div>
               {selected.optionsConsidered.length > 0 && (
                 <div>
                   <span className="font-medium text-foreground">{translate("Options Considered:")}</span>

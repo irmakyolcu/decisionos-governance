@@ -179,7 +179,7 @@ export default function MeetingsPage() {
                                 </div>
                               </div>
                               <div className="flex-shrink-0 flex items-center gap-2">
-                                <StatusBadge status={translate(linked.status)} />
+                                <StatusBadge status={linked.status} />
                                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
@@ -213,7 +213,7 @@ export default function MeetingsPage() {
                             <p className="font-medium text-sm text-foreground">{d.title}</p>
                             <p className="text-xs text-muted-foreground mt-1">{translate("Budget: €")}{d.budget.toLocaleString(getLocale())}</p>
                           </div>
-                          <StatusBadge status={translate(d.status)} />
+                          <StatusBadge status={d.status} />
                         </div>
                         {d.aiEvaluation && (
                           <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded p-2">

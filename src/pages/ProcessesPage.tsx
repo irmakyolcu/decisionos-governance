@@ -243,7 +243,7 @@ export default function ProcessesPage() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {(Object.keys(RELATION_LABELS) as Relation[]).map((k) => (
-                    <SelectItem key={translate(k)} value={translate(k)}>{RELATION_LABELS[k]}</SelectItem>
+                    <SelectItem key={k} value={k}>{RELATION_LABELS[k]}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

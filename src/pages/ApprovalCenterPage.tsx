@@ -76,9 +76,9 @@ export default function ApprovalCenterPage() {
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">{a.reason}</p>
             <div className="flex items-center gap-2 mt-2">
-              <ApprovalStatusBadge status={translate(a.approval_status)} />
-              <AuthorityLevelBadge level={translate(a.authority_level)} />
-              <RiskBadge level={translate(a.risk_level)} />
+              <ApprovalStatusBadge status={a.approval_status} />
+              <AuthorityLevelBadge level={a.authority_level} />
+              <RiskBadge level={a.risk_level} />
               <span className="text-xs text-muted-foreground">{myApprovals(a.id, a.version).length}/{a.required_approver_count} {translate("approvals")}</span>
             </div>
           </div>
@@ -128,9 +128,9 @@ export default function ApprovalCenterPage() {
           {selected && (
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <AuthorityLevelBadge level={translate(selected.authority_level)} />
-                <RiskBadge level={translate(selected.risk_level)} />
-                <ApprovalStatusBadge status={translate(selected.approval_status)} />
+                <AuthorityLevelBadge level={selected.authority_level} />
+                <RiskBadge level={selected.risk_level} />
+                <ApprovalStatusBadge status={selected.approval_status} />
                 <ContentHashChip hash={selected.content_hash} version={selected.version} />
               </div>
               {selected.authority_level === 'commit' && (

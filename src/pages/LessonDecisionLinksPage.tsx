@@ -100,7 +100,7 @@ export default function LessonDecisionLinksPage() {
           <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{translate("All categories")}</SelectItem>
-            {categories.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}
+            {categories.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
           </SelectContent>
         </Select>
         <label className="flex items-center gap-2 text-sm">

@@ -73,9 +73,9 @@ export default function ExecutionCenterPage() {
                   </div>
                   <p className="text-xs text-muted-foreground">{a.action_type} → {a.target_system || 'internal'}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <ApprovalStatusBadge status={translate(a.approval_status)} />
-                    <AuthorityLevelBadge level={translate(a.authority_level)} />
-                    <RiskBadge level={translate(a.risk_level)} />
+                    <ApprovalStatusBadge status={a.approval_status} />
+                    <AuthorityLevelBadge level={a.authority_level} />
+                    <RiskBadge level={a.risk_level} />
                   </div>
                 </div>
                 <Button size="sm" disabled={a.approval_status !== 'approved'} onClick={() => execute(a)}>

@@ -212,7 +212,7 @@ export default function DataSourcesPage() {
           {CONNECTORS.map((c) => {
             const existing = sources.find((s) => s.kind === c.kind);
             return (
-              <Card key={translate(c.kind)} className="p-3 flex items-center justify-between">
+              <Card key={c.kind} className="p-3 flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium">{translate(c.label)}</div>
                   <div className="text-[10px] text-muted-foreground">{existing ? existing.status : translate("Not connected")}</div>

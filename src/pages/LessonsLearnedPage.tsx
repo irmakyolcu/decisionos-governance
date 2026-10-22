@@ -102,9 +102,9 @@ export default function LessonsLearnedPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>{translate("Category")}</Label>
-                    <Select value={translate(form.category)} onValueChange={(v) => setForm({ ...form, category: v })}>
+                    <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>{CATEGORIES.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}</SelectContent>
+                      <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   <div>
@@ -140,7 +140,7 @@ export default function LessonsLearnedPage() {
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{translate("All categories")}</SelectItem>
-            {CATEGORIES.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{translate(c)}</SelectItem>)}
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={impact} onValueChange={setImpact}>

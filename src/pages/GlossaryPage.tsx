@@ -78,7 +78,7 @@ export default function GlossaryPage() {
               <div><Label>{translate("Definition")}</Label><Textarea rows={3} value={form.definition} onChange={(e) => setForm({ ...form, definition: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>{translate("Aliases")}</Label><Input value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} placeholder={translate("Comma separated")} /></div>
-                <div><Label>{translate("Category")}</Label><Input value={translate(form.category)} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
+                <div><Label>{translate("Category")}</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
               </div>
               <div><Label>{translate("Owner")}</Label><Input value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} /></div>
             </div>

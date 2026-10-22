@@ -175,7 +175,7 @@ function PreferenceList({ prefs, onAdd, onToggle, onDelete }: any) {
           <DialogContent>
             <DialogHeader><DialogTitle>{translate("New preference")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>{translate("Category")}</Label><Input value={translate(form.category)} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
+              <div><Label>{translate("Category")}</Label><Input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
               <div><Label>{translate("Statement")}</Label><Textarea value={form.statement} onChange={(e) => setForm({...form, statement: e.target.value})} placeholder={translate("Always prefer reversible decisions over irreversible ones.")} /></div>
               <div><Label>{translate("Weight (1-10)")}</Label><Input type="number" min={1} max={10} value={form.weight} onChange={(e) => setForm({...form, weight: Number(e.target.value)})} /></div>
             </div>

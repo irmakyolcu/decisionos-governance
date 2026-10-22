@@ -59,7 +59,7 @@ export default function CompanyBrainPage() {
         </div>
         <div className="grid sm:grid-cols-5 gap-4">
           {health.map((h) => (
-            <div key={translate(h.label)}>
+            <div key={h.label}>
               <div className="text-xs text-muted-foreground mb-1">{translate(h.label)}</div>
               <div className="text-lg font-semibold">{h.v}%</div>
               <div className="h-1.5 bg-muted rounded-full mt-1 overflow-hidden">

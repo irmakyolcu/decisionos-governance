@@ -60,8 +60,8 @@ export default function ExecutiveDashboardPage() {
                     <p className="text-xs text-muted-foreground">{a._why}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <AuthorityLevelBadge level={translate(a.authority_level)} />
-                    <RiskBadge level={translate(a.risk_level)} />
+                    <AuthorityLevelBadge level={a.authority_level} />
+                    <RiskBadge level={a.risk_level} />
                     <Button size="sm" variant="outline" onClick={() => nav('/approvals-center')}>{t('Review')}</Button>
                   </div>
                 </li>
@@ -113,8 +113,8 @@ export default function ExecutiveDashboardPage() {
                     <p className="text-xs text-muted-foreground">{a.action_type} → {a.target_system || t('internal')}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <ApprovalStatusBadge status={translate(a.approval_status)} />
-                    <AuthorityLevelBadge level={translate(a.authority_level)} />
+                    <ApprovalStatusBadge status={a.approval_status} />
+                    <AuthorityLevelBadge level={a.authority_level} />
                   </div>
                 </li>
               ))}

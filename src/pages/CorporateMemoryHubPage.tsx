@@ -130,7 +130,7 @@ export default function CorporateMemoryHubPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((s) => (
-          <Card key={translate(s.label)}>
+          <Card key={s.label}>
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground">{translate(s.label)}</div>
               <div className="text-2xl font-bold mt-1">{s.value}</div>
@@ -148,7 +148,7 @@ export default function CorporateMemoryHubPage() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {health.map((h) => (
-              <div key={translate(h.label)} className="rounded-lg border p-3">
+              <div key={h.label} className="rounded-lg border p-3">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <h.icon className="h-3.5 w-3.5" />
                   {translate(h.label)}

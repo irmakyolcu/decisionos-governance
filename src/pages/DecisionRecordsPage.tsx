@@ -58,7 +58,7 @@ export default function DecisionRecordsPage() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">{translate("Record locked ·")} {d.createdAt.toLocaleDateString(getLocale())}</p>
                 </div>
-                <StatusBadge status={translate(d.status)} />
+                <StatusBadge status={d.status} />
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -68,7 +68,7 @@ export default function DecisionRecordsPage() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{translate("Risk Level")}</p>
-                  <RiskBadge level={translate(d.riskLevel)} />
+                  <RiskBadge level={d.riskLevel} />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{translate("Approvers")}</p>

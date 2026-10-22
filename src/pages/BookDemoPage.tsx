@@ -209,7 +209,7 @@ export default function BookDemoPage() {
                     <Input
                       id="role"
                       autoComplete="organization-title"
-                      value={translate(values.role)}
+                      value={values.role}
                       onChange={(e) => set('role', e.target.value)}
                       placeholder={t('Head of Ops')}
                       maxLength={80}

@@ -92,7 +92,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="px-2 py-2">
         {navGroups.map((group) => (
-          <SidebarGroup key={translate(group.label)}>
+          <SidebarGroup key={group.label}>
             <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-widest mb-1">
               {!collapsed && t(group.label)}
             </SidebarGroupLabel>

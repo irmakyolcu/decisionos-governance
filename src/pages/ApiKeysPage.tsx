@@ -124,7 +124,7 @@ export default function ApiKeysPage() {
               <div className="space-y-3">
                 <div><Label>{translate("Ad")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={translate("Örn: Zapier entegrasyonu")} /></div>
                 <div><Label>{translate("Rol")}</Label>
-                  <Select value={translate(form.role)} onValueChange={(v) => setForm({ ...form, role: v })}>
+                  <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="viewer">{translate("Viewer (sadece okuma)")}</SelectItem>

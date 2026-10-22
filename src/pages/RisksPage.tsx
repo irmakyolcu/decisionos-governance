@@ -77,15 +77,15 @@ export default function RisksPage() {
             <DialogHeader><DialogTitle>{translate("Log Risk")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>{translate("Category")}</Label>
-                <Select value={translate(form.category)} onValueChange={(v) => setForm({ ...form, category: v })}>
+                <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{CATEGORIES.map((c) => <SelectItem key={translate(c)} value={translate(c)}>{c.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                  <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><Label>{translate("Severity")}</Label>
-                <Select value={translate(form.severity)} onValueChange={(v) => setForm({ ...form, severity: v })}>
+                <Select value={form.severity} onValueChange={(v) => setForm({ ...form, severity: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{['low','medium','high','critical'].map((s) => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}</SelectContent>
+                  <SelectContent>{['low','medium','high','critical'].map((s) => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><Label>{translate("Department")}</Label>
@@ -168,9 +168,9 @@ export default function RisksPage() {
                   {r.why_it_matters && <p className="text-xs text-muted-foreground">{r.why_it_matters}</p>}
                   {r.recommended_action && <p className="text-xs mt-1"><span className="text-muted-foreground">{translate("Action:")} </span>{r.recommended_action}</p>}
                 </div>
-                <Select value={translate(r.status)} onValueChange={(v) => updateStatus(r.id, v)}>
+                <Select value={r.status} onValueChange={(v) => updateStatus(r.id, v)}>
                   <SelectTrigger className="w-40 h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>{['new','investigating','action_required','resolved','dismissed'].map((s) => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}</SelectContent>
+                  <SelectContent>{['new','investigating','action_required','resolved','dismissed'].map((s) => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </Card>

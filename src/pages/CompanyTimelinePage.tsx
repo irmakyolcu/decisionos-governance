@@ -81,7 +81,7 @@ export default function CompanyTimelinePage() {
             <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{translate("All events")}</SelectItem>
-              {Object.entries(KIND_META).map(([k, v]) => <SelectItem key={translate(k)} value={translate(k)}>{translate(v.label)}</SelectItem>)}
+              {Object.entries(KIND_META).map(([k, v]) => <SelectItem key={k} value={k}>{translate(v.label)}</SelectItem>)}
             </SelectContent>
           </Select>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -93,9 +93,9 @@ export default function CompanyTimelinePage() {
                   <div><Label>{translate("Date")}</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
                   <div>
                     <Label>{translate("Type")}</Label>
-                    <Select value={translate(form.kind)} onValueChange={(v: Kind) => setForm({ ...form, kind: v })}>
+                    <Select value={form.kind} onValueChange={(v: Kind) => setForm({ ...form, kind: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>{Object.entries(KIND_META).map(([k, v]) => <SelectItem key={translate(k)} value={translate(k)}>{translate(v.label)}</SelectItem>)}</SelectContent>
+                      <SelectContent>{Object.entries(KIND_META).map(([k, v]) => <SelectItem key={k} value={k}>{translate(v.label)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                 </div>

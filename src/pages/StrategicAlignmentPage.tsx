@@ -106,8 +106,8 @@ export default function StrategicAlignmentPage() {
                     <p className="text-xs text-muted-foreground truncate">{d.description}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <RiskBadge level={translate(d.riskLevel)} />
-                    <StatusBadge status={translate(d.status)} />
+                    <RiskBadge level={d.riskLevel} />
+                    <StatusBadge status={d.status} />
                   </div>
                 </div>
               ))}

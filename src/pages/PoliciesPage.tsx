@@ -67,7 +67,7 @@ export default function PoliciesPage() {
               <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder={translate("Budget over €25k requires CEO+CFO")} /></div>
               <div><Label>{translate("Description")}</Label><Textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label>{translate("Category")}</Label><Input value={translate(form.category)} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
+                <div><Label>{translate("Category")}</Label><Input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
                 <div><Label>{translate("Applies to action type")}</Label><Input value={form.action_type} onChange={(e) => setForm({...form, action_type: e.target.value})} placeholder="approve_budget" /></div>
               </div>
               <div className="p-3 bg-muted rounded space-y-2">

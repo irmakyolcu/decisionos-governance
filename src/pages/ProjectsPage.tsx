@@ -100,7 +100,7 @@ export default function ProjectsPage() {
             <div className="space-y-3">
               <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
               <div><Label>{translate("Status")}</Label>
-                <Select value={translate(form.status)} onValueChange={(v) => setForm({ ...form, status: v })}>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="active">{translate("Active")}</SelectItem><SelectItem value="on_hold">{translate("On hold")}</SelectItem>

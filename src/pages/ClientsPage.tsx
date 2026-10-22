@@ -106,7 +106,7 @@ export default function ClientsPage() {
             <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div><Label>{translate("Industry")}</Label><Input value={form.industry} onChange={(e) => setForm({ ...form, industry: e.target.value })} /></div>
             <div><Label>{translate("Risk level")}</Label>
-              <Select value={translate(form.risk_level)} onValueChange={(v) => setForm({ ...form, risk_level: v })}>
+              <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">{translate("Low")}</SelectItem><SelectItem value="medium">{translate("Medium")}</SelectItem>
