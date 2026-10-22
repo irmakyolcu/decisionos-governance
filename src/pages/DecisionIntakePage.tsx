@@ -154,7 +154,7 @@ export default function DecisionIntakePage() {
               <div className="grid grid-cols-3 gap-3">
                 {(['legalRisk','brandRisk','strategicRelevance'] as const).map((k) => (
                   <div key={k} className="grid gap-2">
-                    <Label className="capitalize text-xs">{k.replace(/([A-Z])/g, ' $1')}</Label>
+                    <Label className="text-xs">{translate(k)}</Label>
                     <Select value={form[k]} onValueChange={(v) => update(k, v as RiskBand)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>{RISKS.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}</SelectContent>

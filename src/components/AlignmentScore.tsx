@@ -51,7 +51,7 @@ export function AlignmentScore({ score, size = 'md', label = 'Strategic Alignmen
       {size !== 'sm' && (
         <div className="text-center">
           <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{translate(label)}</p>
-          <p className={cn('text-xs mt-0.5', tone)}>{verdict}</p>
+          <p className={cn('text-xs mt-0.5', tone)}>{translate(verdict)}</p>
         </div>
       )}
     </div>
