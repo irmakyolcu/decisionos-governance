@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { DecisionStatus, RiskLevel, OutcomeStatus } from '@/types/decision';
 
@@ -26,17 +27,19 @@ const riskColors: Record<RiskLevel, string> = {
 };
 
 export function StatusBadge({ status }: { status: DecisionStatus | OutcomeStatus | string }) {
+  const { t } = useLanguage();
   return (
     <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap', statusColors[status] || 'bg-muted text-muted-foreground')}>
-      {status}
+      {t(status)}
     </span>
   );
 }
 
 export function RiskBadge({ level }: { level: RiskLevel }) {
+  const { t } = useLanguage();
   return (
     <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', riskColors[level])}>
-      {level}
+      {t(level)}
     </span>
   );
 }

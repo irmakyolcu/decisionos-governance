@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
 export default function AuthPage() {
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +23,7 @@ export default function AuthPage() {
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        toast({ title: 'Giriş hatası', description: error.message, variant: 'destructive' });
+        toast({ title: t('Sign-in error'), description: error.message, variant: 'destructive' });
       }
     } else {
       const { error } = await supabase.auth.signUp({
@@ -31,9 +35,9 @@ export default function AuthPage() {
         },
       });
       if (error) {
-        toast({ title: 'Kayıt hatası', description: error.message, variant: 'destructive' });
+        toast({ title: t('Registration error'), description: error.message, variant: 'destructive' });
       } else {
-        toast({ title: 'Kayıt başarılı', description: 'Yönlendiriliyorsunuz...' });
+        toast({ title: t('Registration successful'), description: t('Redirecting…') });
       }
     }
     setLoading(false);
@@ -44,7 +48,7 @@ export default function AuthPage() {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      toast({ title: 'Google giriş hatası', description: String(result.error), variant: 'destructive' });
+      toast({ title: t('Google sign-in error'), description: String(result.error), variant: 'destructive' });
     }
     if (result.redirected) return;
   };
@@ -67,11 +71,10 @@ export default function AuthPage() {
             </div>
 
             <h1 className="text-4xl font-semibold text-white leading-tight tracking-tight">
-              Modern yönetim kurulu için <br />
-              <span className="text-[#4f46e5]">karar zekâsı.</span>
+              {t('Decision intelligence for the modern boardroom')}
             </h1>
             <p className="mt-6 text-[#94a3b8] text-lg leading-relaxed max-w-xs">
-              Yönetici ekipleri için denetlenebilir, AI destekli karar altyapısı.
+              {t('Auditable, AI-powered decision infrastructure for executive teams.')}
             </p>
           </div>
 
@@ -82,7 +85,7 @@ export default function AuthPage() {
               <div className="w-8 h-8 rounded-full border-2 border-[#141432] bg-[#1e1e5a]" />
             </div>
             <span className="text-xs text-[#64748b] uppercase tracking-widest font-medium italic">
-              Audit-grade · SOC2-ready
+              {t('Audit-grade · SOC2-ready')}
             </span>
           </div>
         </div>
@@ -97,32 +100,34 @@ export default function AuthPage() {
               <span className="text-lg font-bold text-white">DecisionOS</span>
             </div>
 
+            <div className="flex justify-end mb-5"><LanguageToggle /></div>
+
             {/* Tabs */}
             <div className="flex p-1 bg-[#0a0a1a] rounded-xl border border-[#1e1e5a] mb-8">
-              <button
+              <Button
                 type="button"
                 onClick={() => setIsLogin(true)}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                   isLogin ? 'text-white bg-[#1e1e5a] shadow-sm' : 'text-[#64748b] hover:text-white'
                 }`}
               >
-                Giriş Yap
-              </button>
-              <button
+                {t('Sign in')}
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setIsLogin(false)}
                 className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                   !isLogin ? 'text-white bg-[#1e1e5a] shadow-sm' : 'text-[#64748b] hover:text-white'
                 }`}
               >
-                Hesap Oluştur
-              </button>
+                {t('Create account')}
+              </Button>
             </div>
 
             <form onSubmit={handleEmailAuth} className="space-y-5">
               {!isLogin && (
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Şirket Adı</label>
+                  <label className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">{t('Company name')}</label>
                   <input
                     type="text"
                     placeholder="Acme Inc."
@@ -136,10 +141,10 @@ export default function AuthPage() {
               )}
 
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">İş E-postası</label>
+                <label className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">{t('Work email')}</label>
                 <input
                   type="email"
-                  placeholder="isim@sirket.com"
+                  placeholder={t('name@company.com')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -149,9 +154,9 @@ export default function AuthPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Şifre</label>
+                  <label className="text-xs font-semibold text-[#64748b] uppercase tracking-wider">{t('Password')}</label>
                   {isLogin && (
-                    <a href="#" className="text-xs font-medium text-[#4f46e5] hover:text-[#6366f1] transition-colors">Şifremi unuttum</a>
+                    <a href="#" className="text-xs font-medium text-[#4f46e5] hover:text-[#6366f1] transition-colors">{t('Forgot password')}</a>
                   )}
                 </div>
                 <input
@@ -165,14 +170,14 @@ export default function AuthPage() {
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
                 className="w-full py-3.5 bg-[#4f46e5] hover:bg-[#6366f1] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-[0_10px_20px_-5px_rgba(79,70,229,0.4)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isLogin ? 'Giriş Yap' : 'Hesap Oluştur'}
-              </button>
+                {t(isLogin ? 'Sign in' : 'Create account')}
+              </Button>
             </form>
 
             <div className="relative my-6">
@@ -180,11 +185,11 @@ export default function AuthPage() {
                 <span className="w-full border-t border-[#1e1e5a]" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase tracking-[0.2em]">
-                <span className="bg-[#141432] px-3 text-[#64748b]">veya</span>
+                <span className="bg-[#141432] px-3 text-[#64748b]">{t('or')}</span>
               </div>
             </div>
 
-            <button
+            <Button
               type="button"
               onClick={handleGoogleAuth}
               className="w-full py-3 flex items-center justify-center gap-3 bg-[#0a0a1a] hover:bg-[#1e1e5a]/40 border border-[#1e1e5a] text-white font-medium rounded-xl transition-colors"
@@ -195,16 +200,12 @@ export default function AuthPage() {
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
-              Google ile devam et
-            </button>
+              {t('Continue with Google')}
+            </Button>
 
             <div className="mt-8 pt-6 border-t border-[#1e1e5a] text-center">
               <p className="text-xs text-[#475569] leading-relaxed">
-                Devam ederek{' '}
-                <a href="#" className="text-[#64748b] hover:text-white underline underline-offset-4">Hizmet Şartları</a>{' '}
-                ve{' '}
-                <a href="#" className="text-[#64748b] hover:text-white underline underline-offset-4">Veri Yönetişimi Politikası</a>
-                'nı kabul etmiş olursunuz.
+                {t('By continuing, you accept the Terms of Service and Data Governance Policy.')}
               </p>
             </div>
           </div>

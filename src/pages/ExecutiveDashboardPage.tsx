@@ -5,7 +5,10 @@ import { AlertTriangle, Clock, CheckCircle2, Activity, ShieldAlert, Plus } from 
 import { useTable } from '@/hooks/useGovernance';
 import { ApprovalStatusBadge, RiskBadge, AuthorityLevelBadge } from '@/components/governance/StatusBadges';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 export default function ExecutiveDashboardPage() {
+  const { t, locale } = useLanguage();
   const nav = useNavigate();
   const { rows: actions } = useTable<any>('action_proposals');
   const { rows: decisions } = useTable<any>('decisions');
@@ -18,36 +21,36 @@ export default function ExecutiveDashboardPage() {
   const policyViolations = audit.filter((e) => e.event_type?.includes('policy_violation'));
 
   const needsAttention = [
-    ...awaitingApproval.filter((a) => a.authority_level === 'commit').map((a) => ({ ...a, _why: 'L3 commit awaiting two approvals' })),
-    ...highRisk.filter((a) => a.approval_status !== 'completed').map((a) => ({ ...a, _why: 'High-risk action' })),
+    ...awaitingApproval.filter((a) => a.authority_level === 'commit').map((a) => ({ ...a, _why: t('L3 commit awaiting two approvals') })),
+    ...highRisk.filter((a) => a.approval_status !== 'completed').map((a) => ({ ...a, _why: t('High-risk action') })),
   ].slice(0, 6);
 
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Executive Dashboard</h1>
-          <p className="text-muted-foreground mt-1">AI prepares the decision. You stay accountable.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('Executive Dashboard')}</h1>
+          <p className="text-muted-foreground mt-1">{t('AI prepares the decision. You stay accountable.')}</p>
         </div>
-        <Button onClick={() => nav('/decision-intake')}><Plus className="h-4 w-4 mr-2" />Start a New Decision</Button>
+        <Button onClick={() => nav('/decision-intake')}><Plus className="h-4 w-4 mr-2" />{t('Start a New Decision')}</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <MetricCard icon={Clock} label="Decisions awaiting approval" value={awaitingApproval.filter(a=>a.decision_id).length} onClick={() => nav('/approvals-center')} />
-        <MetricCard icon={Activity} label="Execution actions pending" value={awaitingApproval.length} onClick={() => nav('/execution')} />
-        <MetricCard icon={ShieldAlert} label="High-risk actions" value={highRisk.length} tone="risk" />
-        <MetricCard icon={CheckCircle2} label="Recently approved" value={recentlyApproved.length} tone="ok" />
+        <MetricCard icon={Clock} label={t('Decisions awaiting approval')} value={awaitingApproval.filter(a=>a.decision_id).length} onClick={() => nav('/approvals-center')} />
+        <MetricCard icon={Activity} label={t('Execution actions pending')} value={awaitingApproval.length} onClick={() => nav('/execution')} />
+        <MetricCard icon={ShieldAlert} label={t('High-risk actions')} value={highRisk.length} tone="risk" />
+        <MetricCard icon={CheckCircle2} label={t('Recently approved')} value={recentlyApproved.length} tone="ok" />
       </div>
 
       <Card className="border-amber-500/40 bg-amber-500/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-700">
-            <AlertTriangle className="h-5 w-5" /> Needs Your Attention
+            <AlertTriangle className="h-5 w-5" /> {t('Needs Your Attention')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {needsAttention.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nothing requires your attention right now.</p>
+            <p className="text-sm text-muted-foreground">{t('Nothing requires your attention right now.')}</p>
           ) : (
             <ul className="space-y-3">
               {needsAttention.map((a) => (
@@ -59,7 +62,7 @@ export default function ExecutiveDashboardPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <AuthorityLevelBadge level={a.authority_level} />
                     <RiskBadge level={a.risk_level} />
-                    <Button size="sm" variant="outline" onClick={() => nav('/approvals-center')}>Review</Button>
+                    <Button size="sm" variant="outline" onClick={() => nav('/approvals-center')}>{t('Review')}</Button>
                   </div>
                 </li>
               ))}
@@ -70,14 +73,14 @@ export default function ExecutiveDashboardPage() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <Card>
-          <CardHeader><CardTitle className="text-base">Blocked decisions</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t('Blocked decisions')}</CardTitle></CardHeader>
           <CardContent>
-            {blockedDecisions.length === 0 ? <p className="text-sm text-muted-foreground">None.</p> : (
+            {blockedDecisions.length === 0 ? <p className="text-sm text-muted-foreground">{t('None.')}</p> : (
               <ul className="space-y-2">
                 {blockedDecisions.slice(0, 5).map((d) => (
                   <li key={d.id} className="flex items-center justify-between text-sm">
                     <span className="truncate">{d.title}</span>
-                    <Button size="sm" variant="ghost" onClick={() => nav(`/decisions/${d.id}`)}>Open</Button>
+                    <Button size="sm" variant="ghost" onClick={() => nav(`/decisions/${d.id}`)}>{t('Open')}</Button>
                   </li>
                 ))}
               </ul>
@@ -85,12 +88,12 @@ export default function ExecutiveDashboardPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="text-base">Policy violations (last events)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t('Policy violations (last events)')}</CardTitle></CardHeader>
           <CardContent>
-            {policyViolations.length === 0 ? <p className="text-sm text-muted-foreground">No violations recorded.</p> : (
+            {policyViolations.length === 0 ? <p className="text-sm text-muted-foreground">{t('No violations recorded.')}</p> : (
               <ul className="space-y-2 text-sm">
                 {policyViolations.slice(0, 5).map((e) => (
-                  <li key={e.id} className="flex justify-between"><span>{e.event_type}</span><span className="text-muted-foreground text-xs">{new Date(e.created_at).toLocaleString()}</span></li>
+                  <li key={e.id} className="flex justify-between"><span>{e.event_type}</span><span className="text-muted-foreground text-xs">{new Date(e.created_at).toLocaleString(locale)}</span></li>
                 ))}
               </ul>
             )}
@@ -99,15 +102,15 @@ export default function ExecutiveDashboardPage() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Latest action proposals</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{t('Latest action proposals')}</CardTitle></CardHeader>
         <CardContent>
-          {actions.length === 0 ? <p className="text-sm text-muted-foreground">No action proposals yet.</p> : (
+          {actions.length === 0 ? <p className="text-sm text-muted-foreground">{t('No action proposals yet.')}</p> : (
             <ul className="divide-y">
               {actions.slice(0, 8).map((a) => (
                 <li key={a.id} className="flex items-center justify-between py-3 gap-3">
                   <div className="min-w-0">
                     <p className="font-medium truncate">{a.title}</p>
-                    <p className="text-xs text-muted-foreground">{a.action_type} → {a.target_system || 'internal'}</p>
+                    <p className="text-xs text-muted-foreground">{a.action_type} → {a.target_system || t('internal')}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <ApprovalStatusBadge status={a.approval_status} />

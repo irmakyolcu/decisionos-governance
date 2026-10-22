@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { appTranslations } from '@/lib/i18n/appTranslations';
 
 export type Lang = 'en' | 'tr';
 
@@ -22,9 +23,9 @@ const dict: Dict = {
   'hero.demo': { en: 'See How It Works', tr: 'Nasıl Çalıştığını Gör' },
 
   // Demo modal
-  'demo.desc': { en: 'A 60-second walkthrough of the Enterprise AI Stack.', tr: 'Kurumsal AI Yığını için 60 saniyelik hızlı tur.' },
-  'demo.title': { en: 'Interactive demo coming soon', tr: 'Etkileşimli demo çok yakında' },
-  'demo.body': { en: 'Meanwhile, create a free workspace and explore DecisionOS with sample data in under a minute.', tr: 'Şimdilik ücretsiz bir çalışma alanı oluşturun ve örnek verilerle DecisionOS\'u bir dakikadan kısa sürede keşfedin.' },
+  'demo.desc': { en: 'A 30-second walkthrough of the Enterprise AI Stack.', tr: 'Kurumsal AI Yığını için 30 saniyelik hızlı tur.' },
+  'demo.title': { en: 'DecisionOS in action', tr: 'DecisionOS’u çalışırken görün' },
+  'demo.body': { en: 'Watch how company knowledge becomes governed decisions in this 30-second product overview.', tr: 'Bu 30 saniyelik ürün tanıtımında şirket bilgisinin kontrollü kararlara nasıl dönüştüğünü izleyin.' },
   'demo.try': { en: 'Try it now', tr: 'Hemen dene' },
   'demo.close': { en: 'Close', tr: 'Kapat' },
   'demo.f1': { en: 'Unified enterprise memory across every tool', tr: 'Tüm araçlarınız için birleşik kurumsal hafıza' },
@@ -143,6 +144,8 @@ const dict: Dict = {
 
   // Source labels used elsewhere
   'src.meetings': { en: 'Meetings', tr: 'Toplantılar' },
+  'stack.layer': { en: 'Layer', tr: 'Katman' },
+  ...appTranslations,
   'src.docs': { en: 'Docs', tr: 'Belgeler' },
 };
 
@@ -150,18 +153,21 @@ interface Ctx {
   lang: Lang;
   setLang: (l: Lang) => void;
   t: (key: string) => string;
+  locale: 'en-US' | 'tr-TR';
 }
 
 const LanguageContext = createContext<Ctx | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('lang') : null;
-    return (stored === 'en' || stored === 'tr') ? stored : 'tr';
+    try {
+      const stored = typeof window !== 'undefined' ? localStorage.getItem('lang') : null;
+      return (stored === 'en' || stored === 'tr') ? stored : 'tr';
+    } catch { return 'tr'; }
   });
 
   useEffect(() => {
-    localStorage.setItem('lang', lang);
+    try { localStorage.setItem('lang', lang); } catch { /* Storage may be disabled. */ }
     document.documentElement.lang = lang;
   }, [lang]);
 
@@ -169,7 +175,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const t = (key: string) => dict[key]?.[lang] ?? key;
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, t, locale: lang === 'tr' ? 'tr-TR' : 'en-US' }}>
       {children}
     </LanguageContext.Provider>
   );

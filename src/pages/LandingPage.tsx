@@ -431,6 +431,7 @@ function StackLayer({
   description: string;
   children: React.ReactNode;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="relative rounded-2xl border border-border bg-card/60 backdrop-blur p-6 md:p-8 shadow-enterprise overflow-hidden">
       <div aria-hidden className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
@@ -440,7 +441,7 @@ function StackLayer({
             <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
               <Icon className="h-5 w-5 text-primary" />
             </div>
-            <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Layer {index}</div>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{t('stack.layer')} {index}</div>
           </div>
           <div className="text-xl md:text-2xl font-bold tracking-tight">{title}</div>
           <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{description}</p>

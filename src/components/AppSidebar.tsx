@@ -4,6 +4,8 @@ import {
   BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote, Search, CalendarRange,
   Lock, Building, FileCheck,
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
 import { NavLink } from '@/components/NavLink';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -26,13 +28,13 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Memory Hub', url: '/memory', icon: Brain },
       { title: 'Structured Memory', url: '/memory/structured', icon: BookOpen },
       { title: 'Decision Memory', url: '/memory/decisions', icon: GitBranch },
-      { title: 'Retrospektif Arama', url: '/memory/retrospective', icon: Search },
-      { title: 'Karar Zaman Çizelgesi', url: '/memory/decision-timeline', icon: CalendarRange },
+      { title: 'Retrospective Search', url: '/memory/retrospective', icon: Search },
+      { title: 'Decision Timeline', url: '/memory/decision-timeline', icon: CalendarRange },
       { title: 'Lessons Learned', url: '/memory/lessons', icon: Lightbulb },
       { title: 'Lessons ↔ Decisions', url: '/memory/links', icon: Link2 },
       { title: 'Link Audit Trail', url: '/memory/link-audit', icon: History },
       { title: 'Company Timeline', url: '/memory/timeline', icon: History },
-      { title: 'Önemli Notlar', url: '/memory/notes', icon: StickyNote },
+      { title: 'Important Notes', url: '/memory/notes', icon: StickyNote },
       { title: 'Glossary', url: '/memory/glossary', icon: BookMarked },
     ],
   },
@@ -48,27 +50,28 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
     ],
   },
   {
-    label: 'Denetim',
+    label: 'Audit',
     items: [
-      { title: 'İç Denetim', url: '/audit/internal', icon: Lock },
-      { title: 'Dış Denetim', url: '/audit/external', icon: Building },
-      { title: 'Uyum Raporları', url: '/compliance', icon: FileCheck },
+      { title: 'Internal Audit', url: '/audit/internal', icon: Lock },
+      { title: 'External Audit', url: '/audit/external', icon: Building },
+      { title: 'Compliance Reports', url: '/compliance', icon: FileCheck },
     ],
   },
   {
     label: 'Admin',
     items: [
       { title: 'Data Sources', url: '/data-sources', icon: Database },
-      { title: 'Raporlar', url: '/reports', icon: FileBarChart },
+      { title: 'Reports', url: '/reports', icon: FileBarChart },
       { title: 'Team', url: '/team', icon: Users },
       { title: 'Admin & Permissions', url: '/admin', icon: Shield },
       { title: 'Security Audit', url: '/security-audit', icon: ShieldCheck },
-      { title: 'API Anahtarları', url: '/api-keys', icon: KeyRound },
+      { title: 'API Keys', url: '/api-keys', icon: KeyRound },
     ],
   },
 ];
 
 export function AppSidebar() {
+  const { t } = useLanguage();
   const { state, toggleSidebar } = useSidebar();
   const collapsed = state === 'collapsed';
 
@@ -82,7 +85,7 @@ export function AppSidebar() {
           {!collapsed && (
             <div>
               <h2 className="text-sm font-bold text-sidebar-accent-foreground tracking-wide">DecisionOS</h2>
-              <p className="text-[10px] text-sidebar-muted">Company Brain</p>
+              <p className="text-[10px] text-sidebar-muted">{t('Company Brain')}</p>
             </div>
           )}
         </div>
@@ -91,7 +94,7 @@ export function AppSidebar() {
         {navGroups.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-widest mb-1">
-              {!collapsed && group.label}
+              {!collapsed && t(group.label)}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -105,7 +108,7 @@ export function AppSidebar() {
                         activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                       >
                         <item.icon className="h-4 w-4 flex-shrink-0" />
-                        {!collapsed && <span>{item.title}</span>}
+                        {!collapsed && <span>{t(item.title)}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -116,12 +119,13 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2">
-        <button
+        <Button variant="ghost" size="sm"
+          aria-label={t(collapsed ? 'Expand sidebar' : 'Collapse sidebar')}
           onClick={toggleSidebar}
           className="flex items-center justify-center w-full h-8 rounded-md hover:bg-sidebar-accent text-sidebar-muted hover:text-sidebar-accent-foreground transition-colors"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </button>
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );

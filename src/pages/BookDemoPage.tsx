@@ -12,27 +12,30 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageToggle } from '@/components/LanguageToggle';
+
 // Replace with your real calendar link (Calendly, Cal.com, HubSpot, etc.)
 const BOOKING_URL = 'https://calendly.com/decisionos/30min';
 
-const schema = z.object({
-  fullName: z.string().trim().min(2, 'Please enter your full name').max(100),
+const createSchema = (t: (key: string) => string) => z.object({
+  fullName: z.string().trim().min(2, t('Please enter your full name')).max(100),
   workEmail: z
     .string()
     .trim()
-    .email('Please enter a valid work email')
+    .email(t('Please enter a valid work email'))
     .max(255)
     .refine(
       (v) => !/@(gmail|yahoo|hotmail|outlook|icloud|proton)\./i.test(v),
-      'Please use your work email address',
+      t('Please use your work email address'),
     ),
-  company: z.string().trim().min(1, 'Company is required').max(120),
-  role: z.string().trim().min(1, 'Role is required').max(80),
-  companySize: z.string().min(1, 'Please select a company size'),
+  company: z.string().trim().min(1, t('Company is required')).max(120),
+  role: z.string().trim().min(1, t('Role is required')).max(80),
+  companySize: z.string().min(1, t('Please select a company size')),
   useCase: z.string().trim().max(1000).optional().or(z.literal('')),
 });
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof createSchema>>;
 
 const initial: FormValues = {
   fullName: '',
@@ -44,6 +47,8 @@ const initial: FormValues = {
 };
 
 export default function BookDemoPage() {
+  const { t } = useLanguage();
+  const schema = createSchema((key) => key);
   const navigate = useNavigate();
   const [values, setValues] = useState<FormValues>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
@@ -85,7 +90,7 @@ export default function BookDemoPage() {
 
     setSuccess(true);
     setSubmitting(false);
-    toast({ title: 'Thanks!', description: 'Redirecting you to the calendar…' });
+    toast({ title: t('Thanks!'), description: t('Redirecting you to the calendar…') });
 
     // Redirect to the booking calendar with prefilled details.
     const url = new URL(BOOKING_URL);
@@ -107,30 +112,29 @@ export default function BookDemoPage() {
             </div>
             <span className="font-bold text-lg tracking-tight">DecisionOS</span>
           </Link>
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2">
-            <ArrowLeft className="h-4 w-4" /> Back
-          </Button>
+          <div className="flex items-center gap-2"><LanguageToggle /><Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2">
+            <ArrowLeft className="h-4 w-4" /> {t('Back')}
+          </Button></div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-[1.1fr_1fr] gap-12">
         <section>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-card/60 text-xs text-muted-foreground mb-6">
-            <Calendar className="h-3 w-3 text-primary" /> 30-minute personalized demo
+            <Calendar className="h-3 w-3 text-primary" /> {t('30-minute personalized demo')}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-            See DecisionOS in action.
+            {t('See DecisionOS in action.')}
           </h1>
           <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
-            Book a live walkthrough with our team. We&apos;ll show how DecisionOS turns your
-            company&apos;s knowledge into governed, auditable AI decisions — tailored to your stack.
+            {t('Book a live walkthrough with our team. We’ll show how DecisionOS turns your company’s knowledge into governed, auditable AI decisions — tailored to your stack.')}
           </p>
 
           <ul className="mt-10 space-y-4">
             {[
-              'Live tour of Company Brain, Decision Rooms, and Agent Runtime',
-              'Governance, audit trail, and role-based authority walkthrough',
-              'Q&A with a solutions engineer — no sales pitch',
+              t('Live tour of Company Brain, Decision Rooms, and Agent Runtime'),
+              t('Governance, audit trail, and role-based authority walkthrough'),
+              t('Q&A with a solutions engineer — no sales pitch'),
             ].map((line) => (
               <li key={line} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -147,27 +151,27 @@ export default function BookDemoPage() {
                 <div className="mx-auto h-14 w-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center mb-5">
                   <CheckCircle2 className="h-7 w-7 text-primary" />
                 </div>
-                <h2 className="text-xl font-semibold">You&apos;re all set</h2>
+                <h2 className="text-xl font-semibold">{t('You’re all set')}</h2>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Opening the calendar to pick your time…
+                  {t('Opening the calendar to pick your time…')}
                 </p>
                 <a
                   href={BOOKING_URL}
                   className="inline-flex items-center gap-2 mt-6 text-sm text-primary hover:underline"
                 >
-                  Open manually <ExternalLink className="h-3.5 w-3.5" />
+                  {t('Open manually')} <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
             ) : (
               <form onSubmit={onSubmit} noValidate className="space-y-5">
                 <div>
-                  <h2 className="text-xl font-semibold">Book a demo</h2>
+                  <h2 className="text-xl font-semibold">{t('Book a demo')}</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Fill in a few details and we&apos;ll route you to the calendar.
+                    {t('Fill in a few details and we’ll route you to the calendar.')}
                   </p>
                 </div>
 
-                <Field label="Full name" error={errors.fullName} htmlFor="fullName">
+                <Field label={t('Full name')} error={errors.fullName ? t(errors.fullName ?? "") : undefined} htmlFor="fullName">
                   <Input
                     id="fullName"
                     autoComplete="name"
@@ -178,7 +182,7 @@ export default function BookDemoPage() {
                   />
                 </Field>
 
-                <Field label="Work email" error={errors.workEmail} htmlFor="workEmail">
+                <Field label={t('Work email')} error={errors.workEmail ? t(errors.workEmail ?? "") : undefined} htmlFor="workEmail">
                   <Input
                     id="workEmail"
                     type="email"
@@ -191,7 +195,7 @@ export default function BookDemoPage() {
                 </Field>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Company" error={errors.company} htmlFor="company">
+                  <Field label={t('Company')} error={errors.company ? t(errors.company ?? "") : undefined} htmlFor="company">
                     <Input
                       id="company"
                       autoComplete="organization"
@@ -201,22 +205,22 @@ export default function BookDemoPage() {
                       maxLength={120}
                     />
                   </Field>
-                  <Field label="Role" error={errors.role} htmlFor="role">
+                  <Field label={t('Role')} error={errors.role ? t(errors.role ?? "") : undefined} htmlFor="role">
                     <Input
                       id="role"
                       autoComplete="organization-title"
                       value={values.role}
                       onChange={(e) => set('role', e.target.value)}
-                      placeholder="Head of Ops"
+                      placeholder={t('Head of Ops')}
                       maxLength={80}
                     />
                   </Field>
                 </div>
 
-                <Field label="Company size" error={errors.companySize} htmlFor="companySize">
+                <Field label={t('Company size')} error={errors.companySize ? t(errors.companySize ?? "") : undefined} htmlFor="companySize">
                   <Select value={values.companySize} onValueChange={(v) => set('companySize', v)}>
                     <SelectTrigger id="companySize">
-                      <SelectValue placeholder="Select…" />
+                      <SelectValue placeholder={t('Select…')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1-10">1–10</SelectItem>
@@ -228,12 +232,12 @@ export default function BookDemoPage() {
                   </Select>
                 </Field>
 
-                <Field label="What would you like to see? (optional)" error={errors.useCase} htmlFor="useCase">
+                <Field label={t('What would you like to see? (optional)')} error={errors.useCase ? t(errors.useCase ?? "") : undefined} htmlFor="useCase">
                   <Textarea
                     id="useCase"
                     value={values.useCase}
                     onChange={(e) => set('useCase', e.target.value)}
-                    placeholder="Governed AI decisions across finance & ops…"
+                    placeholder={t('Governed AI decisions across finance & ops…')}
                     rows={4}
                     maxLength={1000}
                   />
@@ -241,14 +245,14 @@ export default function BookDemoPage() {
 
                 <Button type="submit" size="lg" className="w-full gap-2" disabled={submitting}>
                   {submitting ? (
-                    <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</>
+                    <><Loader2 className="h-4 w-4 animate-spin" /> {t('Submitting…')}</>
                   ) : (
-                    <>Continue to calendar <Calendar className="h-4 w-4" /></>
+                    <>{t('Continue to calendar')} <Calendar className="h-4 w-4" /></>
                   )}
                 </Button>
 
                 <p className="text-[11px] text-muted-foreground text-center">
-                  By submitting, you agree to be contacted about your demo request.
+                  {t('By submitting, you agree to be contacted about your demo request.')}
                 </p>
               </form>
             )}
