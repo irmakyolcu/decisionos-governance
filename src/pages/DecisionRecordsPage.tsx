@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useState, useMemo } from 'react';
 import { useDecisions } from '@/hooks/useDecisions';
 import { StatusBadge, RiskBadge } from '@/components/StatusBadge';
@@ -8,6 +9,7 @@ import { Archive, Lock, Eye } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DecisionRecordsPage() {
+  useLanguage();
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
   const { decisions, loading } = useDecisions();
   const finalized = useMemo(() => {
@@ -18,15 +20,15 @@ export default function DecisionRecordsPage() {
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Decision Records</h1>
-        <p className="page-description">Immutable finalized decision records. Higher roles see records from all levels below.</p>
+        <h1 className="page-title">{translate("Decision Records")}</h1>
+        <p className="page-description">{translate("Immutable finalized decision records. Higher roles see records from all levels below.")}</p>
       </div>
 
       <RoleSwitcher currentRole={viewRole} onChange={setViewRole} />
 
       <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
         <Eye className="h-3.5 w-3.5" />
-        <span>Showing <strong className="text-foreground">{finalized.length}</strong> records visible to <strong className="text-foreground">{viewRole}</strong> level</span>
+        <span>{translate("Showing")} <strong className="text-foreground">{finalized.length}</strong> {translate("records visible to")} <strong className="text-foreground">{viewRole}</strong> {translate("level")}</span>
       </div>
 
       <div className="space-y-4">
@@ -35,7 +37,7 @@ export default function DecisionRecordsPage() {
         ) : finalized.length === 0 ? (
           <div className="enterprise-card p-12 text-center">
             <Archive className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">No finalized decision records visible at this authority level.</p>
+            <p className="text-muted-foreground">{translate("No finalized decision records visible at this authority level.")}</p>
           </div>
         ) : (
           finalized.map((d) => (
@@ -51,48 +53,48 @@ export default function DecisionRecordsPage() {
                       d.createdBy.role === 'Executive' ? 'bg-warning/10 text-warning' :
                       'bg-muted text-muted-foreground'
                     }`}>
-                      {d.createdBy.role}
+                      {translate(d.createdBy.role)}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Record locked · {d.createdAt.toLocaleDateString()}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{translate("Record locked ·")} {d.createdAt.toLocaleDateString(getLocale())}</p>
                 </div>
                 <StatusBadge status={d.status} />
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <p className="text-xs text-muted-foreground">Budget</p>
-                  <p className="font-mono font-medium text-foreground">€{d.budget.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">{translate("Budget")}</p>
+                  <p className="font-mono font-medium text-foreground">€{d.budget.toLocaleString(getLocale())}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Risk Level</p>
+                  <p className="text-xs text-muted-foreground">{translate("Risk Level")}</p>
                   <RiskBadge level={d.riskLevel} />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Approvers</p>
+                  <p className="text-xs text-muted-foreground">{translate("Approvers")}</p>
                   <p className="text-foreground">{d.approvers.map(a => a.name).join(', ') || 'Pending'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Created By</p>
-                  <p className="text-foreground">{d.createdBy.name} ({d.createdBy.role})</p>
+                  <p className="text-xs text-muted-foreground">{translate("Created By")}</p>
+                  <p className="text-foreground">{d.createdBy.name} ({translate(d.createdBy.role)})</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
-                  <p className="text-xs font-medium text-success mb-1">Pros</p>
+                  <p className="text-xs font-medium text-success mb-1">{translate("Pros")}</p>
                   {d.pros.map(p => <p key={p.id} className="text-xs text-muted-foreground">• {p.description}</p>)}
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-destructive mb-1">Cons</p>
+                  <p className="text-xs font-medium text-destructive mb-1">{translate("Cons")}</p>
                   {d.cons.map(c => <p key={c.id} className="text-xs text-muted-foreground">• {c.description}</p>)}
                 </div>
               </div>
 
               {d.aiEvaluation && (
                 <div className="mt-4 bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs font-medium text-foreground mb-1">AI Evaluation Snapshot</p>
-                  <p className="text-xs text-muted-foreground">ROI: {d.aiEvaluation.expectedROI}% · Risk Δ: {d.aiEvaluation.riskChange} pts · Value: €{d.aiEvaluation.expectedValue.toLocaleString()}</p>
+                  <p className="text-xs font-medium text-foreground mb-1">{translate("AI Evaluation Snapshot")}</p>
+                  <p className="text-xs text-muted-foreground">ROI: {d.aiEvaluation.expectedROI}% · Risk Δ: {d.aiEvaluation.riskChange} {translate("pts · Value: €")}{d.aiEvaluation.expectedValue.toLocaleString(getLocale())}</p>
                 </div>
               )}
             </div>

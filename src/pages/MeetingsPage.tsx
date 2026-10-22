@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useState, useEffect } from 'react';
 import { useMeetings } from '@/hooks/useMeetings';
 import { useDecisions } from '@/hooks/useDecisions';
@@ -12,6 +13,7 @@ import { PermissionGate } from '@/components/PermissionGate';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MeetingsPage() {
+  useLanguage();
   const { meetings, loading } = useMeetings();
   const { decisions } = useDecisions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -35,13 +37,13 @@ export default function MeetingsPage() {
     <div>
       <div className="page-header flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title">Meeting Records</h1>
-          <p className="page-description">Board and executive meeting logs with linked decisions.</p>
+          <h1 className="page-title">{translate("Meeting Records")}</h1>
+          <p className="page-description">{translate("Board and executive meeting logs with linked decisions.")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link to="/meeting-sources">
             <Button variant="outline" size="sm">
-              <Plug className="h-4 w-4 mr-2" /> Kaynaklardan içe aktar
+              <Plug className="h-4 w-4 mr-2" /> {translate("Kaynaklardan içe aktar")}
             </Button>
           </Link>
           <PermissionGate permission="createDecision">
@@ -55,13 +57,13 @@ export default function MeetingsPage() {
       ) : meetings.length === 0 ? (
         <div className="enterprise-card p-12 text-center">
           <Calendar className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">Henüz toplantı yok. İlk toplantınızı oluşturun.</p>
+          <p className="text-muted-foreground">{translate("Henüz toplantı yok. İlk toplantınızı oluşturun.")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="enterprise-card">
             <div className="p-4 border-b border-border">
-              <h3 className="font-semibold text-foreground text-sm">All Meetings</h3>
+              <h3 className="font-semibold text-foreground text-sm">{translate("All Meetings")}</h3>
             </div>
             <div className="divide-y divide-border/50">
               {meetings.map((m) => (
@@ -71,7 +73,7 @@ export default function MeetingsPage() {
                   className={`w-full text-left p-4 hover:bg-muted/30 transition-colors ${selectedMeeting?.id === m.id ? 'bg-accent' : ''}`}
                 >
                   <p className="font-medium text-sm text-foreground">{m.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{m.date.toLocaleDateString()} · {m.startTime}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{m.date.toLocaleDateString(getLocale())} · {m.startTime}</p>
                   <div className="flex items-center gap-2 mt-2">
                     {m.isApproved ? <StatusBadge status="Approved" /> : <StatusBadge status="Pending" />}
                   </div>
@@ -89,21 +91,21 @@ export default function MeetingsPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground"><Calendar className="h-4 w-4" />{selectedMeeting.date.toLocaleDateString()}</div>
-                  <div className="flex items-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" />{selectedMeeting.startTime} – {selectedMeeting.endTime} ({selectedMeeting.duration}min)</div>
+                  <div className="flex items-center gap-2 text-muted-foreground"><Calendar className="h-4 w-4" />{selectedMeeting.date.toLocaleDateString(getLocale())}</div>
+                  <div className="flex items-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" />{selectedMeeting.startTime} – {selectedMeeting.endTime} ({selectedMeeting.duration}{translate("min)")}</div>
                   <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="h-4 w-4" />{selectedMeeting.location || '—'}</div>
-                  <div className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" />{selectedMeeting.attendees.length} attendees</div>
+                  <div className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" />{selectedMeeting.attendees.length} {translate("attendees")}</div>
                 </div>
 
                 {selectedMeeting.chairperson?.name && (
                   <div className="mt-4">
-                    <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Chairperson:</span> {selectedMeeting.chairperson.name} ({selectedMeeting.chairperson.role})</p>
+                    <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">{translate("Chairperson:")}</span> {selectedMeeting.chairperson.name} ({translate(selectedMeeting.chairperson.role)})</p>
                   </div>
                 )}
 
                 {selectedMeeting.source && selectedMeeting.source !== 'manual' && (
                   <p className="mt-3 text-xs text-muted-foreground">
-                    Kaynak: <span className="font-medium text-foreground">{selectedMeeting.source}</span> üzerinden içe aktarıldı
+                    {translate("Kaynak:")} <span className="font-medium text-foreground">{selectedMeeting.source}</span> {translate("üzerinden içe aktarıldı")}
                   </p>
                 )}
               </div>
@@ -114,7 +116,7 @@ export default function MeetingsPage() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Sparkles className="h-4 w-4 text-primary" />
-                        <h3 className="font-semibold text-foreground text-sm">AI Toplantı Özeti</h3>
+                        <h3 className="font-semibold text-foreground text-sm">{translate("AI Toplantı Özeti")}</h3>
                       </div>
                       <p className="text-sm text-muted-foreground whitespace-pre-line">{selectedMeeting.summary}</p>
                     </div>
@@ -123,7 +125,7 @@ export default function MeetingsPage() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <ListChecks className="h-4 w-4 text-primary" />
-                        <h3 className="font-semibold text-foreground text-sm">Aksiyon Maddeleri</h3>
+                        <h3 className="font-semibold text-foreground text-sm">{translate("Aksiyon Maddeleri")}</h3>
                       </div>
                       <ul className="list-disc pl-5 space-y-1">
                         {selectedMeeting.actionItems!.map((a, i) => (
@@ -134,7 +136,7 @@ export default function MeetingsPage() {
                   )}
                   {selectedMeeting.transcript && (
                     <details className="text-sm">
-                      <summary className="cursor-pointer text-muted-foreground">Ham not / transkript</summary>
+                      <summary className="cursor-pointer text-muted-foreground">{translate("Ham not / transkript")}</summary>
                       <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-muted/50 p-3 text-xs text-muted-foreground">{selectedMeeting.transcript}</pre>
                     </details>
                   )}
@@ -143,11 +145,11 @@ export default function MeetingsPage() {
 
               <div className="enterprise-card">
                 <div className="p-4 border-b border-border">
-                  <h3 className="font-semibold text-foreground text-sm">Agenda Items</h3>
+                  <h3 className="font-semibold text-foreground text-sm">{translate("Agenda Items")}</h3>
                 </div>
                 <div className="divide-y divide-border/50">
                   {selectedMeeting.agenda.length === 0 ? (
-                    <p className="p-4 text-sm text-muted-foreground">Gündem maddesi yok.</p>
+                    <p className="p-4 text-sm text-muted-foreground">{translate("Gündem maddesi yok.")}</p>
                   ) : selectedMeeting.agenda.map((item, i) => {
                     const linked = getLinkedDecision(item.linkedDecisionId);
                     return (
@@ -156,7 +158,7 @@ export default function MeetingsPage() {
                           <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center flex-shrink-0">{i + 1}</span>
                           <div className="flex-1">
                             <p className="font-medium text-sm text-foreground">{item.title}</p>
-                            <p className="text-xs text-muted-foreground">{item.duration}min{item.presenter && ` · ${item.presenter.name}`}</p>
+                            <p className="text-xs text-muted-foreground">{item.duration}{translate("min")}{item.presenter && ` · ${item.presenter.name}`}</p>
                           </div>
                         </div>
 
@@ -164,16 +166,16 @@ export default function MeetingsPage() {
                           <div className="ml-9 mt-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
                             <div className="flex items-center gap-2 mb-2">
                               <GitBranch className="h-3.5 w-3.5 text-primary" />
-                              <span className="text-xs font-semibold text-primary uppercase tracking-wide">Bağlı Karar</span>
+                              <span className="text-xs font-semibold text-primary uppercase tracking-wide">{translate("Bağlı Karar")}</span>
                             </div>
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-sm text-foreground">{linked.title}</p>
                                 <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{linked.description}</p>
                                 <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                                  <span>Bütçe: €{linked.budget.toLocaleString()}</span>
-                                  <span>Risk: {linked.riskLevel}</span>
-                                  <span>Oluşturan: {linked.createdBy.name}</span>
+                                  <span>{translate("Bütçe: €")}{linked.budget.toLocaleString(getLocale())}</span>
+                                  <span>Risk: {translate(linked.riskLevel)}</span>
+                                  <span>{translate("Oluşturan:")} {linked.createdBy.name}</span>
                                 </div>
                               </div>
                               <div className="flex-shrink-0 flex items-center gap-2">
@@ -183,7 +185,7 @@ export default function MeetingsPage() {
                             </div>
                             {linked.aiEvaluation && (
                               <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded p-2">
-                                AI: {linked.aiEvaluation.summary.substring(0, 100)}…
+                                {translate("AI:")} {linked.aiEvaluation.summary.substring(0, 100)}…
                               </p>
                             )}
                           </div>
@@ -198,10 +200,10 @@ export default function MeetingsPage() {
 
               <div className="enterprise-card">
                 <div className="p-4 border-b border-border">
-                  <h3 className="font-semibold text-foreground text-sm">Decisions Taken</h3>
+                  <h3 className="font-semibold text-foreground text-sm">{translate("Decisions Taken")}</h3>
                 </div>
                 {meetingDecisions.length === 0 ? (
-                  <p className="p-4 text-sm text-muted-foreground">No decisions recorded for this meeting.</p>
+                  <p className="p-4 text-sm text-muted-foreground">{translate("No decisions recorded for this meeting.")}</p>
                 ) : (
                   <div className="divide-y divide-border/50">
                     {meetingDecisions.map((d) => (
@@ -209,13 +211,13 @@ export default function MeetingsPage() {
                         <div className="flex items-start justify-between">
                           <div>
                             <p className="font-medium text-sm text-foreground">{d.title}</p>
-                            <p className="text-xs text-muted-foreground mt-1">Budget: €{d.budget.toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{translate("Budget: €")}{d.budget.toLocaleString(getLocale())}</p>
                           </div>
                           <StatusBadge status={d.status} />
                         </div>
                         {d.aiEvaluation && (
                           <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded p-2">
-                            AI: {d.aiEvaluation.summary.substring(0, 120)}…
+                            {translate("AI:")} {d.aiEvaluation.summary.substring(0, 120)}…
                           </p>
                         )}
                       </div>

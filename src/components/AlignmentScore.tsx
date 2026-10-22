@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 
 /** Circular Strategic Alignment Score visualization. */
 export function AlignmentScore({ score, size = 'md', label = 'Strategic Alignment', className }: Props) {
+  useLanguage();
   const clamped = Math.max(0, Math.min(100, Math.round(score)));
   const dims = size === 'sm' ? 72 : size === 'lg' ? 160 : 112;
   const stroke = size === 'sm' ? 6 : size === 'lg' ? 12 : 10;
@@ -48,8 +50,8 @@ export function AlignmentScore({ score, size = 'md', label = 'Strategic Alignmen
       </div>
       {size !== 'sm' && (
         <div className="text-center">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{label}</p>
-          <p className={cn('text-xs mt-0.5', tone)}>{verdict}</p>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{translate(label)}</p>
+          <p className={cn('text-xs mt-0.5', tone)}>{translate(verdict)}</p>
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { trainingItems } from '@/data/ceoTwin';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,11 +16,12 @@ const kinds = [
 ];
 
 export default function TrainingDataPage() {
+  useLanguage();
   return (
     <div className="space-y-6">
       <div className="page-header">
-        <h1 className="page-title">Training Data</h1>
-        <p className="page-description">Feed the Judgment Layer. The more grounded data it sees, the closer its recommendations match how the CEO actually thinks.</p>
+        <h1 className="page-title">{translate("Training Data")}</h1>
+        <p className="page-description">{translate("Feed the Judgment Layer. The more grounded data it sees, the closer its recommendations match how the CEO actually thinks.")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -28,12 +30,12 @@ export default function TrainingDataPage() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">{k.icon}</div>
-                <Badge variant="secondary" className="text-[10px]">{trainingItems.filter((t) => t.kind === k.key).length} items</Badge>
+                <Badge variant="secondary" className="text-[10px]">{trainingItems.filter((t) => t.kind === k.key).length} {translate("items")}</Badge>
               </div>
               <h3 className="font-semibold text-foreground mt-3">{k.key}</h3>
               <p className="text-xs text-muted-foreground mt-1">{k.desc}</p>
               <Button variant="outline" size="sm" className="mt-4 w-full" disabled>
-                <Upload className="h-3.5 w-3.5" />Add to memory
+                <Upload className="h-3.5 w-3.5" />{translate("Add to memory")}
               </Button>
             </CardContent>
           </Card>
@@ -43,17 +45,17 @@ export default function TrainingDataPage() {
       <Card>
         <CardContent className="p-0">
           <div className="p-5 border-b border-border">
-            <h2 className="text-base font-semibold text-foreground">Indexed sources</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Sources currently feeding the Judgment Layer.</p>
+            <h2 className="text-base font-semibold text-foreground">{translate("Indexed sources")}</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{translate("Sources currently feeding the Judgment Layer.")}</p>
           </div>
           <div className="divide-y divide-border">
             {trainingItems.map((t) => (
               <div key={t.id} className="flex items-center justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{t.title}</p>
-                  <p className="text-xs text-muted-foreground">{t.kind} · added {new Date(t.addedAt).toLocaleDateString()}{t.size ? ` · ${t.size}` : ''}</p>
+                  <p className="text-xs text-muted-foreground">{translate(t.kind)} {translate("· added")} {new Date(t.addedAt).toLocaleDateString(getLocale())}{t.size ? ` · ${t.size}` : ''}</p>
                 </div>
-                <Badge variant="outline" className="bg-success/10 text-success border-success/30">Indexed</Badge>
+                <Badge variant="outline" className="bg-success/10 text-success border-success/30">{translate("Indexed")}</Badge>
               </div>
             ))}
           </div>

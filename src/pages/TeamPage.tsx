@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -35,6 +36,7 @@ const roleLabels: Record<string, { label: string; icon: any; color: string }> = 
 };
 
 export default function TeamPage() {
+  useLanguage();
   const { workspace, role } = useWorkspace();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -105,12 +107,12 @@ export default function TeamPage() {
 
     if (error) {
       if (error.code === '23505') {
-        toast({ title: 'Bu e-posta zaten davet edilmiş.', variant: 'destructive' });
+        toast({ title: translate("Bu e-posta zaten davet edilmiş."), variant: 'destructive' });
       } else {
-        toast({ title: 'Davet hatası', description: error.message, variant: 'destructive' });
+        toast({ title: translate("Davet hatası"), description: error.message, variant: 'destructive' });
       }
     } else {
-      toast({ title: 'Davet oluşturuldu', description: `${inviteEmail} adresine davet linki hazır.` });
+      toast({ title: translate("Davet oluşturuldu"), description: `${inviteEmail} adresine davet linki hazır.` });
       setInviteEmail('');
       fetchInvites();
     }
@@ -120,7 +122,7 @@ export default function TeamPage() {
   const copyInviteLink = (token: string) => {
     const link = `${window.location.origin}/invite?token=${token}`;
     navigator.clipboard.writeText(link);
-    toast({ title: 'Davet linki kopyalandı!' });
+    toast({ title: translate("Davet linki kopyalandı!") });
   };
 
   const deleteInvite = async (id: string) => {
@@ -134,25 +136,25 @@ export default function TeamPage() {
       .update({ role: newRole as any })
       .eq('id', memberId);
     fetchMembers();
-    toast({ title: 'Rol güncellendi' });
+    toast({ title: translate("Rol güncellendi") });
   };
 
   const removeMember = async (memberId: string, memberUserId: string) => {
     if (memberUserId === user?.id) {
-      toast({ title: 'Kendinizi çıkaramazsınız.', variant: 'destructive' });
+      toast({ title: translate("Kendinizi çıkaramazsınız."), variant: 'destructive' });
       return;
     }
     await supabase.from('workspace_members').delete().eq('id', memberId);
     fetchMembers();
-    toast({ title: 'Üye çıkarıldı' });
+    toast({ title: translate("Üye çıkarıldı") });
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Takım Yönetimi</h1>
+        <h1 className="text-2xl font-bold text-foreground">{translate("Takım Yönetimi")}</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          {workspace?.name} workspace üyelerini yönetin.
+          {workspace?.name} {translate("workspace üyelerini yönetin.")}
         </p>
       </div>
 
@@ -160,8 +162,8 @@ export default function TeamPage() {
         <ReadOnlyNotice
           message={
             role === 'approver'
-              ? 'Approver rolündesiniz: takım üyelerini görüntüleyebilir ancak davet edemez veya rolleri değiştiremezsiniz.'
-              : 'Viewer rolündesiniz: takım üyelerini sadece görüntüleyebilirsiniz.'
+              ? translate("Approver rolündesiniz: takım üyelerini görüntüleyebilir ancak davet edemez veya rolleri değiştiremezsiniz.")
+              : translate("Viewer rolündesiniz: takım üyelerini sadece görüntüleyebilirsiniz.")
           }
         />
       )}
@@ -171,7 +173,7 @@ export default function TeamPage() {
         <div className="enterprise-card p-5">
           <h3 className="font-semibold text-foreground text-sm mb-4 flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
-            Takım Üyesi Davet Et
+            {translate("Takım Üyesi Davet Et")}
           </h3>
           <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
@@ -188,14 +190,14 @@ export default function TeamPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="approver">Approver</SelectItem>
-                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="admin">{translate("Admin")}</SelectItem>
+                <SelectItem value="approver">{translate("Approver")}</SelectItem>
+                <SelectItem value="viewer">{translate("Viewer")}</SelectItem>
               </SelectContent>
             </Select>
             <Button type="submit" disabled={sending}>
               <Mail className="h-4 w-4 mr-1" />
-              Davet Et
+              {translate("Davet Et")}
             </Button>
           </form>
         </div>
@@ -205,7 +207,7 @@ export default function TeamPage() {
       {isAdmin && invites.length > 0 && (
         <div className="enterprise-card">
           <div className="p-4 border-b border-border">
-            <h3 className="font-semibold text-foreground text-sm">Bekleyen Davetler</h3>
+            <h3 className="font-semibold text-foreground text-sm">{translate("Bekleyen Davetler")}</h3>
           </div>
           <div className="divide-y divide-border/50">
             {invites.map((inv) => {
@@ -219,7 +221,7 @@ export default function TeamPage() {
                     <p className="text-sm font-medium text-foreground truncate">{inv.email}</p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <RoleIcon className={`h-3 w-3 ${roleLabels[inv.role].color}`} />
-                      {roleLabels[inv.role].label} · Süre: {new Date(inv.expires_at).toLocaleDateString('tr-TR')}
+                      {translate(roleLabels[inv.role].label)} {translate("· Süre:")} {new Date(inv.expires_at).toLocaleDateString(getLocale())}
                     </p>
                   </div>
                   <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => copyInviteLink(inv.token)}>
@@ -240,7 +242,7 @@ export default function TeamPage() {
         <div className="p-4 border-b border-border">
           <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Üyeler ({members.length})
+            {translate("Üyeler (")}{members.length})
           </h3>
         </div>
         <div className="divide-y divide-border/50">
@@ -257,11 +259,11 @@ export default function TeamPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">
                     {m.profiles?.display_name || 'Adsız Kullanıcı'}
-                    {isCurrentUser && <span className="text-xs text-muted-foreground ml-1">(Siz)</span>}
+                    {isCurrentUser && <span className="text-xs text-muted-foreground ml-1">{translate("(Siz)")}</span>}
                   </p>
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <RoleIcon className={`h-3 w-3 ${roleLabels[m.role].color}`} />
-                    {roleLabels[m.role].label}
+                    {translate(roleLabels[m.role].label)}
                     {m.profiles?.department && ` · ${m.profiles.department}`}
                   </p>
                 </div>
@@ -275,9 +277,9 @@ export default function TeamPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="approver">Approver</SelectItem>
-                        <SelectItem value="viewer">Viewer</SelectItem>
+                        <SelectItem value="admin">{translate("Admin")}</SelectItem>
+                        <SelectItem value="approver">{translate("Approver")}</SelectItem>
+                        <SelectItem value="viewer">{translate("Viewer")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button

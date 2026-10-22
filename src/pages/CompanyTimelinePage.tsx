@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ const seed: Milestone[] = [
 ];
 
 export default function CompanyTimelinePage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const key = workspace ? `mem:milestones:${workspace.id}` : 'mem:milestones';
   const [rows, setRows] = useState<Milestone[]>([]);
@@ -71,37 +73,37 @@ export default function CompanyTimelinePage() {
     <div className="space-y-6">
       <div className="page-header flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="page-title flex items-center gap-2"><History className="h-6 w-6 text-primary" /> Company Timeline</h1>
-          <p className="page-description">The company's history — the events every executive and AI agent should know.</p>
+          <h1 className="page-title flex items-center gap-2"><History className="h-6 w-6 text-primary" /> {translate("Company Timeline")}</h1>
+          <p className="page-description">{translate("The company's history — the events every executive and AI agent should know.")}</p>
         </div>
         <div className="flex gap-2">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All events</SelectItem>
-              {Object.entries(KIND_META).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
+              <SelectItem value="all">{translate("All events")}</SelectItem>
+              {Object.entries(KIND_META).map(([k, v]) => <SelectItem key={k} value={k}>{translate(v.label)}</SelectItem>)}
             </SelectContent>
           </Select>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-2" /> New Milestone</Button></DialogTrigger>
+            <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-2" /> {translate("New Milestone")}</Button></DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Add milestone</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>{translate("Add milestone")}</DialogTitle></DialogHeader>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
+                  <div><Label>{translate("Date")}</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
                   <div>
-                    <Label>Type</Label>
+                    <Label>{translate("Type")}</Label>
                     <Select value={form.kind} onValueChange={(v: Kind) => setForm({ ...form, kind: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>{Object.entries(KIND_META).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
+                      <SelectContent>{Object.entries(KIND_META).map(([k, v]) => <SelectItem key={k} value={k}>{translate(v.label)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-                <div><Label>Description</Label><Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-                <div><Label>Impact</Label><Textarea rows={2} value={form.impact} onChange={(e) => setForm({ ...form, impact: e.target.value })} /></div>
+                <div><Label>{translate("Title")}</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+                <div><Label>{translate("Description")}</Label><Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+                <div><Label>{translate("Impact")}</Label><Textarea rows={2} value={form.impact} onChange={(e) => setForm({ ...form, impact: e.target.value })} /></div>
               </div>
-              <DialogFooter><Button onClick={save}>Save</Button></DialogFooter>
+              <DialogFooter><Button onClick={save}>{translate("Save")}</Button></DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
@@ -123,14 +125,14 @@ export default function CompanyTimelinePage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs text-muted-foreground">{new Date(m.date).toLocaleDateString()}</span>
-                          <Badge variant="outline" className="text-xs">{meta.label}</Badge>
+                          <span className="text-xs text-muted-foreground">{new Date(m.date).toLocaleDateString(getLocale())}</span>
+                          <Badge variant="outline" className="text-xs">{translate(meta.label)}</Badge>
                         </div>
                         <h3 className="font-semibold mt-1">{m.title}</h3>
                         {m.description && <p className="text-sm text-muted-foreground mt-1">{m.description}</p>}
                         {m.impact && (
                           <div className="mt-2 rounded-md bg-primary/5 border border-primary/20 p-2">
-                            <p className="text-[10px] uppercase tracking-wider text-primary">Impact</p>
+                            <p className="text-[10px] uppercase tracking-wider text-primary">{translate("Impact")}</p>
                             <p className="text-sm">{m.impact}</p>
                           </div>
                         )}
@@ -144,7 +146,7 @@ export default function CompanyTimelinePage() {
           })}
           {sorted.length === 0 && (
             <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">
-              <History className="h-6 w-6 mx-auto mb-2 opacity-50" /> No milestones yet.
+              <History className="h-6 w-6 mx-auto mb-2 opacity-50" /> {translate("No milestones yet.")}
             </CardContent></Card>
           )}
         </div>

@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -63,6 +64,7 @@ const OUTCOME_META: Record<string, { label: string; icon: any; className: string
 };
 
 export default function RetrospectivePage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const [rows, setRows] = useState<Decision[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +90,7 @@ export default function RetrospectivePage() {
         .eq('workspace_id', workspace.id)
         .order('created_at', { ascending: false });
       if (error) {
-        toast({ title: 'Yüklenemedi', description: error.message, variant: 'destructive' });
+        toast({ title: translate("Yüklenemedi"), description: error.message, variant: 'destructive' });
       } else {
         setRows((data as any) ?? []);
       }
@@ -141,12 +143,11 @@ export default function RetrospectivePage() {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <header className="space-y-2">
         <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-primary">
-          <History className="h-3.5 w-3.5" /> Retrospektif Arama
+          <History className="h-3.5 w-3.5" /> {translate("Retrospektif Arama")}
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Şirket geçmişinde bu karar alındı mı?</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{translate("Şirket geçmişinde bu karar alındı mı?")}</h1>
         <p className="text-muted-foreground max-w-3xl">
-          Belirli bir dönemde alınan kararları, o dönem şirketin içinde bulunduğu durumu ve
-          sonuçlarını birlikte gösterir. Filtrelere göre veya doğal dille arayın.
+          {translate("Belirli bir dönemde alınan kararları, o dönem şirketin içinde bulunduğu durumu ve sonuçlarını birlikte gösterir. Filtrelere göre veya doğal dille arayın.")}
         </p>
       </header>
 
@@ -158,18 +159,18 @@ export default function RetrospectivePage() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Örn: fiyat artışı, yeni pazar, işten çıkarma, tedarikçi değişimi…"
+              placeholder={translate("Örn: fiyat artışı, yeni pazar, işten çıkarma, tedarikçi değişimi…")}
               className="pl-10 h-11"
             />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Başlangıç</Label>
+              <Label className="text-xs">{translate("Başlangıç")}</Label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Bitiş</Label>
+              <Label className="text-xs">{translate("Bitiş")}</Label>
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
@@ -177,43 +178,43 @@ export default function RetrospectivePage() {
               <Select value={risk} onValueChange={setRisk}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tümü</SelectItem>
-                  <SelectItem value="low">Düşük</SelectItem>
-                  <SelectItem value="medium">Orta</SelectItem>
-                  <SelectItem value="high">Yüksek</SelectItem>
-                  <SelectItem value="critical">Kritik</SelectItem>
+                  <SelectItem value="all">{translate("Tümü")}</SelectItem>
+                  <SelectItem value="low">{translate("Düşük")}</SelectItem>
+                  <SelectItem value="medium">{translate("Orta")}</SelectItem>
+                  <SelectItem value="high">{translate("Yüksek")}</SelectItem>
+                  <SelectItem value="critical">{translate("Kritik")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Sonuç</Label>
+              <Label className="text-xs">{translate("Sonuç")}</Label>
               <Select value={outcome} onValueChange={setOutcome}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tümü</SelectItem>
-                  <SelectItem value="success">Başarılı</SelectItem>
-                  <SelectItem value="partial">Kısmi</SelectItem>
-                  <SelectItem value="failure">Başarısız</SelectItem>
-                  <SelectItem value="pending">Beklemede</SelectItem>
+                  <SelectItem value="all">{translate("Tümü")}</SelectItem>
+                  <SelectItem value="success">{translate("Başarılı")}</SelectItem>
+                  <SelectItem value="partial">{translate("Kısmi")}</SelectItem>
+                  <SelectItem value="failure">{translate("Başarısız")}</SelectItem>
+                  <SelectItem value="pending">{translate("Beklemede")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Finansal durum</Label>
+              <Label className="text-xs">{translate("Finansal durum")}</Label>
               <Select value={financial} onValueChange={setFinancial}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tümü</SelectItem>
-                  <SelectItem value="strong">Güçlü</SelectItem>
-                  <SelectItem value="stable">İstikrarlı</SelectItem>
-                  <SelectItem value="stressed">Zorlanan</SelectItem>
-                  <SelectItem value="critical">Kritik</SelectItem>
+                  <SelectItem value="all">{translate("Tümü")}</SelectItem>
+                  <SelectItem value="strong">{translate("Güçlü")}</SelectItem>
+                  <SelectItem value="stable">{translate("İstikrarlı")}</SelectItem>
+                  <SelectItem value="stressed">{translate("Zorlanan")}</SelectItem>
+                  <SelectItem value="critical">{translate("Kritik")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex items-end">
               <Button variant="outline" onClick={reset} className="w-full gap-2">
-                <Filter className="h-4 w-4" /> Sıfırla
+                <Filter className="h-4 w-4" /> {translate("Sıfırla")}
               </Button>
             </div>
           </div>
@@ -222,12 +223,12 @@ export default function RetrospectivePage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Bulunan karar" value={stats.total.toString()} icon={History} />
-        <StatCard label="Ölçülmüş sonuç" value={`${stats.measured}`} icon={CheckCircle2} />
-        <StatCard label="Başarı oranı" value={`${stats.successRate}%`} icon={TrendingUp} />
+        <StatCard label={translate("Bulunan karar")} value={stats.total.toString()} icon={History} />
+        <StatCard label={translate("Ölçülmüş sonuç")} value={`${stats.measured}`} icon={CheckCircle2} />
+        <StatCard label={translate("Başarı oranı")} value={`${stats.successRate}%`} icon={TrendingUp} />
         <StatCard
-          label="Net finansal etki"
-          value={new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(stats.netImpact)}
+          label={translate("Net finansal etki")}
+          value={new Intl.NumberFormat(getLocale(), { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(stats.netImpact)}
           icon={DollarSign}
           tone={stats.netImpact >= 0 ? 'success' : 'destructive'}
         />
@@ -245,7 +246,7 @@ export default function RetrospectivePage() {
             <CardContent className="p-12 text-center">
               <Sparkles className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
               <p className="text-muted-foreground">
-                Bu filtrelerle eşleşen geçmiş karar bulunamadı. Farklı bir dönem veya anahtar kelime deneyin.
+                {translate("Bu filtrelerle eşleşen geçmiş karar bulunamadı. Farklı bir dönem veya anahtar kelime deneyin.")}
               </p>
             </CardContent>
           </Card>
@@ -260,13 +261,14 @@ export default function RetrospectivePage() {
 function StatCard({
   label, value, icon: Icon, tone = 'default',
 }: { label: string; value: string; icon: any; tone?: 'default' | 'success' | 'destructive' }) {
+  useLanguage();
   const toneCls =
     tone === 'success' ? 'text-success' : tone === 'destructive' ? 'text-destructive' : 'text-foreground';
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">{label}</div>
+          <div className="text-xs text-muted-foreground">{translate(label)}</div>
           <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
         <div className={`text-2xl font-bold mt-2 ${toneCls}`}>{value}</div>
@@ -276,13 +278,14 @@ function StatCard({
 }
 
 function RetroCard({ d }: { d: Decision }) {
+  useLanguage();
   const snap = d.decision_context_snapshots[0];
   const out = d.decision_outcomes[0];
   const meta = out ? OUTCOME_META[out.outcome_status] ?? OUTCOME_META.pending : null;
   const Icon = meta?.icon ?? Clock;
 
   const fmt = (n: number | null) =>
-    n == null ? '—' : new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+    n == null ? '—' : new Intl.NumberFormat(getLocale(), { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
   return (
     <Card className="overflow-hidden">
@@ -293,12 +296,12 @@ function RetroCard({ d }: { d: Decision }) {
             <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(d.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                {new Date(d.created_at).toLocaleDateString(getLocale(), { day: '2-digit', month: 'short', year: 'numeric' })}
               </span>
               {d.risk_level && (
-                <Badge variant="outline" className="text-[10px]">Risk: {d.risk_level}</Badge>
+                <Badge variant="outline" className="text-[10px]">Risk: {translate(d.risk_level)}</Badge>
               )}
-              {d.status && <Badge variant="secondary" className="text-[10px]">{d.status}</Badge>}
+              {d.status && <Badge variant="secondary" className="text-[10px]">{translate(d.status)}</Badge>}
               {d.budget != null && (
                 <span className="inline-flex items-center gap-1">
                   <DollarSign className="h-3 w-3" /> {fmt(d.budget)}
@@ -308,7 +311,7 @@ function RetroCard({ d }: { d: Decision }) {
           </div>
           <Link to={`/decisions/list/${d.id}`}>
             <Button size="sm" variant="ghost" className="gap-1">
-              Detay <ExternalLink className="h-3 w-3" />
+              {translate("Detay")} <ExternalLink className="h-3 w-3" />
             </Button>
           </Link>
         </div>
@@ -321,22 +324,22 @@ function RetroCard({ d }: { d: Decision }) {
         {/* Context */}
         <div className="rounded-lg border border-border bg-muted/30 p-4">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            <Building2 className="h-3.5 w-3.5" /> Karar anındaki şirket durumu
+            <Building2 className="h-3.5 w-3.5" /> {translate("Karar anındaki şirket durumu")}
           </div>
           {snap ? (
             <div className="space-y-2 text-sm">
-              <Row label="Genel durum" value={snap.company_state} />
-              <Row label="Finansal sağlık" value={snap.financial_health} />
-              <Row label="Pazar koşulları" value={snap.market_conditions} />
-              <Row label="Ana zorluklar" value={snap.key_challenges} />
+              <Row label={translate("Genel durum")} value={snap.company_state} />
+              <Row label={translate("Finansal sağlık")} value={snap.financial_health} />
+              <Row label={translate("Pazar koşulları")} value={snap.market_conditions} />
+              <Row label={translate("Ana zorluklar")} value={snap.key_challenges} />
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/60">
-                <Mini label="Gelir" value={fmt(snap.revenue)} />
-                <Mini label="Runway" value={snap.runway_months != null ? `${snap.runway_months} ay` : '—'} />
-                <Mini label="Ekip" value={snap.team_size?.toString() ?? '—'} />
+                <Mini label={translate("Gelir")} value={fmt(snap.revenue)} />
+                <Mini label={translate("Runway")} value={snap.runway_months != null ? translate("{v0} ay", {v0: snap.runway_months}) : '—'} />
+                <Mini label={translate("Ekip")} value={snap.team_size?.toString() ?? '—'} />
               </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground italic">Bu karar için bağlam snapshot'ı kaydedilmemiş.</p>
+            <p className="text-sm text-muted-foreground italic">{translate("Bu karar için bağlam snapshot'ı kaydedilmemiş.")}</p>
           )}
         </div>
 
@@ -344,20 +347,20 @@ function RetroCard({ d }: { d: Decision }) {
         <div className={`rounded-lg border p-4 ${out ? 'bg-card' : 'bg-muted/30 border-border'}`}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              <TrendingUp className="h-3.5 w-3.5" /> Sonuç
+              <TrendingUp className="h-3.5 w-3.5" /> {translate("Sonuç")}
             </div>
             {meta && (
               <Badge variant="outline" className={`gap-1 ${meta.className}`}>
-                <Icon className="h-3 w-3" /> {meta.label}
+                <Icon className="h-3 w-3" /> {translate(meta.label)}
               </Badge>
             )}
           </div>
           {out ? (
             <div className="space-y-2 text-sm">
-              <Row label="Özet" value={out.summary} />
-              <Row label="Nitel etki" value={out.impact_qualitative} />
+              <Row label={translate("Özet")} value={out.summary} />
+              <Row label={translate("Nitel etki")} value={out.impact_qualitative} />
               <Row
-                label="Finansal etki"
+                label={translate("Finansal etki")}
                 value={out.impact_financial != null ? fmt(out.impact_financial) : '—'}
                 valueClass={
                   out.impact_financial == null ? '' :
@@ -367,17 +370,17 @@ function RetroCard({ d }: { d: Decision }) {
               {out.lessons_learned && (
                 <div className="pt-2 border-t border-border/60">
                   <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1 flex items-center gap-1">
-                    <AlertTriangle className="h-3 w-3" /> Öğrenilen dersler
+                    <AlertTriangle className="h-3 w-3" /> {translate("Öğrenilen dersler")}
                   </div>
                   <p className="text-sm">{out.lessons_learned}</p>
                 </div>
               )}
               <div className="text-[10px] text-muted-foreground pt-1">
-                Ölçüm: {new Date(out.measured_at).toLocaleDateString('tr-TR')}
+                {translate("Ölçüm:")} {new Date(out.measured_at).toLocaleDateString(getLocale())}
               </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground italic">Bu karar için henüz sonuç kaydedilmemiş.</p>
+            <p className="text-sm text-muted-foreground italic">{translate("Bu karar için henüz sonuç kaydedilmemiş.")}</p>
           )}
         </div>
       </CardContent>
@@ -386,19 +389,21 @@ function RetroCard({ d }: { d: Decision }) {
 }
 
 function Row({ label, value, valueClass = '' }: { label: string; value: string | null | undefined; valueClass?: string }) {
+  useLanguage();
   if (!value) return null;
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{translate(label)}</div>
       <div className={`text-sm ${valueClass}`}>{value}</div>
     </div>
   );
 }
 
 function Mini({ label, value }: { label: string; value: string }) {
+  useLanguage();
   return (
     <div className="text-center">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{translate(label)}</div>
       <div className="text-sm font-medium">{value}</div>
     </div>
   );

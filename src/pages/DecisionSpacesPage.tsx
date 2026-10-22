@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { Layers } from 'lucide-react';
 
 const spaces = [
@@ -9,11 +10,12 @@ const spaces = [
 ];
 
 export default function DecisionSpacesPage() {
+  useLanguage();
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Decision Spaces</h1>
-        <p className="page-description">Departmental and organizational decision workspaces.</p>
+        <h1 className="page-title">{translate("Decision Spaces")}</h1>
+        <p className="page-description">{translate("Departmental and organizational decision workspaces.")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -26,8 +28,8 @@ export default function DecisionSpacesPage() {
               <h3 className="font-semibold text-foreground">{s.name}</h3>
             </div>
             <div className="flex gap-6 text-sm">
-              <div><span className="text-muted-foreground">Decisions:</span> <span className="font-medium text-foreground">{s.decisions}</span></div>
-              <div><span className="text-muted-foreground">Pending:</span> <span className="font-medium text-warning">{s.pending}</span></div>
+              <div><span className="text-muted-foreground">{translate("Decisions:")}</span> <span className="font-medium text-foreground">{s.decisions}</span></div>
+              <div><span className="text-muted-foreground">{translate("Pending:")}</span> <span className="font-medium text-warning">{s.pending}</span></div>
             </div>
           </div>
         ))}

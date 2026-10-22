@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { downloadStepAudits, downloadRows, auditEventToRow } from '@/lib/stepAud
 const ALL = '__all__';
 
 export default function InternalAuditPage() {
+  useLanguage();
   const { rows } = useTable<any>('audit_events');
   const [q, setQ] = useState('');
   const [from, setFrom] = useState('');
@@ -116,42 +118,42 @@ export default function InternalAuditPage() {
     <div className="p-6 space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Denetim — İç</p>
+          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Denetim — İç")}</p>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <Lock className="h-6 w-6" /> İç Denetim
+            <Lock className="h-6 w-6" /> {translate("İç Denetim")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Kuruluş içi denetim görünümü: aktör kimlikleri, gerekçeler ve tüm iç kayıtlar dahil.
+            {translate("Kuruluş içi denetim görünümü: aktör kimlikleri, gerekçeler ve tüm iç kayıtlar dahil.")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
           <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
           <Select value={eventType} onValueChange={setEventType}>
-            <SelectTrigger className="w-56"><SelectValue placeholder="Olay türü" /></SelectTrigger>
+            <SelectTrigger className="w-56"><SelectValue placeholder={translate("Olay türü")} /></SelectTrigger>
             <SelectContent className="max-h-72">
-              <SelectItem value={ALL}>Tüm olay türleri</SelectItem>
+              <SelectItem value={ALL}>{translate("Tüm olay türleri")}</SelectItem>
               {eventTypeOptions.map((t) => (
                 <SelectItem key={t} value={t} className="font-mono text-xs">{t}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={flow} onValueChange={setFlow}>
-            <SelectTrigger className="w-48"><SelectValue placeholder="Akış" /></SelectTrigger>
+            <SelectTrigger className="w-48"><SelectValue placeholder={translate("Akış")} /></SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL}>Tüm akışlar</SelectItem>
+              <SelectItem value={ALL}>{translate("Tüm akışlar")}</SelectItem>
               {flowOptions.map((f) => (
                 <SelectItem key={f} value={f}>{f}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Filtrele…" value={q} onChange={(e) => setQ(e.target.value)} className="w-56" />
+          <Input placeholder={translate("Filtrele…")} value={q} onChange={(e) => setQ(e.target.value)} className="w-56" />
         </div>
       </div>
 
       <Card>
         <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-sm">Toplu rapor satırı</CardTitle>
+          <CardTitle className="text-sm">{translate("Toplu rapor satırı")}</CardTitle>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -171,7 +173,7 @@ export default function InternalAuditPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Seçili filtredeki tüm defter kayıtları tek bir veri satırına toplandı.
+            {translate("Seçili filtredeki tüm defter kayıtları tek bir veri satırına toplandı.")}
           </p>
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-sm">
@@ -198,11 +200,11 @@ export default function InternalAuditPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Denetim defteri raporu</CardTitle>
+          <CardTitle className="text-sm">{translate("Denetim defteri raporu")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            {auditReportRows.length} olay — seçili olay türü ve akış filtreleriyle. Aynı şema dışa aktarım uç noktasında:{' '}
+            {auditReportRows.length} {translate("olay — seçili olay türü ve akış filtreleriyle. Aynı şema dışa aktarım uç noktasında:")}{' '}
             <code className="text-xs">GET /v1/export?{exportQuery}&amp;format=json|csv</code>
           </p>
           <div className="flex gap-2">
@@ -228,12 +230,11 @@ export default function InternalAuditPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Adım denetim raporları</CardTitle>
+          <CardTitle className="text-sm">{translate("Adım denetim raporları")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            {stepAuditRows.length} otomatik adım raporu — eksik bilgi, yakalanan hata ve kesilen akış özetleri.
-            Aynı şema dışa aktarım uç noktasında da mevcut: <code className="text-xs">GET /v1/export?entities=step_audits&amp;format=json|csv</code>
+            {stepAuditRows.length} {translate("otomatik adım raporu — eksik bilgi, yakalanan hata ve kesilen akış özetleri. Aynı şema dışa aktarım uç noktasında da mevcut:")} <code className="text-xs">GET /v1/export?entities=step_audits&amp;format=json|csv</code>
           </p>
           <div className="flex gap-2">
             <Button
@@ -259,7 +260,7 @@ export default function InternalAuditPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Kapsamdaki olay</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">{translate("Kapsamdaki olay")}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{filtered.length}</p>
@@ -267,7 +268,7 @@ export default function InternalAuditPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Farklı aktör</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">{translate("Farklı aktör")}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{actors}</p>
@@ -275,14 +276,14 @@ export default function InternalAuditPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">İlgili modüller</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">{translate("İlgili modüller")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             <NavLink to="/security-audit" className="text-xs text-primary hover:underline flex items-center gap-1">
-              <ShieldCheck className="h-3.5 w-3.5" /> Güvenlik Denetimi
+              <ShieldCheck className="h-3.5 w-3.5" /> {translate("Güvenlik Denetimi")}
             </NavLink>
             <NavLink to="/memory/link-audit" className="text-xs text-primary hover:underline flex items-center gap-1">
-              <History className="h-3.5 w-3.5" /> Bağlantı İzi
+              <History className="h-3.5 w-3.5" /> {translate("Bağlantı İzi")}
             </NavLink>
           </CardContent>
         </Card>
@@ -291,7 +292,7 @@ export default function InternalAuditPage() {
       {byType.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Olay türü dağılımı</CardTitle>
+            <CardTitle className="text-base">{translate("Olay türü dağılımı")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {byType.map(([type, count]) => (
@@ -305,24 +306,24 @@ export default function InternalAuditPage() {
 
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-base">Append-only iç denetim defteri</CardTitle>
+          <CardTitle className="text-base">{translate("Append-only iç denetim defteri")}</CardTitle>
           <span className="text-xs text-muted-foreground flex items-center gap-1">
-            <EyeOff className="h-3.5 w-3.5" /> Dış denetçilere kapalı
+            <EyeOff className="h-3.5 w-3.5" /> {translate("Dış denetçilere kapalı")}
           </span>
         </CardHeader>
         <CardContent className="p-0">
           <ul className="divide-y">
-            {filtered.length === 0 && <li className="p-6 text-sm text-muted-foreground">Kayıt yok.</li>}
+            {filtered.length === 0 && <li className="p-6 text-sm text-muted-foreground">{translate("Kayıt yok.")}</li>}
             {filtered.map((e) => (
               <li key={e.id} className="p-3 flex items-start gap-3 text-sm">
                 <span className="text-xs text-muted-foreground font-mono w-44 flex-shrink-0">
-                  {new Date(e.created_at).toLocaleString()}
+                  {new Date(e.created_at).toLocaleString(getLocale())}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium">{e.event_type}</p>
                   {e.reason && <p className="text-xs text-muted-foreground">{e.reason}</p>}
                   <p className="text-xs font-mono text-muted-foreground mt-0.5">
-                    {e.actor_user_id && <>actor:{String(e.actor_user_id).slice(0, 8)} </>}
+                    {e.actor_user_id && <>{translate("actor:")}{String(e.actor_user_id).slice(0, 8)} </>}
                     {e.action_id && <>act:{String(e.action_id).slice(0, 8)} </>}
                     {e.decision_id && <>dec:{String(e.decision_id).slice(0, 8)}</>}
                   </p>

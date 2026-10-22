@@ -5,7 +5,7 @@ import { AlertTriangle, Clock, CheckCircle2, Activity, ShieldAlert, Plus } from 
 import { useTable } from '@/hooks/useGovernance';
 import { ApprovalStatusBadge, RiskBadge, AuthorityLevelBadge } from '@/components/governance/StatusBadges';
 
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 
 export default function ExecutiveDashboardPage() {
   const { t, locale } = useLanguage();
@@ -127,12 +127,13 @@ export default function ExecutiveDashboardPage() {
 }
 
 function MetricCard({ icon: Icon, label, value, onClick, tone }: any) {
+  useLanguage();
   return (
     <Card className={onClick ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''} onClick={onClick}>
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="text-sm text-muted-foreground">{translate(label)}</p>
             <p className="text-3xl font-bold mt-1">{value}</p>
           </div>
           <Icon className={`h-8 w-8 ${tone === 'risk' ? 'text-red-500' : tone === 'ok' ? 'text-emerald-500' : 'text-muted-foreground'}`} />

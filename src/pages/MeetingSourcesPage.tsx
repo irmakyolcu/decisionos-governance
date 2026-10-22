@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ interface ConnectorState {
 }
 
 export default function MeetingSourcesPage() {
+  useLanguage();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [states, setStates] = useState<ConnectorState[]>([]);
@@ -34,7 +36,7 @@ export default function MeetingSourcesPage() {
     setLoading(true);
     const { data, error } = await supabase.functions.invoke('app-user-connect', { body: { action: 'status' } });
     if (error) {
-      toast({ title: 'Durum alınamadı', description: error.message, variant: 'destructive' });
+      toast({ title: translate("Durum alınamadı"), description: error.message, variant: 'destructive' });
     } else {
       setStates(data?.connectors ?? []);
     }
@@ -51,7 +53,7 @@ export default function MeetingSourcesPage() {
     setBusy(null);
     if (error || data?.error) {
       toast({
-        title: 'Bağlantı başlatılamadı',
+        title: translate("Bağlantı başlatılamadı"),
         description: data?.error === 'connector_not_configured'
           ? 'Bu kaynak için workspace yöneticisinin OAuth istemcisini tanımlaması gerekiyor.'
           : (data?.error ?? error?.message),
@@ -75,11 +77,11 @@ export default function MeetingSourcesPage() {
     const { data, error } = await supabase.functions.invoke('meeting-sync', { body: { action: 'list', connector_id: id } });
     setBusy(null);
     if (error || data?.error) {
-      toast({ title: 'Kaynaklar alınamadı', description: data?.error ?? error?.message, variant: 'destructive' });
+      toast({ title: translate("Kaynaklar alınamadı"), description: data?.error ?? error?.message, variant: 'destructive' });
       return;
     }
     setSources((s) => ({ ...s, [id]: data?.sources ?? [] }));
-    if ((data?.sources ?? []).length === 0) toast({ title: 'Kaynak bulunamadı' });
+    if ((data?.sources ?? []).length === 0) toast({ title: translate("Kaynak bulunamadı") });
   };
 
   const importMeetings = async (id: ConnectorId) => {
@@ -91,11 +93,11 @@ export default function MeetingSourcesPage() {
     });
     setBusy(null);
     if (error || data?.error) {
-      toast({ title: 'İçe aktarma başarısız', description: data?.error ?? error?.message, variant: 'destructive' });
+      toast({ title: translate("İçe aktarma başarısız"), description: data?.error ?? error?.message, variant: 'destructive' });
       return;
     }
     toast({
-      title: 'İçe aktarma tamamlandı',
+      title: translate("İçe aktarma tamamlandı"),
       description: data?.count ? `${data.count} toplantı kaydı oluşturuldu/güncellendi.` : (data?.message ?? 'Yeni kayıt bulunamadı.'),
     });
   };
@@ -103,10 +105,9 @@ export default function MeetingSourcesPage() {
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Toplantı Kaynakları</h1>
+        <h1 className="page-title">{translate("Toplantı Kaynakları")}</h1>
         <p className="page-description">
-          Slack, Google Meet/Calendar ve Microsoft Teams üzerinden toplantı kayıtlarını ve notlarını içe aktarın.
-          Her kullanıcı kendi hesabını bağlar; AI notları özetleyip aksiyon maddelerini çıkarır.
+          {translate("Slack, Google Meet/Calendar ve Microsoft Teams üzerinden toplantı kayıtlarını ve notlarını içe aktarın. Her kullanıcı kendi hesabını bağlar; AI notları özetleyip aksiyon maddelerini çıkarır.")}
         </p>
       </div>
 
@@ -128,18 +129,18 @@ export default function MeetingSourcesPage() {
                     <div>
                       <p className="font-semibold text-foreground">{c.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {connected ? 'Bağlı' : st?.configured ? 'Bağlı değil' : 'Kurulum gerekli'}
+                        {connected ? translate("Bağlı") : st?.configured ? translate("Bağlı değil") : translate("Kurulum gerekli")}
                       </p>
                     </div>
                   </div>
-                  <Badge variant={connected ? 'default' : 'secondary'}>{connected ? 'Aktif' : 'Pasif'}</Badge>
+                  <Badge variant={connected ? 'default' : 'secondary'}>{connected ? translate("Aktif") : translate("Pasif")}</Badge>
                 </div>
 
                 <p className="text-sm text-muted-foreground">{c.description}</p>
 
                 {!st?.configured && (
                   <p className="text-xs rounded-md border border-border bg-muted/40 p-3 text-muted-foreground">
-                    Bu kaynak için workspace yöneticisinin OAuth istemcisini tanımlaması gerekiyor.
+                    {translate("Bu kaynak için workspace yöneticisinin OAuth istemcisini tanımlaması gerekiyor.")}
                   </p>
                 )}
 
@@ -148,17 +149,17 @@ export default function MeetingSourcesPage() {
                     <>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => loadSources(c.id)} disabled={busy === c.id}>
-                          {busy === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Kaynakları yükle'}
+                          {busy === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : translate("Kaynakları yükle")}
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => disconnect(c.id)} disabled={busy === c.id}>
-                          <Unlink className="h-4 w-4 mr-1" /> Kaldır
+                          <Unlink className="h-4 w-4 mr-1" /> {translate("Kaldır")}
                         </Button>
                       </div>
 
                       {(sources[c.id]?.length ?? 0) > 0 && (
                         <div className="space-y-2">
                           <Select value={selected[c.id] ?? ''} onValueChange={(v) => setSelected((s) => ({ ...s, [c.id]: v }))}>
-                            <SelectTrigger><SelectValue placeholder="Kanal / takvim seçin" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={translate("Kanal / takvim seçin")} /></SelectTrigger>
                             <SelectContent>
                               {sources[c.id].map((s) => (
                                 <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
@@ -167,7 +168,7 @@ export default function MeetingSourcesPage() {
                           </Select>
                           <Button size="sm" className="w-full" disabled={!selected[c.id] || busy === c.id} onClick={() => importMeetings(c.id)}>
                             {busy === c.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Download className="h-4 w-4 mr-2" />}
-                            Son 14 günü içe aktar
+                            {translate("Son 14 günü içe aktar")}
                           </Button>
                         </div>
                       )}
@@ -175,7 +176,7 @@ export default function MeetingSourcesPage() {
                   ) : (
                     <Button size="sm" className="w-full" disabled={!st?.configured || busy === c.id} onClick={() => connect(c.id)}>
                       {busy === c.id ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Link2 className="h-4 w-4 mr-2" />}
-                      {c.name} hesabımı bağla
+                      {c.name} {translate("hesabımı bağla")}
                     </Button>
                   )}
                 </div>

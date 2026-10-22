@@ -4,7 +4,7 @@ import {
   BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote, Search, CalendarRange,
   Lock, Building, FileCheck,
 } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -120,7 +120,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2">
         <Button variant="ghost" size="sm"
-          aria-label={t(collapsed ? 'Expand sidebar' : 'Collapse sidebar')}
+          aria-label={t(collapsed ? translate("Expand sidebar") : translate("Collapse sidebar"))}
           onClick={toggleSidebar}
           className="flex items-center justify-center w-full h-8 rounded-md hover:bg-sidebar-accent text-sidebar-muted hover:text-sidebar-accent-foreground transition-colors"
         >

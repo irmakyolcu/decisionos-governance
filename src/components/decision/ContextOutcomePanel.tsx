@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ export default function ContextOutcomePanel({
   workspaceId: string;
   canWrite: boolean;
 }) {
+  useLanguage();
   const [snapshots, setSnapshots] = useState<any[]>([]);
   const [outcomes, setOutcomes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,14 +55,14 @@ export default function ContextOutcomePanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold">Karar Anındaki Şirket Durumu</h3>
+            <h3 className="font-semibold">{translate("Karar Anındaki Şirket Durumu")}</h3>
           </div>
           {canWrite && <ContextDialog decisionId={decisionId} workspaceId={workspaceId} onSaved={load} />}
         </div>
-        <p className="text-xs text-muted-foreground">Karar alınırken şirketin finansal, operasyonel ve pazar durumu. Zaman içindeki değişim izlenir.</p>
-        {loading ? <Card><CardContent className="py-6 text-sm text-muted-foreground">Yükleniyor…</CardContent></Card>
+        <p className="text-xs text-muted-foreground">{translate("Karar alınırken şirketin finansal, operasyonel ve pazar durumu. Zaman içindeki değişim izlenir.")}</p>
+        {loading ? <Card><CardContent className="py-6 text-sm text-muted-foreground">{translate("Yükleniyor…")}</CardContent></Card>
           : snapshots.length === 0
-            ? <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">Henüz bağlam kaydı yok. {canWrite && '"Anlık görüntü ekle" ile başlayın.'}</CardContent></Card>
+            ? <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">{translate("Henüz bağlam kaydı yok.")} {canWrite && '"Anlık görüntü ekle" ile başlayın.'}</CardContent></Card>
             : snapshots.map((s, i) => <SnapshotCard key={s.id} s={s} isLatest={i === 0} />)}
       </div>
 
@@ -69,14 +71,14 @@ export default function ContextOutcomePanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold">Kararın Sonuçları</h3>
+            <h3 className="font-semibold">{translate("Kararın Sonuçları")}</h3>
           </div>
           {canWrite && <OutcomeDialog decisionId={decisionId} workspaceId={workspaceId} onSaved={load} />}
         </div>
-        <p className="text-xs text-muted-foreground">Karar sonrası ölçülen etki: finansal, niteliksel, KPI değişimleri ve çıkarılan dersler.</p>
-        {loading ? <Card><CardContent className="py-6 text-sm text-muted-foreground">Yükleniyor…</CardContent></Card>
+        <p className="text-xs text-muted-foreground">{translate("Karar sonrası ölçülen etki: finansal, niteliksel, KPI değişimleri ve çıkarılan dersler.")}</p>
+        {loading ? <Card><CardContent className="py-6 text-sm text-muted-foreground">{translate("Yükleniyor…")}</CardContent></Card>
           : outcomes.length === 0
-            ? <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">Henüz sonuç kaydı yok. {canWrite && '"Sonuç ekle" ile başlayın.'}</CardContent></Card>
+            ? <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">{translate("Henüz sonuç kaydı yok.")} {canWrite && '"Sonuç ekle" ile başlayın.'}</CardContent></Card>
             : outcomes.map((o, i) => <OutcomeCard key={o.id} o={o} isLatest={i === 0} />)}
       </div>
     </div>
@@ -84,30 +86,32 @@ export default function ContextOutcomePanel({
 }
 
 function SnapshotCard({ s, isLatest }: { s: any; isLatest: boolean }) {
+  useLanguage();
   return (
     <Card className={isLatest ? 'border-primary/40' : ''}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm">{new Date(s.recorded_at).toLocaleString('tr-TR')}</CardTitle>
-          {isLatest && <Badge variant="secondary" className="text-[10px]">EN GÜNCEL</Badge>}
+          <CardTitle className="text-sm">{new Date(s.recorded_at).toLocaleString(getLocale())}</CardTitle>
+          {isLatest && <Badge variant="secondary" className="text-[10px]">{translate("EN GÜNCEL")}</Badge>}
         </div>
       </CardHeader>
       <CardContent className="text-sm space-y-2">
-        <p><span className="text-muted-foreground">Durum:</span> {s.company_state}</p>
+        <p><span className="text-muted-foreground">{translate("Durum:")}</span> {s.company_state}</p>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          {s.financial_health && <div><span className="text-muted-foreground">Finansal:</span> {s.financial_health}</div>}
-          {s.team_size != null && <div><span className="text-muted-foreground">Ekip:</span> {s.team_size}</div>}
-          {s.revenue != null && <div><span className="text-muted-foreground">Gelir:</span> €{Number(s.revenue).toLocaleString('tr-TR')}</div>}
-          {s.runway_months != null && <div><span className="text-muted-foreground">Runway:</span> {s.runway_months} ay</div>}
+          {s.financial_health && <div><span className="text-muted-foreground">{translate("Finansal:")}</span> {s.financial_health}</div>}
+          {s.team_size != null && <div><span className="text-muted-foreground">{translate("Ekip:")}</span> {s.team_size}</div>}
+          {s.revenue != null && <div><span className="text-muted-foreground">{translate("Gelir:")}</span> €{Number(s.revenue).toLocaleString(getLocale())}</div>}
+          {s.runway_months != null && <div><span className="text-muted-foreground">{translate("Runway:")}</span> {s.runway_months} {translate("ay")}</div>}
         </div>
-        {s.market_conditions && <p className="text-xs"><span className="text-muted-foreground">Pazar:</span> {s.market_conditions}</p>}
-        {s.key_challenges && <p className="text-xs"><span className="text-muted-foreground">Zorluklar:</span> {s.key_challenges}</p>}
+        {s.market_conditions && <p className="text-xs"><span className="text-muted-foreground">{translate("Pazar:")}</span> {s.market_conditions}</p>}
+        {s.key_challenges && <p className="text-xs"><span className="text-muted-foreground">{translate("Zorluklar:")}</span> {s.key_challenges}</p>}
       </CardContent>
     </Card>
   );
 }
 
 function OutcomeCard({ o, isLatest }: { o: any; isLatest: boolean }) {
+  useLanguage();
   const cfg = OUTCOME_STATUSES.find(x => x.value === o.outcome_status) ?? OUTCOME_STATUSES[4];
   const Icon = cfg.icon;
   const impact = o.impact_financial;
@@ -117,10 +121,10 @@ function OutcomeCard({ o, isLatest }: { o: any; isLatest: boolean }) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Badge className={`${cfg.color} border`}><Icon className="h-3 w-3 mr-1" />{cfg.label}</Badge>
-            {isLatest && <Badge variant="secondary" className="text-[10px]">EN GÜNCEL</Badge>}
+            <Badge className={`${cfg.color} border`}><Icon className="h-3 w-3 mr-1" />{translate(cfg.label)}</Badge>
+            {isLatest && <Badge variant="secondary" className="text-[10px]">{translate("EN GÜNCEL")}</Badge>}
           </div>
-          <span className="text-xs text-muted-foreground">{new Date(o.measured_at).toLocaleDateString('tr-TR')}</span>
+          <span className="text-xs text-muted-foreground">{new Date(o.measured_at).toLocaleDateString(getLocale())}</span>
         </div>
       </CardHeader>
       <CardContent className="text-sm space-y-2">
@@ -128,14 +132,14 @@ function OutcomeCard({ o, isLatest }: { o: any; isLatest: boolean }) {
         {impact != null && (
           <div className="flex items-center gap-1.5 text-xs">
             <ImpactIcon className={`h-3.5 w-3.5 ${impact > 0 ? 'text-emerald-600' : impact < 0 ? 'text-red-600' : ''}`} />
-            <span className="text-muted-foreground">Finansal etki:</span>
-            <span className="font-medium">€{Number(impact).toLocaleString('tr-TR')}</span>
+            <span className="text-muted-foreground">{translate("Finansal etki:")}</span>
+            <span className="font-medium">€{Number(impact).toLocaleString(getLocale())}</span>
           </div>
         )}
         {o.impact_qualitative && <p className="text-xs text-muted-foreground">{o.impact_qualitative}</p>}
         {o.lessons_learned && (
           <div className="mt-2 rounded border border-amber-500/30 bg-amber-500/5 p-2 text-xs">
-            <p className="font-medium text-amber-700 mb-0.5">Çıkarılan ders</p>
+            <p className="font-medium text-amber-700 mb-0.5">{translate("Çıkarılan ders")}</p>
             <p>{o.lessons_learned}</p>
           </div>
         )}
@@ -145,6 +149,7 @@ function OutcomeCard({ o, isLatest }: { o: any; isLatest: boolean }) {
 }
 
 function ContextDialog({ decisionId, workspaceId, onSaved }: { decisionId: string; workspaceId: string; onSaved: () => void }) {
+  useLanguage();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [f, setF] = useState({ company_state: '', financial_health: '', team_size: '', revenue: '', runway_months: '', key_challenges: '', market_conditions: '' });
@@ -175,27 +180,28 @@ function ContextDialog({ decisionId, workspaceId, onSaved }: { decisionId: strin
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="h-3.5 w-3.5 mr-1" />Anlık görüntü ekle</Button></DialogTrigger>
+      <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="h-3.5 w-3.5 mr-1" />{translate("Anlık görüntü ekle")}</Button></DialogTrigger>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>Şirket Durumu Anlık Görüntüsü</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{translate("Şirket Durumu Anlık Görüntüsü")}</DialogTitle></DialogHeader>
         <div className="grid gap-3">
-          <div><Label>Şirket durumu özeti *</Label><Textarea rows={2} value={f.company_state} onChange={e => setF({ ...f, company_state: e.target.value })} placeholder="Ör: Büyüme aşamasında, Seri A sonrası..." /></div>
+          <div><Label>{translate("Şirket durumu özeti *")}</Label><Textarea rows={2} value={f.company_state} onChange={e => setF({ ...f, company_state: e.target.value })} placeholder={translate("Ör: Büyüme aşamasında, Seri A sonrası...")} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Finansal sağlık</Label><Input value={f.financial_health} onChange={e => setF({ ...f, financial_health: e.target.value })} placeholder="İyi / Zayıf / Karlı" /></div>
-            <div><Label>Ekip büyüklüğü</Label><Input type="number" value={f.team_size} onChange={e => setF({ ...f, team_size: e.target.value })} /></div>
-            <div><Label>Gelir (€)</Label><Input type="number" value={f.revenue} onChange={e => setF({ ...f, revenue: e.target.value })} /></div>
-            <div><Label>Runway (ay)</Label><Input type="number" value={f.runway_months} onChange={e => setF({ ...f, runway_months: e.target.value })} /></div>
+            <div><Label>{translate("Finansal sağlık")}</Label><Input value={f.financial_health} onChange={e => setF({ ...f, financial_health: e.target.value })} placeholder={translate("İyi / Zayıf / Karlı")} /></div>
+            <div><Label>{translate("Ekip büyüklüğü")}</Label><Input type="number" value={f.team_size} onChange={e => setF({ ...f, team_size: e.target.value })} /></div>
+            <div><Label>{translate("Gelir (€)")}</Label><Input type="number" value={f.revenue} onChange={e => setF({ ...f, revenue: e.target.value })} /></div>
+            <div><Label>{translate("Runway (ay)")}</Label><Input type="number" value={f.runway_months} onChange={e => setF({ ...f, runway_months: e.target.value })} /></div>
           </div>
-          <div><Label>Pazar koşulları</Label><Textarea rows={2} value={f.market_conditions} onChange={e => setF({ ...f, market_conditions: e.target.value })} /></div>
-          <div><Label>Ana zorluklar</Label><Textarea rows={2} value={f.key_challenges} onChange={e => setF({ ...f, key_challenges: e.target.value })} /></div>
+          <div><Label>{translate("Pazar koşulları")}</Label><Textarea rows={2} value={f.market_conditions} onChange={e => setF({ ...f, market_conditions: e.target.value })} /></div>
+          <div><Label>{translate("Ana zorluklar")}</Label><Textarea rows={2} value={f.key_challenges} onChange={e => setF({ ...f, key_challenges: e.target.value })} /></div>
         </div>
-        <DialogFooter><Button onClick={save} disabled={saving}>{saving ? 'Kaydediliyor…' : 'Kaydet'}</Button></DialogFooter>
+        <DialogFooter><Button onClick={save} disabled={saving}>{saving ? translate("Kaydediliyor…") : translate("Kaydet")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
 function OutcomeDialog({ decisionId, workspaceId, onSaved }: { decisionId: string; workspaceId: string; onSaved: () => void }) {
+  useLanguage();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [f, setF] = useState({ outcome_status: 'ongoing', summary: '', impact_financial: '', impact_qualitative: '', lessons_learned: '' });
@@ -224,22 +230,22 @@ function OutcomeDialog({ decisionId, workspaceId, onSaved }: { decisionId: strin
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="h-3.5 w-3.5 mr-1" />Sonuç ekle</Button></DialogTrigger>
+      <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="h-3.5 w-3.5 mr-1" />{translate("Sonuç ekle")}</Button></DialogTrigger>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>Karar Sonucu Kaydı</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{translate("Karar Sonucu Kaydı")}</DialogTitle></DialogHeader>
         <div className="grid gap-3">
-          <div><Label>Durum *</Label>
+          <div><Label>{translate("Durum *")}</Label>
             <Select value={f.outcome_status} onValueChange={v => setF({ ...f, outcome_status: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{OUTCOME_STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+              <SelectContent>{OUTCOME_STATUSES.map(s => <SelectItem key={s.value} value={s.value}>{translate(s.label)}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <div><Label>Özet *</Label><Textarea rows={2} value={f.summary} onChange={e => setF({ ...f, summary: e.target.value })} placeholder="Ne oldu, sonuç nedir?" /></div>
-          <div><Label>Finansal etki (€, negatif de olabilir)</Label><Input type="number" value={f.impact_financial} onChange={e => setF({ ...f, impact_financial: e.target.value })} /></div>
-          <div><Label>Niteliksel etki</Label><Textarea rows={2} value={f.impact_qualitative} onChange={e => setF({ ...f, impact_qualitative: e.target.value })} placeholder="Marka, moral, operasyon..." /></div>
-          <div><Label>Çıkarılan dersler</Label><Textarea rows={2} value={f.lessons_learned} onChange={e => setF({ ...f, lessons_learned: e.target.value })} /></div>
+          <div><Label>{translate("Özet *")}</Label><Textarea rows={2} value={f.summary} onChange={e => setF({ ...f, summary: e.target.value })} placeholder={translate("Ne oldu, sonuç nedir?")} /></div>
+          <div><Label>{translate("Finansal etki (€, negatif de olabilir)")}</Label><Input type="number" value={f.impact_financial} onChange={e => setF({ ...f, impact_financial: e.target.value })} /></div>
+          <div><Label>{translate("Niteliksel etki")}</Label><Textarea rows={2} value={f.impact_qualitative} onChange={e => setF({ ...f, impact_qualitative: e.target.value })} placeholder={translate("Marka, moral, operasyon...")} /></div>
+          <div><Label>{translate("Çıkarılan dersler")}</Label><Textarea rows={2} value={f.lessons_learned} onChange={e => setF({ ...f, lessons_learned: e.target.value })} /></div>
         </div>
-        <DialogFooter><Button onClick={save} disabled={saving}>{saving ? 'Kaydediliyor…' : 'Kaydet'}</Button></DialogFooter>
+        <DialogFooter><Button onClick={save} disabled={saving}>{saving ? translate("Kaydediliyor…") : translate("Kaydet")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
   );

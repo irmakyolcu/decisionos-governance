@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { Mic, Square, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function VoiceInputButton({ onTranscript, size = 'sm', label }: Props) {
+  useLanguage();
   const { recording, start, stop } = useVoiceRecorder();
   const [processing, setProcessing] = useState(false);
   const { toast } = useToast();
@@ -24,7 +26,7 @@ export function VoiceInputButton({ onTranscript, size = 'sm', label }: Props) {
     }
     const blob = await stop();
     if (!blob) {
-      toast({ title: 'No audio captured', description: 'Hold and speak for at least a second', variant: 'destructive' });
+      toast({ title: translate("No audio captured"), description: translate("Hold and speak for at least a second"), variant: 'destructive' });
       return;
     }
     setProcessing(true);
@@ -38,7 +40,7 @@ export function VoiceInputButton({ onTranscript, size = 'sm', label }: Props) {
       if (!text) throw new Error('No transcript');
       onTranscript(text);
     } catch (e: any) {
-      toast({ title: 'Transcription failed', description: e.message, variant: 'destructive' });
+      toast({ title: translate("Transcription failed"), description: e.message, variant: 'destructive' });
     } finally {
       setProcessing(false);
     }
@@ -57,7 +59,7 @@ export function VoiceInputButton({ onTranscript, size = 'sm', label }: Props) {
       className={recording ? 'animate-pulse' : ''}
     >
       {icon}
-      {label ?? (recording ? 'Stop' : processing ? 'Transcribing…' : 'Speak')}
+      {label ?? (recording ? translate("Stop") : processing ? translate("Transcribing…") : translate("Speak"))}
     </Button>
   );
 }

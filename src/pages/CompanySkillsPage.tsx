@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,6 +34,7 @@ const toStepText = (s: any): string =>
   typeof s === 'string' ? s : (s?.instruction ?? s?.text ?? '');
 
 export default function CompanySkillsPage() {
+  useLanguage();
   const { user } = useAuth();
   const { workspace } = useWorkspace();
   const { toast } = useToast();
@@ -92,7 +94,7 @@ export default function CompanySkillsPage() {
 
   const save = async () => {
     if (!workspace || !user || !form.name.trim()) {
-      toast({ title: 'Skill adı gerekli', variant: 'destructive' });
+      toast({ title: translate("Skill adı gerekli"), variant: 'destructive' });
       return;
     }
     setSaving(true);
@@ -111,22 +113,22 @@ export default function CompanySkillsPage() {
       : await supabase.from('company_skills').insert({ ...payload, workspace_id: workspace.id, created_by: user.id });
 
     setSaving(false);
-    if (error) return toast({ title: 'Kaydedilemedi', description: error.message, variant: 'destructive' });
+    if (error) return toast({ title: translate("Kaydedilemedi"), description: error.message, variant: 'destructive' });
     toast({ title: editingId ? 'Skill güncellendi' : 'Skill oluşturuldu' });
     setOpen(false); setEditingId(null); setForm(emptyForm()); load();
   };
 
   const remove = async (id: string) => {
     const { error } = await supabase.from('company_skills').delete().eq('id', id);
-    if (error) return toast({ title: 'Silinemedi', description: error.message, variant: 'destructive' });
-    toast({ title: 'Skill silindi' });
+    if (error) return toast({ title: translate("Silinemedi"), description: error.message, variant: 'destructive' });
+    toast({ title: translate("Skill silindi") });
     load();
   };
 
   const renderList = (key: 'steps' | 'decision_rules', label: string, placeholder: string, addLabel: string) => (
     <div className="space-y-2">
-      <Label>{label}</Label>
-      <p className="text-[11px] text-muted-foreground">Sıralamayı değiştirmek için tutamaçtan sürükleyip bırakın.</p>
+      <Label>{translate(label)}</Label>
+      <p className="text-[11px] text-muted-foreground">{translate("Sıralamayı değiştirmek için tutamaçtan sürükleyip bırakın.")}</p>
       <div className="space-y-2">
         {form[key].map((val, i) => {
           const isDragging = drag?.key === key && drag.from === i;
@@ -151,7 +153,7 @@ export default function CompanySkillsPage() {
                 draggable
                 onDragStart={() => setDrag({ key, from: i, over: i })}
                 onDragEnd={() => setDrag(null)}
-                title="Sürükleyerek taşı"
+                title={translate("Sürükleyerek taşı")}
                 className="mt-2 flex items-center gap-1 text-xs text-muted-foreground w-10 shrink-0 cursor-grab active:cursor-grabbing select-none"
               >
                 <GripVertical className="h-3.5 w-3.5" />
@@ -190,42 +192,42 @@ export default function CompanySkillsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Company Skills</h1>
-          <p className="text-sm text-muted-foreground">Executable instructions for employees and AI agents.</p>
+          <h1 className="text-2xl font-bold">{translate("Company Skills")}</h1>
+          <p className="text-sm text-muted-foreground">{translate("Executable instructions for employees and AI agents.")}</p>
         </div>
-        <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />New Skill</Button>
+        <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />{translate("New Skill")}</Button>
       </div>
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditingId(null); setForm(emptyForm()); } }}>
         <DialogContent className="max-w-2xl">
-          <DialogHeader><DialogTitle>{editingId ? 'Skill Düzenle' : 'New Company Skill'}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{editingId ? translate("Skill Düzenle") : translate("New Company Skill")}</DialogTitle></DialogHeader>
           <div className="space-y-4 max-h-[70vh] overflow-auto pr-1">
-            <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-            <div><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-            <div><Label>Trigger (when to use)</Label><Input value={form.trigger} onChange={(e) => setForm({ ...form, trigger: e.target.value })} /></div>
+            <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+            <div><Label>{translate("Description")}</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+            <div><Label>{translate("Trigger (when to use)")}</Label><Input value={form.trigger} onChange={(e) => setForm({ ...form, trigger: e.target.value })} /></div>
 
             {renderList('steps', 'Steps', 'Adımı yazın…', 'Add step')}
             {renderList('decision_rules', 'Decision rules', 'Kuralı yazın…', 'Add rule')}
 
-            <div><Label>Expected output</Label><Input value={form.expected_output} onChange={(e) => setForm({ ...form, expected_output: e.target.value })} /></div>
-            <div><Label>Status</Label>
+            <div><Label>{translate("Expected output")}</Label><Input value={form.expected_output} onChange={(e) => setForm({ ...form, expected_output: e.target.value })} /></div>
+            <div><Label>{translate("Status")}</Label>
               <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem><SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="needs_review">Needs review</SelectItem><SelectItem value="deprecated">Deprecated</SelectItem>
+                  <SelectItem value="draft">{translate("Draft")}</SelectItem><SelectItem value="active">{translate("Active")}</SelectItem>
+                  <SelectItem value="needs_review">{translate("Needs review")}</SelectItem><SelectItem value="deprecated">{translate("Deprecated")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Button onClick={save} disabled={saving} className="w-full">
-              {saving ? 'Kaydediliyor…' : editingId ? 'Değişiklikleri kaydet' : 'Create Skill'}
+              {saving ? translate("Kaydediliyor…") : editingId ? translate("Değişiklikleri kaydet") : translate("Create Skill")}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {rows.length === 0 ? (
-        <Card className="p-12 text-center"><Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">No skills yet.</p></Card>
+        <Card className="p-12 text-center"><Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">{translate("No skills yet.")}</p></Card>
       ) : (
         <div className="grid md:grid-cols-2 gap-3">
           {rows.map((s) => (
@@ -233,13 +235,13 @@ export default function CompanySkillsPage() {
               <div className="flex items-start justify-between gap-2">
                 <div className="font-semibold flex items-center gap-2"><Zap className="h-4 w-4 text-primary" />{s.name}</div>
                 <div className="flex items-center gap-1">
-                  <Badge variant={STATUS_COLOR[s.status] as any} className="text-[10px]">{s.status}</Badge>
+                  <Badge variant={STATUS_COLOR[s.status] as any} className="text-[10px]">{translate(s.status)}</Badge>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(s)}><Pencil className="h-3.5 w-3.5" /></Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => remove(s.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
               {s.description && <p className="text-xs text-muted-foreground">{s.description}</p>}
-              {s.trigger && <div className="text-xs"><span className="text-muted-foreground">Trigger: </span>{s.trigger}</div>}
+              {s.trigger && <div className="text-xs"><span className="text-muted-foreground">{translate("Trigger:")} </span>{s.trigger}</div>}
               {Array.isArray(s.steps) && s.steps.length > 0 && (
                 <ol className="list-decimal pl-5 space-y-0.5">
                   {s.steps.map((st: any, i: number) => (
@@ -247,7 +249,7 @@ export default function CompanySkillsPage() {
                   ))}
                 </ol>
               )}
-              <div className="text-[10px] text-muted-foreground">v{s.version} · {Array.isArray(s.steps) ? s.steps.length : 0} steps</div>
+              <div className="text-[10px] text-muted-foreground">v{s.version} · {Array.isArray(s.steps) ? s.steps.length : 0} {translate("steps")}</div>
             </Card>
           ))}
         </div>

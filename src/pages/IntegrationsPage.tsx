@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plug, Check, X, Loader2, RefreshCw } from 'lucide-react';
@@ -22,6 +23,7 @@ type Integration = {
 
 
 export default function IntegrationsPage() {
+  useLanguage();
   const navigate = useNavigate();
   const { workspace, role } = useWorkspace();
   const { user } = useAuth();
@@ -92,18 +94,18 @@ export default function IntegrationsPage() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          <Plug className="h-6 w-6 text-primary" /> Integrations
+          <Plug className="h-6 w-6 text-primary" /> {translate("Integrations")}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Connect external systems used by the Execution Engine. Phase 3 connections are simulated — real OAuth and MCP wiring is enabled per provider on request.
+          {translate("Connect external systems used by the Execution Engine. Phase 3 connections are simulated — real OAuth and MCP wiring is enabled per provider on request.")}
         </p>
         {!isAdmin && (
-          <p className="text-xs text-warning mt-2">Workspace admins manage integrations.</p>
+          <p className="text-xs text-warning mt-2">{translate("Workspace admins manage integrations.")}</p>
         )}
       </div>
 
       {loading ? (
-        <Card><CardContent className="p-8 text-sm text-muted-foreground">Loading…</CardContent></Card>
+        <Card><CardContent className="p-8 text-sm text-muted-foreground">{translate("Loading…")}</CardContent></Card>
       ) : (
         <div className="space-y-8">
           {(Object.keys(CATEGORY_LABELS) as CatalogEntry['category'][]).map((cat) => {
@@ -111,7 +113,7 @@ export default function IntegrationsPage() {
             if (!entries.length) return null;
             return (
               <div key={cat}>
-                <h2 className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-3">{CATEGORY_LABELS[cat]}</h2>
+                <h2 className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-3">{translate(CATEGORY_LABELS[cat])}</h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {entries.map((entry) => {
                     const existing = byProvider(entry.provider);
@@ -122,32 +124,32 @@ export default function IntegrationsPage() {
                           <div className="flex items-start justify-between">
                             <div>
                               <CardTitle className="text-base">{entry.display_name}</CardTitle>
-                              <p className="text-xs text-muted-foreground mt-1">{entry.description}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{translate(entry.description)}</p>
                             </div>
                             <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
-                              {connected ? <><Check className="h-3 w-3 mr-1" />Connected</> : <><X className="h-3 w-3 mr-1" />Not connected</>}
+                              {connected ? <><Check className="h-3 w-3 mr-1" />{translate("Connected")}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}
                             </Badge>
                           </div>
                         </CardHeader>
                         <CardContent onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-between">
                             <div className="text-xs text-muted-foreground">
-                              {existing?.last_synced_at ? `Last synced ${new Date(existing.last_synced_at).toLocaleString()}` : 'Never synced'}
+                              {existing?.last_synced_at ? translate("Last synced {v0}", {v0: new Date(existing.last_synced_at).toLocaleString()}) : translate("Never synced")}
                             </div>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="ghost" onClick={() => navigate(`/integrations/${entry.provider}`)}>Details</Button>
+                              <Button size="sm" variant="ghost" onClick={() => navigate(`/integrations/${entry.provider}`)}>{translate("Details")}</Button>
                               {connected ? (
                                 <>
                                   <Button size="sm" variant="outline" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
                                     {busyProvider === entry.provider ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
-                                    Sync
+                                    {translate("Sync")}
                                   </Button>
-                                  <Button size="sm" variant="ghost" disabled={!isAdmin} onClick={() => disconnect(entry)}>Disconnect</Button>
+                                  <Button size="sm" variant="ghost" disabled={!isAdmin} onClick={() => disconnect(entry)}>{translate("Disconnect")}</Button>
                                 </>
                               ) : (
                                 <Button size="sm" disabled={!isAdmin || busyProvider === entry.provider} onClick={() => connect(entry)} className="gap-1">
                                   {busyProvider === entry.provider && <Loader2 className="h-3 w-3 animate-spin" />}
-                                  Connect
+                                  {translate("Connect")}
                                 </Button>
                               )}
                             </div>

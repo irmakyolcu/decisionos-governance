@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 import { LanguageToggle } from '@/components/LanguageToggle';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
@@ -176,7 +176,7 @@ export default function AuthPage() {
                 className="w-full py-3.5 bg-[#4f46e5] hover:bg-[#6366f1] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-[0_10px_20px_-5px_rgba(79,70,229,0.4)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                {t(isLogin ? 'Sign in' : 'Create account')}
+                {t(isLogin ? translate("Sign in") : translate("Create account"))}
               </Button>
             </form>
 

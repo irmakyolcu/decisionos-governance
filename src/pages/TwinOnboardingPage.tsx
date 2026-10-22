@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ const STEPS = [
 ];
 
 export default function TwinOnboardingPage() {
+  useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -73,7 +75,7 @@ export default function TwinOnboardingPage() {
     if (report.status === 'blocked') {
       toast({
         title: `Adım ${step} denetimi: kesinti`,
-        description: 'Denetim raporu oluşturuldu; eksikler kayıt altına alındı.',
+        description: translate("Denetim raporu oluşturuldu; eksikler kayıt altına alındı."),
         variant: 'destructive',
       });
     }
@@ -84,7 +86,7 @@ export default function TwinOnboardingPage() {
   const finish = () => {
     auditStep(4);
     localStorage.setItem(TWIN_ONBOARDING_KEY, '1');
-    toast({ title: 'CEO Digital Twin is active', description: 'Your judgment layer is now powering recommendations.' });
+    toast({ title: translate("CEO Digital Twin is active"), description: translate("Your judgment layer is now powering recommendations.") });
     navigate('/decision-intake');
   };
 
@@ -98,7 +100,7 @@ export default function TwinOnboardingPage() {
     ]);
     toast({
       title: `Adım ${step}: akıştan çıkış kaydedildi`,
-      description: 'Denetim raporu iç denetim defterine yazıldı.',
+      description: translate("Denetim raporu iç denetim defterine yazıldı."),
       variant: 'destructive',
     });
     navigate('/');
@@ -109,10 +111,10 @@ export default function TwinOnboardingPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="page-header">
-        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Setup — 4 steps</p>
-        <h1 className="page-title">Preserve founder judgment as the company scales</h1>
+        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Setup — 4 steps")}</p>
+        <h1 className="page-title">{translate("Preserve founder judgment as the company scales")}</h1>
         <p className="page-description">
-          Capture how the CEO actually decides — so the team can move without waiting, and only what truly needs executive judgment gets escalated.
+          {translate("Capture how the CEO actually decides — so the team can move without waiting, and only what truly needs executive judgment gets escalated.")}
         </p>
       </div>
 
@@ -139,31 +141,31 @@ export default function TwinOnboardingPage() {
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><StepIcon className="h-5 w-5 text-primary" /></div>
             <div>
-              <CardTitle className="text-base">Step {step}: {STEPS[step - 1].title}</CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">{STEPS[step - 1].subtitle}</p>
+              <CardTitle className="text-base">{translate("Step")} {step}: {translate(STEPS[step - 1].title)}</CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">{translate(STEPS[step - 1].subtitle)}</p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {step === 1 && (
             <>
-              <p className="text-sm text-muted-foreground">List the top 3–5 things the CEO consistently optimizes for. The twin uses these to weight every recommendation.</p>
+              <p className="text-sm text-muted-foreground">{translate("List the top 3–5 things the CEO consistently optimizes for. The twin uses these to weight every recommendation.")}</p>
               {priorities.map((p, i) => (
                 <div className="grid gap-2" key={i}>
-                  <Label>Priority {i + 1}</Label>
+                  <Label>{translate("Priority")} {i + 1}</Label>
                   <Input value={p} onChange={(e) => setPriorities((arr) => arr.map((x, j) => j === i ? e.target.value : x))}
-                    placeholder={i === 0 ? 'e.g. Brand trust over short-term revenue' : 'Add a CEO priority…'} />
+                    placeholder={i === 0 ? translate("e.g. Brand trust over short-term revenue") : translate("Add a CEO priority…")} />
                 </div>
               ))}
-              <Button variant="outline" size="sm" onClick={() => setPriorities((a) => [...a, ''])}>+ Add another priority</Button>
+              <Button variant="outline" size="sm" onClick={() => setPriorities((a) => [...a, ''])}>{translate("+ Add another priority")}</Button>
             </>
           )}
 
           {step === 2 && (
             <>
-              <p className="text-sm text-muted-foreground">Paste 3–10 past decisions and how the CEO actually resolved them. These become the twin's reusable operating logic.</p>
+              <p className="text-sm text-muted-foreground">{translate("Paste 3–10 past decisions and how the CEO actually resolved them. These become the twin's reusable operating logic.")}</p>
               <div className="grid gap-2">
-                <Label>Past decisions</Label>
+                <Label>{translate("Past decisions")}</Label>
                 <Textarea rows={10} value={pastDecisions} onChange={(e) => setPastDecisions(e.target.value)}
                   placeholder={`Example:\n• Freshmango accelerator → declined equity, kept advisory relationship. Equity is most expensive currency.\n• Senior PM hire → hired from network with 2-week paid trial. Trust signal beats credential signal.\n• Refund policy → extended to 30 days, first purchase only. Trust gestures pay back in retention.`} />
               </div>
@@ -172,47 +174,47 @@ export default function TwinOnboardingPage() {
 
           {step === 3 && (
             <>
-              <p className="text-sm text-muted-foreground">Define which decisions the team can take, which need a manager, and which require the CEO. Escalate only what truly needs executive judgment.</p>
+              <p className="text-sm text-muted-foreground">{translate("Define which decisions the team can take, which need a manager, and which require the CEO. Escalate only what truly needs executive judgment.")}</p>
               <div className="space-y-2">
                 {rules.map((r, i) => (
                   <div key={i} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-start">
                     <Input className="md:col-span-3" value={r.condition} onChange={(e) =>
-                      setRules((arr) => arr.map((x, j) => j === i ? { ...x, condition: e.target.value } : x))} placeholder="Condition" />
+                      setRules((arr) => arr.map((x, j) => j === i ? { ...x, condition: e.target.value } : x))} placeholder={translate("Condition")} />
                     <select className="md:col-span-2 h-10 rounded-md border border-input bg-background px-3 text-sm"
                       value={r.level} onChange={(e) =>
                         setRules((arr) => arr.map((x, j) => j === i ? { ...x, level: e.target.value } : x))}>
-                      <option>Team can decide</option>
-                      <option>Needs manager approval</option>
-                      <option>Needs CEO approval</option>
-                      <option>Escalate immediately</option>
+                      <option value="Team can decide">{translate("Team can decide")}</option>
+                      <option value="Needs manager approval">{translate("Needs manager approval")}</option>
+                      <option value="Needs CEO approval">{translate("Needs CEO approval")}</option>
+                      <option value="Escalate immediately">{translate("Escalate immediately")}</option>
                     </select>
                   </div>
                 ))}
-                <Button variant="outline" size="sm" onClick={() => setRules((a) => [...a, { condition: '', level: 'Team can decide' }])}>+ Add rule</Button>
+                <Button variant="outline" size="sm" onClick={() => setRules((a) => [...a, { condition: '', level: 'Team can decide' }])}>{translate("+ Add rule")}</Button>
               </div>
             </>
           )}
 
           {step === 4 && (
             <>
-              <p className="text-sm text-muted-foreground">Try the twin on a real open decision. You'll get a CEO-aligned recommendation, reasoning, and a stakeholder message in seconds.</p>
+              <p className="text-sm text-muted-foreground">{translate("Try the twin on a real open decision. You'll get a CEO-aligned recommendation, reasoning, and a stakeholder message in seconds.")}</p>
               <div className="grid gap-2">
-                <Label>What decision is on your desk right now?</Label>
+                <Label>{translate("What decision is on your desk right now?")}</Label>
                 <Textarea rows={4} value={firstRequest} onChange={(e) => setFirstRequest(e.target.value)}
-                  placeholder="e.g. Partnership offer from a new accelerator — they want 2% equity for a 12-week program." />
+                  placeholder={translate("e.g. Partnership offer from a new accelerator — they want 2% equity for a 12-week program.")} />
               </div>
               <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm text-foreground">
-                On finish, you'll be taken to <span className="font-medium">Decision Intake</span> with this seeded, so the twin can produce its first recommendation.
+                {translate("On finish, you'll be taken to")} <span className="font-medium">{translate("Decision Intake")}</span> {translate("with this seeded, so the twin can produce its first recommendation.")}
               </div>
             </>
           )}
 
           <div className="flex justify-between pt-2">
-            <Button variant="outline" onClick={prev} disabled={step === 1}><ArrowLeft className="h-4 w-4" />Back</Button>
+            <Button variant="outline" onClick={prev} disabled={step === 1}><ArrowLeft className="h-4 w-4" />{translate("Back")}</Button>
             {step < 4 ? (
-              <Button onClick={next}>Continue<ArrowRight className="h-4 w-4" /></Button>
+              <Button onClick={next}>{translate("Continue")}<ArrowRight className="h-4 w-4" /></Button>
             ) : (
-              <Button onClick={finish}>Activate twin & submit first request<ArrowRight className="h-4 w-4" /></Button>
+              <Button onClick={finish}>{translate("Activate twin & submit first request")}<ArrowRight className="h-4 w-4" /></Button>
             )}
           </div>
         </CardContent>
@@ -222,7 +224,7 @@ export default function TwinOnboardingPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">
-              Adım denetim raporları
+              {translate("Adım denetim raporları")}
             </h2>
             <div className="flex gap-2">
               <Button
@@ -249,7 +251,7 @@ export default function TwinOnboardingPage() {
 
 
       <p className="text-center text-xs text-muted-foreground">
-        Skip and explore — <button className="text-primary hover:underline" onClick={exitFlow}>go to dashboard</button>
+        {translate("Skip and explore —")} <button className="text-primary hover:underline" onClick={exitFlow}>{translate("go to dashboard")}</button>
       </p>
     </div>
   );

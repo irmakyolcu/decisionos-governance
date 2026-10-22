@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { UserRole } from '@/types/decision';
 import { ALL_ROLES } from '@/lib/roleHierarchy';
 import { Shield } from 'lucide-react';
@@ -16,10 +17,11 @@ const roleBadgeColors: Record<UserRole, string> = {
 };
 
 export function RoleSwitcher({ currentRole, onChange }: RoleSwitcherProps) {
+  useLanguage();
   return (
     <div className="flex items-center gap-2 mb-6 flex-wrap">
       <Shield className="h-4 w-4 text-muted-foreground" />
-      <span className="text-xs text-muted-foreground font-medium">Viewing as:</span>
+      <span className="text-xs text-muted-foreground font-medium">{translate("Viewing as:")}</span>
       {ALL_ROLES.map((role) => (
         <button
           key={role}
@@ -30,7 +32,7 @@ export function RoleSwitcher({ currentRole, onChange }: RoleSwitcherProps) {
               : 'bg-muted/50 text-muted-foreground hover:bg-muted'
           }`}
         >
-          {role}
+          {translate(role)}
         </button>
       ))}
     </div>

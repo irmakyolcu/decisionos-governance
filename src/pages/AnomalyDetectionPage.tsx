@@ -1,3 +1,5 @@
+import { tr as trLocale, enUS } from "date-fns/locale";
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,6 +32,7 @@ const SEVERITY: Record<string, string> = {
 };
 
 export default function AnomalyDetectionPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const { user } = useAuth();
   const [items, setItems] = useState<Anomaly[]>([]);
@@ -73,7 +76,7 @@ export default function AnomalyDetectionPage() {
             detector: 'budget_risk_mismatch',
             severity: 'high',
             title: `High budget with low risk classification: ${d.title}`,
-            description: `Budget of ${d.budget.toLocaleString()} flagged as ${d.risk_level}. Likely under-classified.`,
+            description: `Budget of ${d.budget.toLocaleString(getLocale())} flagged as ${d.risk_level}. Likely under-classified.`,
             signal: { budget: d.budget, risk_level: d.risk_level },
             status: 'open',
           });
@@ -88,7 +91,7 @@ export default function AnomalyDetectionPage() {
             detector: 'expired_pending_action',
             severity: 'medium',
             title: 'Action proposal expired while awaiting approval',
-            description: `Action expired at ${new Date(a.expires_at).toLocaleString()}.`,
+            description: `Action expired at ${new Date(a.expires_at).toLocaleString(getLocale())}.`,
             signal: { expires_at: a.expires_at },
             status: 'open',
           });
@@ -141,29 +144,29 @@ export default function AnomalyDetectionPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-warning" /> Anomaly Detection
+            <AlertTriangle className="h-6 w-6 text-warning" /> {translate("Anomaly Detection")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Deterministic heuristics over decisions and action proposals. Run a scan to refresh findings.
+            {translate("Deterministic heuristics over decisions and action proposals. Run a scan to refresh findings.")}
           </p>
         </div>
         <Button onClick={scan} disabled={scanning} className="gap-2">
           {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          Run scan
+          {translate("Run scan")}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-destructive" /> Open ({open.length})
+            <AlertTriangle className="h-4 w-4 text-destructive" /> {translate("Open (")}{open.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {loading ? (
-            <div className="text-sm text-muted-foreground">Loading…</div>
+            <div className="text-sm text-muted-foreground">{translate("Loading…")}</div>
           ) : open.length === 0 ? (
-            <div className="text-sm text-muted-foreground">No open anomalies.</div>
+            <div className="text-sm text-muted-foreground">{translate("No open anomalies.")}</div>
           ) : (
             open.map((a) => (
               <div key={a.id} className="border border-border rounded-md p-4 space-y-2">
@@ -172,17 +175,17 @@ export default function AnomalyDetectionPage() {
                     <div className="text-sm font-medium text-foreground">{a.title}</div>
                     {a.description && <p className="text-xs text-muted-foreground mt-1">{a.description}</p>}
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className={SEVERITY[a.severity]}>{a.severity}</Badge>
+                      <Badge variant="outline" className={SEVERITY[a.severity]}>{translate(a.severity)}</Badge>
                       <Badge variant="outline" className="text-[10px]">{a.detector}</Badge>
                       <span className="text-[10px] text-muted-foreground">
-                        {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(a.created_at), { addSuffix: true , locale: getLocale() === "tr-TR" ? trLocale : enUS})}
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <Button size="sm" variant="outline" onClick={() => updateStatus(a.id, 'acknowledged')}>Acknowledge</Button>
-                    <Button size="sm" variant="outline" onClick={() => updateStatus(a.id, 'resolved')}>Resolve</Button>
-                    <Button size="sm" variant="ghost" onClick={() => updateStatus(a.id, 'dismissed')}>Dismiss</Button>
+                    <Button size="sm" variant="outline" onClick={() => updateStatus(a.id, 'acknowledged')}>{translate("Acknowledge")}</Button>
+                    <Button size="sm" variant="outline" onClick={() => updateStatus(a.id, 'resolved')}>{translate("Resolve")}</Button>
+                    <Button size="sm" variant="ghost" onClick={() => updateStatus(a.id, 'dismissed')}>{translate("Dismiss")}</Button>
                   </div>
                 </div>
               </div>
@@ -195,7 +198,7 @@ export default function AnomalyDetectionPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-success" /> Handled ({handled.length})
+              <CheckCircle2 className="h-4 w-4 text-success" /> {translate("Handled (")}{handled.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -203,9 +206,9 @@ export default function AnomalyDetectionPage() {
               <div key={a.id} className="flex items-center justify-between text-sm py-2 border-b last:border-0">
                 <div>
                   <span className="text-foreground">{a.title}</span>
-                  <span className="ml-2 text-xs text-muted-foreground">— {a.status}</span>
+                  <span className="ml-2 text-xs text-muted-foreground">— {translate(a.status)}</span>
                 </div>
-                <Badge variant="outline" className={SEVERITY[a.severity]}>{a.severity}</Badge>
+                <Badge variant="outline" className={SEVERITY[a.severity]}>{translate(a.severity)}</Badge>
               </div>
             ))}
           </CardContent>

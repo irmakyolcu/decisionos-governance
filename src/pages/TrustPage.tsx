@@ -1,6 +1,8 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { Shield, Lock, Database, Users, FileText, Mail } from "lucide-react";
 
 export default function TrustPage() {
+  useLanguage();
   const sections = [
     {
       icon: Lock,
@@ -37,12 +39,9 @@ export default function TrustPage() {
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Trust & Security</h1>
+        <h1 className="page-title">{translate("Trust & Security")}</h1>
         <p className="page-description">
-          This page is maintained by the DecisionOS team to answer common security and privacy
-          questions. It describes controls that are enabled today. It is not an independent
-          certification and does not constitute legal or compliance advice — contact the workspace
-          owner for written terms.
+          {translate("This page is maintained by the DecisionOS team to answer common security and privacy questions. It describes controls that are enabled today. It is not an independent certification and does not constitute legal or compliance advice — contact the workspace owner for written terms.")}
         </p>
       </div>
 
@@ -50,14 +49,14 @@ export default function TrustPage() {
         {sections.map((s) => {
           const Icon = s.icon;
           return (
-            <div key={s.title} className="enterprise-card p-5">
+            <div key={translate(s.title)} className="enterprise-card p-5">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Icon className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground text-sm mb-1">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
+                  <h3 className="font-semibold text-foreground text-sm mb-1">{translate(s.title)}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{translate(s.body)}</p>
                 </div>
               </div>
             </div>
@@ -66,13 +65,9 @@ export default function TrustPage() {
       </div>
 
       <div className="enterprise-card p-5 mt-4">
-        <h3 className="font-semibold text-foreground text-sm mb-2">Shared Responsibility</h3>
+        <h3 className="font-semibold text-foreground text-sm mb-2">{translate("Shared Responsibility")}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Lovable Cloud secures the underlying infrastructure (database, auth service, storage,
-          serverless runtime). The DecisionOS application owner is responsible for configuring
-          workspace membership, inviting the right people, and reviewing AI-generated
-          recommendations before acting on them. Customers remain responsible for the accuracy and
-          legality of the decision content they submit.
+          {translate("Lovable Cloud secures the underlying infrastructure (database, auth service, storage, serverless runtime). The DecisionOS application owner is responsible for configuring workspace membership, inviting the right people, and reviewing AI-generated recommendations before acting on them. Customers remain responsible for the accuracy and legality of the decision content they submit.")}
         </p>
       </div>
     </div>

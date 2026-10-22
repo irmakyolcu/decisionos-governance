@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { ceoProfile } from '@/data/ceoTwin';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,13 +10,14 @@ const riskColor = (l: string) =>
   : 'bg-destructive/10 text-destructive border-destructive/30';
 
 export default function CEOProfilePage() {
+  useLanguage();
   const p = ceoProfile;
   return (
     <div className="space-y-6">
       <div className="page-header">
-        <h1 className="page-title">CEO Decision Profile</h1>
+        <h1 className="page-title">{translate("CEO Decision Profile")}</h1>
         <p className="page-description">
-          The Judgment Layer — {p.name}, {p.title} at {p.company}. This is the source of truth that powers every recommendation, delegation call, and alignment score.
+          {translate("The Judgment Layer —")} {p.name}, {p.title} {translate("at")} {p.company}{translate(". This is the source of truth that powers every recommendation, delegation call, and alignment score.")}
         </p>
       </div>
 
@@ -23,7 +25,7 @@ export default function CEOProfilePage() {
         <Card>
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <Target className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">CEO Priorities</CardTitle>
+            <CardTitle className="text-base">{translate("CEO Priorities")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -40,7 +42,7 @@ export default function CEOProfilePage() {
         <Card>
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <Shield className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Risk Appetite</CardTitle>
+            <CardTitle className="text-base">{translate("Risk Appetite")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {p.riskAppetite.map((r) => (
@@ -49,7 +51,7 @@ export default function CEOProfilePage() {
                   <p className="text-sm font-medium text-foreground">{r.area}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{r.note}</p>
                 </div>
-                <Badge variant="outline" className={riskColor(r.level)}>{r.level}</Badge>
+                <Badge variant="outline" className={riskColor(r.level)}>{translate(r.level)}</Badge>
               </div>
             ))}
           </CardContent>
@@ -58,7 +60,7 @@ export default function CEOProfilePage() {
         <Card>
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <Sparkles className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Preferred Decision Style</CardTitle>
+            <CardTitle className="text-base">{translate("Preferred Decision Style")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -70,7 +72,7 @@ export default function CEOProfilePage() {
         <Card>
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <MessageSquare className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Communication Style</CardTitle>
+            <CardTitle className="text-base">{translate("Communication Style")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -82,7 +84,7 @@ export default function CEOProfilePage() {
         <Card>
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <AlertOctagon className="h-5 w-5 text-destructive" />
-            <CardTitle className="text-base">Red Lines / Non-Negotiables</CardTitle>
+            <CardTitle className="text-base">{translate("Red Lines / Non-Negotiables")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -98,7 +100,7 @@ export default function CEOProfilePage() {
         <Card>
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <Users className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Delegation Rules</CardTitle>
+            <CardTitle className="text-base">{translate("Delegation Rules")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -110,7 +112,7 @@ export default function CEOProfilePage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center gap-2 space-y-0">
             <Compass className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Strategic Focus Areas</CardTitle>
+            <CardTitle className="text-base">{translate("Strategic Focus Areas")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

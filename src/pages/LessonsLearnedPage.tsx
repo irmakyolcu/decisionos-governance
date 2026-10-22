@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,6 +40,7 @@ const seed: Lesson[] = [
 ];
 
 export default function LessonsLearnedPage() {
+  useLanguage();
   const { rows, persist } = useLessons();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
@@ -82,48 +84,48 @@ export default function LessonsLearnedPage() {
     <div className="space-y-6">
       <div className="page-header flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="page-title flex items-center gap-2"><Lightbulb className="h-6 w-6 text-primary" /> Lessons Learned</h1>
-          <p className="page-description">Distilled insights from past decisions, deals, launches and crises.</p>
+          <h1 className="page-title flex items-center gap-2"><Lightbulb className="h-6 w-6 text-primary" /> {translate("Lessons Learned")}</h1>
+          <p className="page-description">{translate("Distilled insights from past decisions, deals, launches and crises.")}</p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link to="/memory/links"><Link2 className="h-4 w-4 mr-2" /> Link to decisions</Link>
+            <Link to="/memory/links"><Link2 className="h-4 w-4 mr-2" /> {translate("Link to decisions")}</Link>
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button size="sm"><Plus className="h-4 w-4 mr-2" /> New Lesson</Button>
+              <Button size="sm"><Plus className="h-4 w-4 mr-2" /> {translate("New Lesson")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader><DialogTitle>Capture a lesson</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>{translate("Capture a lesson")}</DialogTitle></DialogHeader>
               <div className="space-y-3">
-                <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+                <div><Label>{translate("Title")}</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Category</Label>
+                    <Label>{translate("Category")}</Label>
                     <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                      <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label>Impact</Label>
+                    <Label>{translate("Impact")}</Label>
                     <Select value={form.impact} onValueChange={(v: any) => setForm({ ...form, impact: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="positive">Positive</SelectItem>
-                        <SelectItem value="negative">Negative</SelectItem>
-                        <SelectItem value="mixed">Mixed</SelectItem>
+                        <SelectItem value="positive">{translate("Positive")}</SelectItem>
+                        <SelectItem value="negative">{translate("Negative")}</SelectItem>
+                        <SelectItem value="mixed">{translate("Mixed")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div><Label>Context</Label><Textarea rows={2} value={form.context} onChange={(e) => setForm({ ...form, context: e.target.value })} /></div>
-                <div><Label>What worked</Label><Textarea rows={2} value={form.what_worked} onChange={(e) => setForm({ ...form, what_worked: e.target.value })} /></div>
-                <div><Label>What failed</Label><Textarea rows={2} value={form.what_failed} onChange={(e) => setForm({ ...form, what_failed: e.target.value })} /></div>
-                <div><Label>Recommendation for next time</Label><Textarea rows={2} value={form.recommendation} onChange={(e) => setForm({ ...form, recommendation: e.target.value })} /></div>
-                <div><Label>Source (project, deal, incident…)</Label><Input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} /></div>
+                <div><Label>{translate("Context")}</Label><Textarea rows={2} value={form.context} onChange={(e) => setForm({ ...form, context: e.target.value })} /></div>
+                <div><Label>{translate("What worked")}</Label><Textarea rows={2} value={form.what_worked} onChange={(e) => setForm({ ...form, what_worked: e.target.value })} /></div>
+                <div><Label>{translate("What failed")}</Label><Textarea rows={2} value={form.what_failed} onChange={(e) => setForm({ ...form, what_failed: e.target.value })} /></div>
+                <div><Label>{translate("Recommendation for next time")}</Label><Textarea rows={2} value={form.recommendation} onChange={(e) => setForm({ ...form, recommendation: e.target.value })} /></div>
+                <div><Label>{translate("Source (project, deal, incident…)")}</Label><Input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} /></div>
               </div>
-              <DialogFooter><Button onClick={save}>Save</Button></DialogFooter>
+              <DialogFooter><Button onClick={save}>{translate("Save")}</Button></DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
@@ -132,22 +134,22 @@ export default function LessonsLearnedPage() {
       <Card><CardContent className="p-4 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[220px]">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search lessons…" className="pl-9" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={translate("Search lessons…")} className="pl-9" />
         </div>
         <Select value={cat} onValueChange={setCat}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            <SelectItem value="all">{translate("All categories")}</SelectItem>
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={impact} onValueChange={setImpact}>
           <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All impact</SelectItem>
-            <SelectItem value="positive">Positive</SelectItem>
-            <SelectItem value="negative">Negative</SelectItem>
-            <SelectItem value="mixed">Mixed</SelectItem>
+            <SelectItem value="all">{translate("All impact")}</SelectItem>
+            <SelectItem value="positive">{translate("Positive")}</SelectItem>
+            <SelectItem value="negative">{translate("Negative")}</SelectItem>
+            <SelectItem value="mixed">{translate("Mixed")}</SelectItem>
           </SelectContent>
         </Select>
       </CardContent></Card>
@@ -161,34 +163,34 @@ export default function LessonsLearnedPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant="outline" className="text-xs">{r.category}</Badge>
+                      <Badge variant="outline" className="text-xs">{translate(r.category)}</Badge>
                       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">{impactIcon(r.impact)} {r.impact}</span>
                     </div>
                     <h3 className="font-semibold mt-2">{r.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{r.source} · {new Date(r.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{r.source} · {new Date(r.created_at).toLocaleDateString(getLocale())}</p>
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => remove(r.id)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
                 {r.context && <p className="text-sm text-muted-foreground">{r.context}</p>}
                 <div className="grid gap-2">
-                  {r.what_worked && <Row label="Worked" tone="positive" value={r.what_worked} />}
-                  {r.what_failed && <Row label="Failed" tone="negative" value={r.what_failed} />}
+                  {r.what_worked && <Row label={translate("Worked")} tone="positive" value={r.what_worked} />}
+                  {r.what_failed && <Row label={translate("Failed")} tone="negative" value={r.what_failed} />}
                   {r.recommendation && (
                     <div className="rounded-md bg-primary/5 border border-primary/20 p-2.5">
-                      <p className="text-[10px] uppercase tracking-wider text-primary mb-1">Next time</p>
+                      <p className="text-[10px] uppercase tracking-wider text-primary mb-1">{translate("Next time")}</p>
                       <p className="text-sm">{r.recommendation}</p>
                     </div>
                   )}
                 </div>
                 <div className="pt-2 border-t">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Linked decisions ({linked.length})</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{translate("Linked decisions (")}{linked.length})</span>
                     <Link to="/memory/links" className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
-                      <Link2 className="h-3 w-3" /> Manage
+                      <Link2 className="h-3 w-3" /> {translate("Manage")}
                     </Link>
                   </div>
                   {linked.length === 0 ? (
-                    <p className="text-xs text-muted-foreground italic">No decisions linked yet.</p>
+                    <p className="text-xs text-muted-foreground italic">{translate("No decisions linked yet.")}</p>
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
                       {linked.map((d) => (
@@ -205,7 +207,7 @@ export default function LessonsLearnedPage() {
         })}
         {filtered.length === 0 && (
           <Card className="md:col-span-2"><CardContent className="p-10 text-center text-sm text-muted-foreground">
-            <Lightbulb className="h-6 w-6 mx-auto mb-2 opacity-50" /> No lessons match your filters.
+            <Lightbulb className="h-6 w-6 mx-auto mb-2 opacity-50" /> {translate("No lessons match your filters.")}
           </CardContent></Card>
         )}
       </div>
@@ -214,10 +216,11 @@ export default function LessonsLearnedPage() {
 }
 
 function Row({ label, tone, value }: { label: string; tone: 'positive' | 'negative'; value: string }) {
+  useLanguage();
   const cls = tone === 'positive' ? 'text-emerald-600 border-emerald-500/30 bg-emerald-500/5' : 'text-red-600 border-red-500/30 bg-red-500/5';
   return (
     <div className={`rounded-md border p-2.5 ${cls}`}>
-      <p className="text-[10px] uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-[10px] uppercase tracking-wider mb-1">{translate(label)}</p>
       <p className="text-sm text-foreground">{value}</p>
     </div>
   );

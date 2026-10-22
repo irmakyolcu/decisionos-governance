@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +20,7 @@ const SEV_WEIGHT: Record<string, number> = { low: 1, medium: 2, high: 3, critica
 const SEV_COLOR: Record<string, string> = { low: 'secondary', medium: 'default', high: 'destructive', critical: 'destructive' };
 
 export default function RisksPage() {
+  useLanguage();
   const { user } = useAuth();
   const { workspace, role } = useWorkspace();
   const isCeo = role === 'admin';
@@ -38,7 +40,7 @@ export default function RisksPage() {
   const create = async () => {
     if (!workspace || !user || !form.summary) return;
     const { error } = await supabase.from('risks').insert({ workspace_id: workspace.id, created_by: user.id, ...form } as any);
-    if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    if (error) return toast({ title: translate("Error"), description: error.message, variant: 'destructive' });
     setOpen(false); setForm({ category: 'client_risk', severity: 'medium', department: 'Operations', summary: '', why_it_matters: '', recommended_action: '' }); load();
   };
 
@@ -68,34 +70,34 @@ export default function RisksPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-2xl font-bold">Risks & Alerts</h1><p className="text-sm text-muted-foreground">Detected risks across your company.</p></div>
+        <div><h1 className="text-2xl font-bold">{translate("Risks & Alerts")}</h1><p className="text-sm text-muted-foreground">{translate("Detected risks across your company.")}</p></div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />New Risk</Button></DialogTrigger>
+          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />{translate("New Risk")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Log Risk</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{translate("Log Risk")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Category</Label>
+              <div><Label>{translate("Category")}</Label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                  <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c.replace(/_/g, ' '))}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Severity</Label>
+              <div><Label>{translate("Severity")}</Label>
                 <Select value={form.severity} onValueChange={(v) => setForm({ ...form, severity: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{['low','medium','high','critical'].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  <SelectContent>{['low','medium','high','critical'].map((s) => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Department</Label>
+              <div><Label>{translate("Department")}</Label>
                 <Select value={form.department} onValueChange={(v) => setForm({ ...form, department: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Summary</Label><Input value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} /></div>
-              <div><Label>Why it matters</Label><Textarea value={form.why_it_matters} onChange={(e) => setForm({ ...form, why_it_matters: e.target.value })} /></div>
-              <div><Label>Recommended action</Label><Textarea value={form.recommended_action} onChange={(e) => setForm({ ...form, recommended_action: e.target.value })} /></div>
-              <Button onClick={create} className="w-full">Log Risk</Button>
+              <div><Label>{translate("Summary")}</Label><Input value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} /></div>
+              <div><Label>{translate("Why it matters")}</Label><Textarea value={form.why_it_matters} onChange={(e) => setForm({ ...form, why_it_matters: e.target.value })} /></div>
+              <div><Label>{translate("Recommended action")}</Label><Textarea value={form.recommended_action} onChange={(e) => setForm({ ...form, recommended_action: e.target.value })} /></div>
+              <Button onClick={create} className="w-full">{translate("Log Risk")}</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -105,11 +107,11 @@ export default function RisksPage() {
         <Card className="p-5">
           <div className="flex items-center gap-2 mb-4">
             <Building2 className="h-4 w-4 text-primary" />
-            <h2 className="font-semibold">Operational Risks by Department</h2>
-            <Badge variant="secondary" className="text-[10px]">CEO view</Badge>
+            <h2 className="font-semibold">{translate("Operational Risks by Department")}</h2>
+            <Badge variant="secondary" className="text-[10px]">{translate("CEO view")}</Badge>
           </div>
           {deptSummary.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No departmental risks recorded yet.</p>
+            <p className="text-sm text-muted-foreground">{translate("No departmental risks recorded yet.")}</p>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {deptSummary.map((d) => (
@@ -120,15 +122,14 @@ export default function RisksPage() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{d.name}</span>
-                    <Badge variant="outline" className="text-[10px]">{d.total} open</Badge>
+                    <Badge variant="outline" className="text-[10px]">{d.total} {translate("open")}</Badge>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    {d.critical} critical · {d.high} high · {d.medium} medium · {d.low} low
-                  </div>
+                    {d.critical} {translate("critical ·")} {d.high} {translate("high ·")} {d.medium} {translate("medium ·")} {d.low} {translate("low")}</div>
                   <div className="h-1.5 bg-muted rounded-full mt-2 overflow-hidden">
                     <div className={`h-full ${d.exposure >= 3 ? 'bg-destructive' : 'bg-primary'}`} style={{ width: `${Math.min(100, (d.exposure / 4) * 100)}%` }} />
                   </div>
-                  <div className="text-[11px] text-muted-foreground mt-1">Risk exposure {d.exposure.toFixed(1)} / 4</div>
+                  <div className="text-[11px] text-muted-foreground mt-1">{translate("Risk exposure")} {d.exposure.toFixed(1)} / 4</div>
                 </button>
               ))}
             </div>
@@ -137,19 +138,19 @@ export default function RisksPage() {
       )}
 
       <div className="flex items-center gap-2">
-        <Label className="text-xs text-muted-foreground">Department</Label>
+        <Label className="text-xs text-muted-foreground">{translate("Department")}</Label>
         <Select value={deptFilter} onValueChange={setDeptFilter}>
           <SelectTrigger className="w-56 h-8 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All departments</SelectItem>
+            <SelectItem value="all">{translate("All departments")}</SelectItem>
             {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-            <SelectItem value="unassigned">Unassigned</SelectItem>
+            <SelectItem value="unassigned">{translate("Unassigned")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {filteredRows.length === 0 ? (
-        <Card className="p-12 text-center"><AlertTriangle className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">No risks logged.</p></Card>
+        <Card className="p-12 text-center"><AlertTriangle className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">{translate("No risks logged.")}</p></Card>
       ) : (
         <div className="space-y-2">
           {filteredRows.map((r) => (
@@ -159,16 +160,16 @@ export default function RisksPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <div className="font-medium">{r.summary}</div>
-                    <Badge variant={SEV_COLOR[r.severity] as any} className="text-[10px]">{r.severity}</Badge>
+                    <Badge variant={SEV_COLOR[r.severity] as any} className="text-[10px]">{translate(r.severity)}</Badge>
                     <Badge variant="outline" className="text-[10px]">{r.category.replace(/_/g,' ')}</Badge>
                     {r.department && <Badge variant="secondary" className="text-[10px]">{r.department}</Badge>}
                   </div>
                   {r.why_it_matters && <p className="text-xs text-muted-foreground">{r.why_it_matters}</p>}
-                  {r.recommended_action && <p className="text-xs mt-1"><span className="text-muted-foreground">Action: </span>{r.recommended_action}</p>}
+                  {r.recommended_action && <p className="text-xs mt-1"><span className="text-muted-foreground">{translate("Action:")} </span>{r.recommended_action}</p>}
                 </div>
                 <Select value={r.status} onValueChange={(v) => updateStatus(r.id, v)}>
                   <SelectTrigger className="w-40 h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>{['new','investigating','action_required','resolved','dismissed'].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  <SelectContent>{['new','investigating','action_required','resolved','dismissed'].map((s) => <SelectItem key={s} value={s}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </Card>

@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ type Report = {
 };
 
 export default function ExternalAuditPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const { rows } = useTable<any>('audit_events');
   const [reports, setReports] = useState<Report[]>([]);
@@ -92,25 +94,25 @@ export default function ExternalAuditPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Denetim — Dış</p>
+        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Denetim — Dış")}</p>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Building className="h-6 w-6" /> Dış Denetim
+          <Building className="h-6 w-6" /> {translate("Dış Denetim")}
         </h1>
         <p className="text-muted-foreground mt-1">
-          Bağımsız denetçiler için kapsam sınırlı, maskelenmiş kanıt paketleri ve çerçeve bazlı uyum raporları.
+          {translate("Bağımsız denetçiler için kapsam sınırlı, maskelenmiş kanıt paketleri ve çerçeve bazlı uyum raporları.")}
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Package className="h-4 w-4" /> Kanıt paketi oluştur
+            <Package className="h-4 w-4" /> {translate("Kanıt paketi oluştur")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <Label>Çerçeve</Label>
+              <Label>{translate("Çerçeve")}</Label>
               <Select value={framework} onValueChange={setFramework}>
                 <SelectTrigger>
                   <SelectValue />
@@ -125,19 +127,19 @@ export default function ExternalAuditPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Başlangıç</Label>
+              <Label>{translate("Başlangıç")}</Label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Bitiş</Label>
+              <Label>{translate("Bitiş")}</Label>
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">{redacted.length} kanıt kaydı</Badge>
+            <Badge variant="outline">{redacted.length} {translate("kanıt kaydı")}</Badge>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <ShieldOff className="h-3.5 w-3.5" /> Aktör kimlikleri ve iç gerekçeler maskelenir
+              <ShieldOff className="h-3.5 w-3.5" /> {translate("Aktör kimlikleri ve iç gerekçeler maskelenir")}
             </span>
             <div className="ml-auto flex gap-2">
               <Button variant="outline" onClick={() => exportPackage('csv')}>
@@ -146,7 +148,7 @@ export default function ExternalAuditPage() {
               </Button>
               <Button onClick={() => exportPackage('json')}>
                 <Download className="h-4 w-4 mr-2" />
-                JSON paketi
+                {translate("JSON paketi")}
               </Button>
             </div>
           </div>
@@ -156,26 +158,26 @@ export default function ExternalAuditPage() {
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base flex items-center gap-2">
-            <FileCheck className="h-4 w-4" /> {framework} uyum raporları
+            <FileCheck className="h-4 w-4" /> {framework} {translate("uyum raporları")}
           </CardTitle>
           <NavLink to="/compliance" className="text-xs text-primary hover:underline">
-            Rapor üret →
+            {translate("Rapor üret →")}
           </NavLink>
         </CardHeader>
         <CardContent className="p-0">
           <ul className="divide-y">
             {frameworkReports.length === 0 && (
-              <li className="p-6 text-sm text-muted-foreground">Bu çerçeve için henüz rapor yok.</li>
+              <li className="p-6 text-sm text-muted-foreground">{translate("Bu çerçeve için henüz rapor yok.")}</li>
             )}
             {frameworkReports.map((r) => (
               <li key={r.id} className="p-3 flex items-center gap-3 text-sm">
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{r.title}</p>
                   <p className="text-xs text-muted-foreground">
-                    {r.period_start} → {r.period_end} · {(r.findings ?? []).length} bulgu
+                    {r.period_start} → {r.period_end} · {(r.findings ?? []).length} {translate("bulgu")}
                   </p>
                 </div>
-                <Badge variant="outline">{r.status}</Badge>
+                <Badge variant="outline">{translate(r.status)}</Badge>
               </li>
             ))}
           </ul>
@@ -183,11 +185,11 @@ export default function ExternalAuditPage() {
       </Card>
 
       <p className="text-xs text-muted-foreground">
-        İç denetim kayıtları (aktör kimlikleri, gerekçeler, güvenlik bulguları) bu modülde gösterilmez —{' '}
+        {translate("İç denetim kayıtları (aktör kimlikleri, gerekçeler, güvenlik bulguları) bu modülde gösterilmez —")}{' '}
         <NavLink to="/audit/internal" className="text-primary hover:underline">
-          İç Denetim
+          {translate("İç Denetim")}
         </NavLink>{' '}
-        modülünde yer alır.
+        {translate("modülünde yer alır.")}
       </p>
     </div>
   );

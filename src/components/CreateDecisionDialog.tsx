@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -11,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { RiskLevel } from '@/types/decision';
 
 export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode }) {
+  useLanguage();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -34,11 +36,11 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
         riskLevel,
         status: 'Under Review',
       });
-      toast({ title: 'Karar oluşturuldu', description: title });
+      toast({ title: translate("Karar oluşturuldu"), description: title });
       setOpen(false);
       setTitle(''); setDescription(''); setProblemStatement(''); setBudget(''); setRiskLevel('Medium');
     } catch (err: any) {
-      toast({ title: 'Oluşturulamadı', description: err.message, variant: 'destructive' });
+      toast({ title: translate("Oluşturulamadı"), description: err.message, variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
@@ -47,49 +49,49 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger ?? <Button size="sm"><Plus className="h-4 w-4 mr-1" />Yeni Karar</Button>}
+        {trigger ?? <Button size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Yeni Karar")}</Button>}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Yeni Karar Oluştur</DialogTitle>
-            <DialogDescription>Karar detaylarını girin. Oluşturulduktan sonra inceleme aşamasında olacak.</DialogDescription>
+            <DialogTitle>{translate("Yeni Karar Oluştur")}</DialogTitle>
+            <DialogDescription>{translate("Karar detaylarını girin. Oluşturulduktan sonra inceleme aşamasında olacak.")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="title">Başlık *</Label>
+              <Label htmlFor="title">{translate("Başlık *")}</Label>
               <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="desc">Açıklama</Label>
+              <Label htmlFor="desc">{translate("Açıklama")}</Label>
               <Textarea id="desc" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="problem">Problem ifadesi</Label>
+              <Label htmlFor="problem">{translate("Problem ifadesi")}</Label>
               <Textarea id="problem" value={problemStatement} onChange={(e) => setProblemStatement(e.target.value)} rows={2} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-2">
-                <Label htmlFor="budget">Bütçe (€)</Label>
+                <Label htmlFor="budget">{translate("Bütçe (€)")}</Label>
                 <Input id="budget" type="number" min="0" value={budget} onChange={(e) => setBudget(e.target.value)} />
               </div>
               <div className="grid gap-2">
-                <Label>Risk Seviyesi</Label>
+                <Label>{translate("Risk Seviyesi")}</Label>
                 <Select value={riskLevel} onValueChange={(v) => setRiskLevel(v as RiskLevel)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Low">Low</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="High">High</SelectItem>
-                    <SelectItem value="Critical">Critical</SelectItem>
+                    <SelectItem value="Low">{translate("Low")}</SelectItem>
+                    <SelectItem value="Medium">{translate("Medium")}</SelectItem>
+                    <SelectItem value="High">{translate("High")}</SelectItem>
+                    <SelectItem value="Critical">{translate("Critical")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>İptal</Button>
-            <Button type="submit" disabled={submitting || !title.trim()}>{submitting ? 'Oluşturuluyor…' : 'Oluştur'}</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>{translate("İptal")}</Button>
+            <Button type="submit" disabled={submitting || !title.trim()}>{submitting ? translate("Oluşturuluyor…") : translate("Oluştur")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

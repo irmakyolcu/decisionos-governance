@@ -9,7 +9,7 @@ import {
   BadgeCheck, Eye, Activity, BrainCircuit, Building2, Briefcase, Crown,
 } from 'lucide-react';
 import { LanguageToggle } from '@/components/LanguageToggle';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import demoVideo from '@/assets/decisionos-demo.mp4.asset.json';
 
@@ -198,7 +198,7 @@ export default function LandingPage() {
                   className="group flex flex-col items-center gap-1 p-2 rounded-lg border border-border bg-background/60 backdrop-blur"
                 >
                   <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <span className="text-[9px] text-muted-foreground truncate max-w-full">{label}</span>
+                  <span className="text-[9px] text-muted-foreground truncate max-w-full">{translate(label)}</span>
                 </div>
               ))}
             </div>
@@ -412,6 +412,7 @@ export default function LandingPage() {
 }
 
 function Section({ tag, children }: { tag: string; children: React.ReactNode }) {
+  useLanguage();
   return (
     <section className="border-t border-border/60">
       <div className="max-w-7xl mx-auto px-6 py-24 md:py-32">
@@ -453,6 +454,7 @@ function StackLayer({
 }
 
 function FlowArrow() {
+  useLanguage();
   return (
     <div className="relative h-8 w-px">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/60 to-transparent" />

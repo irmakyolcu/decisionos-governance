@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ const db = supabase as any;
 const EFFECTS = ['allow', 'allow_with_logging', 'require_approval', 'require_multi_approval', 'warn', 'block', 'escalate'];
 
 export default function PoliciesPage() {
+  useLanguage();
   const { rows: policies, refetch } = useTable<any>('policies', 'priority', true);
   const { workspace } = useWorkspace();
   const [open, setOpen] = useState(false);
@@ -54,22 +56,22 @@ export default function PoliciesPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Policies</h1>
-          <p className="text-muted-foreground mt-1">Deterministic rules evaluated independently of any language model.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{translate("Policies")}</h1>
+          <p className="text-muted-foreground mt-1">{translate("Deterministic rules evaluated independently of any language model.")}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />New Policy</Button></DialogTrigger>
+          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />{translate("New Policy")}</Button></DialogTrigger>
           <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>Create Policy</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{translate("Create Policy")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="Budget over €25k requires CEO+CFO" /></div>
-              <div><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} /></div>
+              <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder={translate("Budget over €25k requires CEO+CFO")} /></div>
+              <div><Label>{translate("Description")}</Label><Textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label>Category</Label><Input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
-                <div><Label>Applies to action type</Label><Input value={form.action_type} onChange={(e) => setForm({...form, action_type: e.target.value})} placeholder="approve_budget" /></div>
+                <div><Label>{translate("Category")}</Label><Input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
+                <div><Label>{translate("Applies to action type")}</Label><Input value={form.action_type} onChange={(e) => setForm({...form, action_type: e.target.value})} placeholder="approve_budget" /></div>
               </div>
               <div className="p-3 bg-muted rounded space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide">IF</p>
+                <p className="text-xs font-semibold uppercase tracking-wide">{translate("IF")}</p>
                 <div className="grid grid-cols-3 gap-2">
                   <Input value={form.field} onChange={(e) => setForm({...form, field: e.target.value})} placeholder="amount" />
                   <Select value={form.operator} onValueChange={(v) => setForm({...form, operator: v})}>
@@ -78,14 +80,14 @@ export default function PoliciesPage() {
                   </Select>
                   <Input value={form.value} onChange={(e) => setForm({...form, value: e.target.value})} />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wide">THEN</p>
+                <p className="text-xs font-semibold uppercase tracking-wide">{translate("THEN")}</p>
                 <Select value={form.effect} onValueChange={(v) => setForm({...form, effect: v as any})}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{EFFECTS.map(e => <SelectItem key={e} value={e}>{e.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
-            <DialogFooter><Button onClick={save}>Create</Button></DialogFooter>
+            <DialogFooter><Button onClick={save}>{translate("Create")}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
@@ -93,15 +95,15 @@ export default function PoliciesPage() {
       <Card>
         <CardContent className="p-0">
           <ul className="divide-y">
-            {policies.length === 0 && <li className="p-6 text-sm text-muted-foreground">No policies yet. Create your first rule to govern AI-proposed actions.</li>}
+            {policies.length === 0 && <li className="p-6 text-sm text-muted-foreground">{translate("No policies yet. Create your first rule to govern AI-proposed actions.")}</li>}
             {policies.map((p) => (
               <li key={p.id} className="p-4 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{p.name}</p>
-                    <Badge variant="outline">{p.category}</Badge>
+                    <Badge variant="outline">{translate(p.category)}</Badge>
                     <Badge>{p.effect?.replace(/_/g, ' ')}</Badge>
-                    <span className="text-xs text-muted-foreground">priority {p.priority}</span>
+                    <span className="text-xs text-muted-foreground">{translate("priority")}{p.priority}</span>
                   </div>
                   {p.description && <p className="text-sm text-muted-foreground mt-1">{p.description}</p>}
                   <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-x-auto">{JSON.stringify(p.rule_tree, null, 2)}</pre>

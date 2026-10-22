@@ -12,7 +12,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
 
 // Replace with your real calendar link (Calendly, Cal.com, HubSpot, etc.)
@@ -136,9 +136,9 @@ export default function BookDemoPage() {
               t('Governance, audit trail, and role-based authority walkthrough'),
               t('Q&A with a solutions engineer — no sales pitch'),
             ].map((line) => (
-              <li key={line} className="flex items-start gap-3">
+              <li key={translate(line)} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground/90">{line}</span>
+                <span className="text-sm text-foreground/90">{translate(line)}</span>
               </li>
             ))}
           </ul>
@@ -271,9 +271,10 @@ function Field({
   error?: string;
   children: React.ReactNode;
 }) {
+  useLanguage();
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={htmlFor} className="text-sm">{label}</Label>
+      <Label htmlFor={htmlFor} className="text-sm">{translate(label)}</Label>
       {children}
       {error && <p className="text-xs text-destructive" role="alert">{error}</p>}
     </div>

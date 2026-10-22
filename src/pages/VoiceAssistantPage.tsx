@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 type Turn = { role: 'user' | 'assistant'; content: string };
 
 export default function VoiceAssistantPage() {
+  useLanguage();
   const { recording, start, stop } = useVoiceRecorder();
   const [busy, setBusy] = useState(false);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -26,7 +28,7 @@ export default function VoiceAssistantPage() {
       audioRef.current = a;
       await a.play();
     } catch (e: any) {
-      toast({ title: 'Playback failed', description: e.message, variant: 'destructive' });
+      toast({ title: translate("Playback failed"), description: e.message, variant: 'destructive' });
     }
   };
 
@@ -38,7 +40,7 @@ export default function VoiceAssistantPage() {
     }
     const blob = await stop();
     if (!blob) {
-      toast({ title: 'Recording too short', variant: 'destructive' });
+      toast({ title: translate("Recording too short"), variant: 'destructive' });
       return;
     }
     setBusy(true);
@@ -61,7 +63,7 @@ export default function VoiceAssistantPage() {
       setTurns([...nextTurns, { role: 'assistant', content: reply }]);
       if (reply) speak(reply);
     } catch (e: any) {
-      toast({ title: 'Assistant error', description: e.message, variant: 'destructive' });
+      toast({ title: translate("Assistant error"), description: e.message, variant: 'destructive' });
     } finally {
       setBusy(false);
     }
@@ -70,14 +72,14 @@ export default function VoiceAssistantPage() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <div className="page-header">
-        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Voice Assistant</p>
-        <h1 className="page-title">Ask the CEO Twin out loud</h1>
-        <p className="page-description">Tap the mic, ask a decision question, and get a CEO-aligned call back — spoken in the founder's operating voice.</p>
+        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Voice Assistant")}</p>
+        <h1 className="page-title">{translate("Ask the CEO Twin out loud")}</h1>
+        <p className="page-description">{translate("Tap the mic, ask a decision question, and get a CEO-aligned call back — spoken in the founder's operating voice.")}</p>
       </div>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" />Conversation</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" />{translate("Conversation")}</CardTitle>
           <Button
             type="button"
             size="lg"
@@ -88,7 +90,7 @@ export default function VoiceAssistantPage() {
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> :
               recording ? <Square className="h-4 w-4 fill-current" /> : <Mic className="h-4 w-4" />}
-            {busy ? 'Thinking…' : recording ? 'Stop & send' : 'Hold to ask'}
+            {busy ? translate("Thinking…") : recording ? translate("Stop & send") : translate("Hold to ask")}
           </Button>
         </CardHeader>
         <CardContent>
@@ -98,7 +100,7 @@ export default function VoiceAssistantPage() {
                 <Mic className="h-6 w-6 text-primary" />
               </div>
               <p className="text-sm max-w-sm">
-                Try: <span className="text-foreground">"Should I approve a €40k pilot with a new accelerator partner?"</span>
+                {translate("Try:")} <span className="text-foreground">{translate("\"Should I approve a €40k pilot with a new accelerator partner?\"")}</span>
               </p>
             </div>
           ) : (
@@ -116,7 +118,7 @@ export default function VoiceAssistantPage() {
                         onClick={() => speak(t.content)}
                         className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                       >
-                        <Volume2 className="h-3 w-3" />Replay
+                        <Volume2 className="h-3 w-3" />{translate("Replay")}
                       </button>
                     )}
                   </div>

@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -7,6 +8,7 @@ import { Brain, Building2, FolderKanban, Workflow, Zap, AlertTriangle, GitBranch
 import { Link } from 'react-router-dom';
 
 export default function CompanyBrainPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const [counts, setCounts] = useState<Record<string, number>>({});
 
@@ -46,19 +48,19 @@ export default function CompanyBrainPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Company Brain</h1>
-        <p className="text-sm text-muted-foreground">Structured view of every entity in your organization.</p>
+        <h1 className="text-2xl font-bold">{translate("Company Brain")}</h1>
+        <p className="text-sm text-muted-foreground">{translate("Structured view of every entity in your organization.")}</p>
       </div>
 
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Brain Health</h2>
-          <Badge variant="secondary">Overall 71</Badge>
+          <h2 className="font-semibold">{translate("Brain Health")}</h2>
+          <Badge variant="secondary">{translate("Overall 71")}</Badge>
         </div>
         <div className="grid sm:grid-cols-5 gap-4">
           {health.map((h) => (
             <div key={h.label}>
-              <div className="text-xs text-muted-foreground mb-1">{h.label}</div>
+              <div className="text-xs text-muted-foreground mb-1">{translate(h.label)}</div>
               <div className="text-lg font-semibold">{h.v}%</div>
               <div className="h-1.5 bg-muted rounded-full mt-1 overflow-hidden">
                 <div className="h-full bg-primary" style={{ width: `${h.v}%` }} />
@@ -69,7 +71,7 @@ export default function CompanyBrainPage() {
       </Card>
 
       <div>
-        <h2 className="font-semibold mb-3">Entities</h2>
+        <h2 className="font-semibold mb-3">{translate("Entities")}</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {entities.map((e) => (
             <Link key={e.key} to={e.href}>
@@ -79,8 +81,8 @@ export default function CompanyBrainPage() {
                     <e.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium">{e.label}</div>
-                    <div className="text-xs text-muted-foreground">{counts[e.key] ?? 0} items</div>
+                    <div className="font-medium">{translate(e.label)}</div>
+                    <div className="text-xs text-muted-foreground">{counts[e.key] ?? 0} {translate("items")}</div>
                   </div>
                 </div>
               </Card>

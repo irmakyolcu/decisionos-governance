@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +9,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 export default function InvitePage() {
+  useLanguage();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const { user } = useAuth();
@@ -71,9 +73,9 @@ export default function InvitePage() {
     if (memberError) {
       if (memberError.code === '23505') {
         // Already a member
-        toast({ title: 'Zaten bu workspace\'in üyesisiniz.' });
+        toast({ title: translate("Zaten bu workspace'in üyesisiniz.") });
       } else {
-        toast({ title: 'Hata', description: memberError.message, variant: 'destructive' });
+        toast({ title: translate("Hata"), description: memberError.message, variant: 'destructive' });
         setStatus('ready');
         return;
       }
@@ -108,7 +110,7 @@ export default function InvitePage() {
             <XCircle className="h-12 w-12 text-destructive mx-auto" />
             <h2 className="text-lg font-semibold text-foreground">{errorMsg}</h2>
             <Button variant="outline" onClick={() => navigate('/auth')}>
-              Giriş Sayfasına Dön
+              {translate("Giriş Sayfasına Dön")}
             </Button>
           </>
         )}
@@ -122,16 +124,16 @@ export default function InvitePage() {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-1">
-                Davet Aldınız
+                {translate("Davet Aldınız")}
               </h2>
               <p className="text-muted-foreground text-sm">
-                <span className="font-medium text-foreground">{workspaceName}</span> workspace'ine{' '}
-                <span className="font-medium text-foreground capitalize">{invite.role}</span>{' '}
-                olarak davet edildiniz.
+                <span className="font-medium text-foreground">{workspaceName}</span> {translate("workspace'ine")}{' '}
+                <span className="font-medium text-foreground capitalize">{translate(invite.role)}</span>{' '}
+                {translate("olarak davet edildiniz.")}
               </p>
             </div>
             <Button className="w-full" onClick={handleAccept}>
-              Daveti Kabul Et
+              {translate("Daveti Kabul Et")}
             </Button>
           </>
         )}
@@ -144,9 +146,9 @@ export default function InvitePage() {
           <>
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
             <h2 className="text-lg font-semibold text-foreground">
-              {workspaceName} workspace'ine katıldınız!
+              {workspaceName} {translate("workspace'ine katıldınız!")}
             </h2>
-            <p className="text-muted-foreground text-sm">Yönlendiriliyorsunuz...</p>
+            <p className="text-muted-foreground text-sm">{translate("Yönlendiriliyorsunuz...")}</p>
           </>
         )}
       </div>

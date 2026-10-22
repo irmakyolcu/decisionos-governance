@@ -1,9 +1,11 @@
+import { useLanguage } from "@/contexts/LanguageContext";
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
 import { TopBar } from '@/components/TopBar';
 import { LicenseBanner } from '@/components/LicenseBanner';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
+  useLanguage();
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">

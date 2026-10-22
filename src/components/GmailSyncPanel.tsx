@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { Mail, RefreshCw, Loader2, Paperclip, Clock, Power, CalendarClock, Pause, Play, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,6 +36,7 @@ const CADENCE_OPTIONS = [
 ];
 
 export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: string; defaultQuery?: string }) {
+  useLanguage();
   const [items, setItems] = useState<Evidence[]>([]);
   const [query, setQuery] = useState(defaultQuery ?? '');
   const [syncing, setSyncing] = useState(false);
@@ -79,10 +81,10 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         body: { decision_id: decisionId, query: query || undefined, max: 10 },
       });
       if (error) throw error;
-      toast({ title: 'Gmail synced', description: `${data?.count ?? 0} message(s) attached to this decision.` });
+      toast({ title: translate("Gmail synced"), description: `${data?.count ?? 0} message(s) attached to this decision.` });
       load();
     } catch (e: any) {
-      toast({ title: 'Gmail sync failed', description: e.message ?? String(e), variant: 'destructive' });
+      toast({ title: translate("Gmail sync failed"), description: e.message ?? String(e), variant: 'destructive' });
     } finally {
       setSyncing(false);
     }
@@ -118,7 +120,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         description: enabled ? `Running every ${cadence} minute(s).` : 'No more scheduled runs until re-enabled.',
       });
     } catch (e: any) {
-      toast({ title: 'Schedule failed', description: e.message ?? String(e), variant: 'destructive' });
+      toast({ title: translate("Schedule failed"), description: e.message ?? String(e), variant: 'destructive' });
     } finally {
       setScheduling(false);
     }
@@ -138,7 +140,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
       setSchedule(data as Schedule);
       if (successMsg) toast({ title: successMsg });
     } catch (e: any) {
-      toast({ title: 'Update failed', description: e.message ?? String(e), variant: 'destructive' });
+      toast({ title: translate("Update failed"), description: e.message ?? String(e), variant: 'destructive' });
     } finally {
       setScheduling(false);
     }
@@ -151,7 +153,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
       const { error } = await (supabase as any).from('gmail_sync_schedules').delete().eq('id', schedule.id);
       if (error) throw error;
       setSchedule(null);
-      toast({ title: 'Auto-sync removed' });
+      toast({ title: translate("Auto-sync removed") });
     } finally {
       setScheduling(false);
     }
@@ -169,7 +171,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
       <div className="p-4 border-b border-border flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-primary" />
-          <h3 className="font-semibold text-sm text-foreground">Gmail Context</h3>
+          <h3 className="font-semibold text-sm text-foreground">{translate("Gmail Context")}</h3>
           <span className="text-xs text-muted-foreground">({items.length})</span>
         </div>
         <button
@@ -178,7 +180,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
           className="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50 flex items-center gap-1"
         >
           {syncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
-          Sync now
+          {translate("Sync now")}
         </button>
       </div>
 
@@ -186,17 +188,17 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder='Gmail search (e.g. from:cfo@acme.com subject:"Q3 plan")'
+          placeholder={translate("Gmail search (e.g. from:cfo@acme.com subject:\"Q3 plan\")")}
           className="w-full text-xs bg-muted rounded-lg px-3 py-2 outline-none font-mono"
         />
-        <p className="text-[10px] text-muted-foreground">Empty = search by decision title. Uses standard Gmail operators.</p>
+        <p className="text-[10px] text-muted-foreground">{translate("Empty = search by decision title. Uses standard Gmail operators.")}</p>
       </div>
 
       {/* Scheduler */}
       <div className="p-3 border-b border-border bg-muted/30 space-y-2">
         <div className="flex items-center gap-2">
           <Clock className="h-3.5 w-3.5 text-primary" />
-          <span className="text-xs font-semibold text-foreground">Auto-sync schedule</span>
+          <span className="text-xs font-semibold text-foreground">{translate("Auto-sync schedule")}</span>
           {schedule?.enabled && (
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 font-medium">ACTIVE</span>
           )}
@@ -206,14 +208,14 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Cadence</label>
+          <label className="text-[10px] uppercase tracking-wide text-muted-foreground">{translate("Cadence")}</label>
           <select
             value={cadence}
             onChange={(e) => setCadence(Number(e.target.value))}
             className="text-xs bg-background border border-border rounded px-2 py-1.5"
           >
             {CADENCE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>{translate(o.label)}</option>
             ))}
           </select>
           <button
@@ -222,7 +224,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
             className="px-2.5 py-1.5 rounded text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 flex items-center gap-1"
           >
             {scheduling ? <Loader2 className="h-3 w-3 animate-spin" /> : <Power className="h-3 w-3" />}
-            {schedule ? 'Save cadence' : 'Enable auto-sync'}
+            {schedule ? translate("Save cadence") : translate("Enable auto-sync")}
           </button>
           {schedule?.enabled && (
             <button
@@ -230,7 +232,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
               disabled={scheduling}
               className="px-2.5 py-1.5 rounded text-xs font-medium bg-muted text-foreground hover:bg-muted/70 disabled:opacity-50 flex items-center gap-1"
             >
-              <Pause className="h-3 w-3" /> Pause
+              <Pause className="h-3 w-3" /> {translate("Pause")}
             </button>
           )}
           {schedule && !schedule.enabled && (
@@ -239,7 +241,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
               disabled={scheduling}
               className="px-2.5 py-1.5 rounded text-xs font-medium bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 disabled:opacity-50 flex items-center gap-1"
             >
-              <Play className="h-3 w-3" /> Resume
+              <Play className="h-3 w-3" /> {translate("Resume")}
             </button>
           )}
           {schedule && (
@@ -248,7 +250,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
               disabled={scheduling}
               className="px-2.5 py-1.5 rounded text-xs font-medium text-destructive hover:bg-destructive/10"
             >
-              Remove
+              {translate("Remove")}
             </button>
           )}
         </div>
@@ -256,7 +258,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         {schedule && (
           <div className="flex items-center gap-2 flex-wrap pt-1">
             <label className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
-              <CalendarClock className="h-3 w-3" /> Next run at
+              <CalendarClock className="h-3 w-3" /> {translate("Next run at")}
             </label>
             <input
               type="datetime-local"
@@ -273,9 +275,9 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
               onClick={() => patchSchedule({ next_run_at: new Date().toISOString(), enabled: true }, 'Will run on next scheduler tick')}
               disabled={scheduling}
               className="px-2.5 py-1.5 rounded text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50 flex items-center gap-1"
-              title="Reset next run to now"
+              title={translate("Reset next run to now")}
             >
-              <Zap className="h-3 w-3" /> Run on next tick
+              <Zap className="h-3 w-3" /> {translate("Run on next tick")}
             </button>
           </div>
         )}
@@ -283,19 +285,18 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         {schedule && (
           <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-border/50">
             <p>
-              <span className="font-medium text-foreground">Cadence:</span> every {schedule.cadence_minutes} min
-              {' · '}<span className="font-medium text-foreground">Query:</span>{' '}
+              <span className="font-medium text-foreground">{translate("Cadence:")}</span> {translate("every")} {schedule.cadence_minutes} {translate("min")}{' · '}<span className="font-medium text-foreground">{translate("Query:")}</span>{' '}
               <span className="font-mono">{schedule.query || '(decision title)'}</span>
             </p>
             <p>
-              <span className="font-medium text-foreground">Last run:</span>{' '}
-              {schedule.last_run_at ? new Date(schedule.last_run_at).toLocaleString() : '—'}
-              {schedule.last_status && <> · status <span className="font-mono">{schedule.last_status}</span></>}
-              {schedule.last_count != null && <> · {schedule.last_count} new</>}
+              <span className="font-medium text-foreground">{translate("Last run:")}</span>{' '}
+              {schedule.last_run_at ? new Date(schedule.last_run_at).toLocaleString(getLocale()) : '—'}
+              {schedule.last_status && <> {translate("· status")} <span className="font-mono">{translate(schedule.last_status)}</span></>}
+              {schedule.last_count != null && <> · {schedule.last_count} {translate("new")}</>}
             </p>
             <p>
-              <span className="font-medium text-foreground">Next run:</span>{' '}
-              {schedule.enabled ? new Date(schedule.next_run_at).toLocaleString() : 'paused'}
+              <span className="font-medium text-foreground">{translate("Next run:")}</span>{' '}
+              {schedule.enabled ? new Date(schedule.next_run_at).toLocaleString(getLocale()) : 'paused'}
             </p>
           </div>
         )}
@@ -304,9 +305,9 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
 
       <div className="divide-y divide-border/50 max-h-96 overflow-y-auto">
         {loading ? (
-          <div className="p-4 text-xs text-muted-foreground">Loading…</div>
+          <div className="p-4 text-xs text-muted-foreground">{translate("Loading…")}</div>
         ) : items.length === 0 ? (
-          <div className="p-4 text-xs text-muted-foreground">No Gmail context yet. Click "Sync now" or enable auto-sync.</div>
+          <div className="p-4 text-xs text-muted-foreground">{translate("No Gmail context yet. Click \"Sync now\" or enable auto-sync.")}</div>
         ) : (
           items.map((it) => {
             const lines = (it.summary ?? '').split('\n');

@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -8,6 +9,7 @@ import { useMeetings } from '@/hooks/useMeetings';
 import { useToast } from '@/hooks/use-toast';
 
 export function CreateMeetingDialog({ trigger }: { trigger?: React.ReactNode }) {
+  useLanguage();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -24,11 +26,11 @@ export function CreateMeetingDialog({ trigger }: { trigger?: React.ReactNode }) 
     setSubmitting(true);
     try {
       await createMeeting({ title: title.trim(), date, startTime, endTime, location: location.trim() });
-      toast({ title: 'Toplantı oluşturuldu', description: title });
+      toast({ title: translate("Toplantı oluşturuldu"), description: title });
       setOpen(false);
       setTitle(''); setLocation('');
     } catch (err: any) {
-      toast({ title: 'Oluşturulamadı', description: err.message, variant: 'destructive' });
+      toast({ title: translate("Oluşturulamadı"), description: err.message, variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
@@ -37,41 +39,41 @@ export function CreateMeetingDialog({ trigger }: { trigger?: React.ReactNode }) 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger ?? <Button size="sm"><Plus className="h-4 w-4 mr-1" />Yeni Toplantı</Button>}
+        {trigger ?? <Button size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Yeni Toplantı")}</Button>}
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Yeni Toplantı</DialogTitle>
-            <DialogDescription>Toplantı bilgilerini girin.</DialogDescription>
+            <DialogTitle>{translate("Yeni Toplantı")}</DialogTitle>
+            <DialogDescription>{translate("Toplantı bilgilerini girin.")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="m-title">Başlık *</Label>
+              <Label htmlFor="m-title">{translate("Başlık *")}</Label>
               <Input id="m-title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="grid gap-2">
-                <Label>Tarih</Label>
+                <Label>{translate("Tarih")}</Label>
                 <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
               <div className="grid gap-2">
-                <Label>Başlangıç</Label>
+                <Label>{translate("Başlangıç")}</Label>
                 <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
               </div>
               <div className="grid gap-2">
-                <Label>Bitiş</Label>
+                <Label>{translate("Bitiş")}</Label>
                 <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="m-loc">Konum</Label>
-              <Input id="m-loc" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Toplantı odası veya video link" />
+              <Label htmlFor="m-loc">{translate("Konum")}</Label>
+              <Input id="m-loc" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={translate("Toplantı odası veya video link")} />
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>İptal</Button>
-            <Button type="submit" disabled={submitting || !title.trim()}>{submitting ? 'Oluşturuluyor…' : 'Oluştur'}</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>{translate("İptal")}</Button>
+            <Button type="submit" disabled={submitting || !title.trim()}>{submitting ? translate("Oluşturuluyor…") : translate("Oluştur")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import { toast } from 'sonner';
 const db = supabase as any;
 
 export default function DecisionTwinPage() {
+  useLanguage();
   const { workspace, role } = useWorkspace();
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
@@ -70,7 +72,7 @@ export default function DecisionTwinPage() {
     toast.success(`Learning update ${status}`);
   }
 
-  if (!profile) return <div className="p-6">Loading…</div>;
+  if (!profile) return <div className="p-6">{translate("Loading…")}</div>;
   const pending = corrections.filter((c) => c.status === 'pending');
   const isAdmin = role === 'admin';
 
@@ -79,37 +81,37 @@ export default function DecisionTwinPage() {
       <div className="flex items-center gap-3">
         <Brain className="h-8 w-8 text-primary" />
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Decision Twin</h1>
-          <p className="text-muted-foreground">Your AI clone learns slowly, transparently, and only with human approval.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{translate("Decision Twin")}</h1>
+          <p className="text-muted-foreground">{translate("Your AI clone learns slowly, transparently, and only with human approval.")}</p>
         </div>
       </div>
 
       <Tabs defaultValue="profile">
         <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="prefs">Preferences ({prefs.length})</TabsTrigger>
-          <TabsTrigger value="learning">Learning Updates ({pending.length})</TabsTrigger>
+          <TabsTrigger value="profile">{translate("Profile")}</TabsTrigger>
+          <TabsTrigger value="prefs">{translate("Preferences (")}{prefs.length})</TabsTrigger>
+          <TabsTrigger value="learning">{translate("Learning Updates (")}{pending.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
           <Card><CardContent className="pt-6 grid md:grid-cols-2 gap-4">
-            <div><Label>Twin name</Label><Input value={profile.twin_name} onChange={(e) => setProfile({...profile, twin_name: e.target.value})} /></div>
-            <div><Label>Risk appetite</Label>
+            <div><Label>{translate("Twin name")}</Label><Input value={profile.twin_name} onChange={(e) => setProfile({...profile, twin_name: e.target.value})} /></div>
+            <div><Label>{translate("Risk appetite")}</Label>
               <Select value={profile.risk_appetite} onValueChange={(v) => setProfile({...profile, risk_appetite: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{['conservative','balanced','aggressive'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div><Label>Communication style</Label>
+            <div><Label>{translate("Communication style")}</Label>
               <Select value={profile.communication_style} onValueChange={(v) => setProfile({...profile, communication_style: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{['direct','diplomatic','analytical','collaborative'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div><Label>Decision style</Label><Input value={profile.decision_style || ''} onChange={(e) => setProfile({...profile, decision_style: e.target.value})} placeholder="data-driven, consensus, decisive…" /></div>
-            <div className="md:col-span-2"><Label>Red lines (never recommend)</Label><Textarea value={profile.red_lines || ''} onChange={(e) => setProfile({...profile, red_lines: e.target.value})} rows={3} /></div>
-            <div className="md:col-span-2"><Label>Notes</Label><Textarea value={profile.notes || ''} onChange={(e) => setProfile({...profile, notes: e.target.value})} rows={3} /></div>
-            <div className="md:col-span-2 flex justify-end"><Button onClick={saveProfile}>Save Twin Profile</Button></div>
+            <div><Label>{translate("Decision style")}</Label><Input value={profile.decision_style || ''} onChange={(e) => setProfile({...profile, decision_style: e.target.value})} placeholder={translate("data-driven, consensus, decisive…")} /></div>
+            <div className="md:col-span-2"><Label>{translate("Red lines (never recommend)")}</Label><Textarea value={profile.red_lines || ''} onChange={(e) => setProfile({...profile, red_lines: e.target.value})} rows={3} /></div>
+            <div className="md:col-span-2"><Label>{translate("Notes")}</Label><Textarea value={profile.notes || ''} onChange={(e) => setProfile({...profile, notes: e.target.value})} rows={3} /></div>
+            <div className="md:col-span-2 flex justify-end"><Button onClick={saveProfile}>{translate("Save Twin Profile")}</Button></div>
           </CardContent></Card>
         </TabsContent>
 
@@ -120,28 +122,28 @@ export default function DecisionTwinPage() {
         <TabsContent value="learning">
           <Card><CardContent className="p-0">
             <ul className="divide-y">
-              {corrections.length === 0 && <li className="p-6 text-sm text-muted-foreground">No learning updates yet. When you override the AI in the Decision Room, propose a learning update here.</li>}
+              {corrections.length === 0 && <li className="p-6 text-sm text-muted-foreground">{translate("No learning updates yet. When you override the AI in the Decision Room, propose a learning update here.")}</li>}
               {corrections.map((c) => (
                 <li key={c.id} className="p-4 space-y-2">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-primary" />
-                    <Badge variant={c.status === 'pending' ? 'outline' : c.status === 'approved' ? 'default' : 'destructive'}>{c.status}</Badge>
-                    <span className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</span>
+                    <Badge variant={c.status === 'pending' ? 'outline' : c.status === 'approved' ? 'default' : 'destructive'}>{translate(c.status)}</Badge>
+                    <span className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString(getLocale())}</span>
                   </div>
                   <div className="text-sm grid md:grid-cols-2 gap-3">
-                    <div><span className="text-xs text-muted-foreground">AI recommended</span><p>{c.ai_recommendation}</p></div>
-                    <div><span className="text-xs text-muted-foreground">Human chose</span><p>{c.human_choice}</p></div>
+                    <div><span className="text-xs text-muted-foreground">{translate("AI recommended")}</span><p>{c.ai_recommendation}</p></div>
+                    <div><span className="text-xs text-muted-foreground">{translate("Human chose")}</span><p>{c.human_choice}</p></div>
                   </div>
-                  {c.reason && <p className="text-sm"><span className="text-xs text-muted-foreground">Reason:</span> {c.reason}</p>}
+                  {c.reason && <p className="text-sm"><span className="text-xs text-muted-foreground">{translate("Reason:")}</span> {c.reason}</p>}
                   {c.proposed_learning && (
                     <div className="p-3 bg-primary/5 border border-primary/20 rounded text-sm">
-                      <strong>Proposed learning:</strong> {c.proposed_learning}
+                      <strong>{translate("Proposed learning:")}</strong> {c.proposed_learning}
                     </div>
                   )}
                   {c.status === 'pending' && isAdmin && (
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={() => reviewCorrection(c, 'approved')}><Check className="h-3 w-3 mr-1" />Approve</Button>
-                      <Button size="sm" variant="outline" onClick={() => reviewCorrection(c, 'rejected')}><X className="h-3 w-3 mr-1" />Reject</Button>
+                      <Button size="sm" onClick={() => reviewCorrection(c, 'approved')}><Check className="h-3 w-3 mr-1" />{translate("Approve")}</Button>
+                      <Button size="sm" variant="outline" onClick={() => reviewCorrection(c, 'rejected')}><X className="h-3 w-3 mr-1" />{translate("Reject")}</Button>
                     </div>
                   )}
                 </li>
@@ -161,36 +163,37 @@ export default function DecisionTwinPage() {
 }
 
 function PreferenceList({ prefs, onAdd, onToggle, onDelete }: any) {
+  useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ category: 'strategy', statement: '', weight: 5 });
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base">Preference rules</CardTitle>
+        <CardTitle className="text-base">{translate("Preference rules")}</CardTitle>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-1" />Add</Button></DialogTrigger>
+          <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Add")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>New preference</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{translate("New preference")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Category</Label><Input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
-              <div><Label>Statement</Label><Textarea value={form.statement} onChange={(e) => setForm({...form, statement: e.target.value})} placeholder="Always prefer reversible decisions over irreversible ones." /></div>
-              <div><Label>Weight (1-10)</Label><Input type="number" min={1} max={10} value={form.weight} onChange={(e) => setForm({...form, weight: Number(e.target.value)})} /></div>
+              <div><Label>{translate("Category")}</Label><Input value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} /></div>
+              <div><Label>{translate("Statement")}</Label><Textarea value={form.statement} onChange={(e) => setForm({...form, statement: e.target.value})} placeholder={translate("Always prefer reversible decisions over irreversible ones.")} /></div>
+              <div><Label>{translate("Weight (1-10)")}</Label><Input type="number" min={1} max={10} value={form.weight} onChange={(e) => setForm({...form, weight: Number(e.target.value)})} /></div>
             </div>
-            <DialogFooter><Button onClick={() => { onAdd(form); setOpen(false); setForm({category:'strategy',statement:'',weight:5}); }} disabled={!form.statement.trim()}>Add</Button></DialogFooter>
+            <DialogFooter><Button onClick={() => { onAdd(form); setOpen(false); setForm({category:'strategy',statement:'',weight:5}); }} disabled={!form.statement.trim()}>{translate("Add")}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </CardHeader>
       <CardContent className="p-0">
         <ul className="divide-y">
-          {prefs.length === 0 && <li className="p-6 text-sm text-muted-foreground">No preferences yet.</li>}
+          {prefs.length === 0 && <li className="p-6 text-sm text-muted-foreground">{translate("No preferences yet.")}</li>}
           {prefs.map((p: any) => (
             <li key={p.id} className="p-4 flex items-center gap-3">
-              <Badge variant="outline">{p.category}</Badge>
+              <Badge variant="outline">{translate(p.category)}</Badge>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm ${!p.active ? 'opacity-50 line-through' : ''}`}>{p.statement}</p>
-                <p className="text-xs text-muted-foreground">weight {p.weight}</p>
+                <p className="text-xs text-muted-foreground">{translate("weight")} {p.weight}</p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => onToggle(p)}>{p.active ? 'Disable' : 'Enable'}</Button>
+              <Button size="sm" variant="ghost" onClick={() => onToggle(p)}>{p.active ? translate("Disable") : translate("Enable")}</Button>
               <Button size="sm" variant="ghost" onClick={() => onDelete(p.id)}><Trash2 className="h-4 w-4" /></Button>
             </li>
           ))}
@@ -201,21 +204,22 @@ function PreferenceList({ prefs, onAdd, onToggle, onDelete }: any) {
 }
 
 function AddCorrection({ onAdd }: any) {
+  useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ ai_recommendation: '', human_choice: '', reason: '', proposed_learning: '' });
   return (
     <div className="flex justify-end mt-4">
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild><Button variant="outline"><Plus className="h-4 w-4 mr-1" />Record an override</Button></DialogTrigger>
+        <DialogTrigger asChild><Button variant="outline"><Plus className="h-4 w-4 mr-1" />{translate("Record an override")}</Button></DialogTrigger>
         <DialogContent>
-          <DialogHeader><DialogTitle>Record an override</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{translate("Record an override")}</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <div><Label>AI recommended</Label><Textarea value={form.ai_recommendation} onChange={(e) => setForm({...form, ai_recommendation: e.target.value})} /></div>
-            <div><Label>You chose</Label><Textarea value={form.human_choice} onChange={(e) => setForm({...form, human_choice: e.target.value})} /></div>
-            <div><Label>Reason</Label><Textarea value={form.reason} onChange={(e) => setForm({...form, reason: e.target.value})} /></div>
-            <div><Label>Proposed learning (optional)</Label><Textarea value={form.proposed_learning} onChange={(e) => setForm({...form, proposed_learning: e.target.value})} placeholder="e.g. 'Prefer in-house solutions over vendor contracts for under €50k.'" /></div>
+            <div><Label>{translate("AI recommended")}</Label><Textarea value={form.ai_recommendation} onChange={(e) => setForm({...form, ai_recommendation: e.target.value})} /></div>
+            <div><Label>{translate("You chose")}</Label><Textarea value={form.human_choice} onChange={(e) => setForm({...form, human_choice: e.target.value})} /></div>
+            <div><Label>{translate("Reason")}</Label><Textarea value={form.reason} onChange={(e) => setForm({...form, reason: e.target.value})} /></div>
+            <div><Label>{translate("Proposed learning (optional)")}</Label><Textarea value={form.proposed_learning} onChange={(e) => setForm({...form, proposed_learning: e.target.value})} placeholder={translate("e.g. 'Prefer in-house solutions over vendor contracts for under €50k.'")} /></div>
           </div>
-          <DialogFooter><Button onClick={() => { onAdd(form); setOpen(false); setForm({ai_recommendation:'',human_choice:'',reason:'',proposed_learning:''}); }}>Submit</Button></DialogFooter>
+          <DialogFooter><Button onClick={() => { onAdd(form); setOpen(false); setForm({ai_recommendation:'',human_choice:'',reason:'',proposed_learning:''}); }}>{translate("Submit")}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -1,3 +1,5 @@
+import { tr as trLocale, enUS } from "date-fns/locale";
+import { useLanguage, translate , getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,6 +61,7 @@ const emptyForm = {
 };
 
 export default function CompanyNotesPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -180,44 +183,44 @@ export default function CompanyNotesPage() {
       <div className="page-header flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="page-title flex items-center gap-2">
-            <StickyNote className="h-6 w-6 text-primary" /> Şirket için Önemli Notlar
+            <StickyNote className="h-6 w-6 text-primary" /> {translate("Şirket için Önemli Notlar")}
           </h1>
           <p className="page-description">
-            Tüm workspace üyeleriyle paylaşılan kalıcı notlar, uyarılar ve hatırlatmalar.
+            {translate("Tüm workspace üyeleriyle paylaşılan kalıcı notlar, uyarılar ve hatırlatmalar.")}
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" onClick={openNew}>
-              <Plus className="h-4 w-4 mr-2" /> Yeni Not
+              <Plus className="h-4 w-4 mr-2" /> {translate("Yeni Not")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>{editingId ? 'Notu Düzenle' : 'Yeni Not'}</DialogTitle>
+              <DialogTitle>{editingId ? translate("Notu Düzenle") : translate("Yeni Not")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
               <div>
-                <Label>Başlık</Label>
+                <Label>{translate("Başlık")}</Label>
                 <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
               </div>
               <div>
-                <Label>İçerik</Label>
+                <Label>{translate("İçerik")}</Label>
                 <Textarea rows={5} value={form.content}
                   onChange={(e) => setForm({ ...form, content: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Kategori</Label>
+                  <Label>{translate("Kategori")}</Label>
                   <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label>Önem</Label>
+                  <Label>{translate("Önem")}</Label>
                   <Select value={form.importance}
                     onValueChange={(v) => setForm({ ...form, importance: v as Note['importance'] })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -228,20 +231,20 @@ export default function CompanyNotesPage() {
                 </div>
               </div>
               <div>
-                <Label>Etiketler</Label>
-                <Input placeholder="Virgülle ayırın: yönetim, q3, acil"
+                <Label>{translate("Etiketler")}</Label>
+                <Input placeholder={translate("Virgülle ayırın: yönetim, q3, acil")}
                   value={form.tagsInput}
                   onChange={(e) => setForm({ ...form, tagsInput: e.target.value })} />
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.is_pinned}
                   onChange={(e) => setForm({ ...form, is_pinned: e.target.checked })} />
-                Sabitle (Pin)
+                {translate("Sabitle (Pin)")}
               </label>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>İptal</Button>
-              <Button onClick={save}>Kaydet</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>{translate("İptal")}</Button>
+              <Button onClick={save}>{translate("Kaydet")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -251,30 +254,30 @@ export default function CompanyNotesPage() {
         <div className="relative flex-1 min-w-[220px]">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input value={q} onChange={(e) => setQ(e.target.value)}
-            placeholder="Not, etiket veya içerik ara…" className="pl-9" />
+            placeholder={translate("Not, etiket veya içerik ara…")} className="pl-9" />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
           <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tüm kategoriler</SelectItem>
-            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            <SelectItem value="all">{translate("Tüm kategoriler")}</SelectItem>
+            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c)}</SelectItem>)}
           </SelectContent>
         </Select>
       </CardContent></Card>
 
       {loading ? (
-        <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">Yükleniyor…</CardContent></Card>
+        <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">{translate("Yükleniyor…")}</CardContent></Card>
       ) : filtered.length === 0 ? (
         <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">
           <StickyNote className="h-6 w-6 mx-auto mb-2 opacity-50" />
-          Henüz not eklenmemiş. Yeni bir not oluşturun.
+          {translate("Henüz not eklenmemiş. Yeni bir not oluşturun.")}
         </CardContent></Card>
       ) : (
         <>
           {pinned.length > 0 && (
             <div>
               <h2 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
-                <Pin className="h-3 w-3" /> Sabitlenmiş
+                <Pin className="h-3 w-3" /> {translate("Sabitlenmiş")}
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {pinned.map((n) => (
@@ -286,7 +289,7 @@ export default function CompanyNotesPage() {
           {rest.length > 0 && (
             <div>
               {pinned.length > 0 && (
-                <h2 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 mt-4">Diğer notlar</h2>
+                <h2 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 mt-4">{translate("Diğer notlar")}</h2>
               )}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {rest.map((n) => (
@@ -330,6 +333,7 @@ function NoteCard({
   onEdit: (n: Note) => void;
   onDelete: (id: string) => void;
 }) {
+  useLanguage();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -410,7 +414,7 @@ function NoteCard({
               <h3 className="font-semibold truncate">{note.title}</h3>
             </div>
             <div className="flex items-center gap-2 flex-wrap mt-1.5">
-              <Badge variant="outline" className="text-[10px]">{note.category}</Badge>
+              <Badge variant="outline" className="text-[10px]">{translate(note.category)}</Badge>
               <Badge className={`text-[10px] ${importanceStyle[note.importance]}`} variant="secondary">
                 {importanceLabel[note.importance]}
               </Badge>
@@ -422,13 +426,13 @@ function NoteCard({
             </div>
           </div>
           <div className="flex opacity-0 group-hover:opacity-100 transition">
-            <Button variant="ghost" size="icon" onClick={() => onPin(note)} title={note.is_pinned ? 'Sabitlemeyi kaldır' : 'Sabitle'}>
+            <Button variant="ghost" size="icon" onClick={() => onPin(note)} title={note.is_pinned ? translate("Sabitlemeyi kaldır") : translate("Sabitle")}>
               {note.is_pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => onEdit(note)} title="Düzenle">
+            <Button variant="ghost" size="icon" onClick={() => onEdit(note)} title={translate("Düzenle")}>
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => onDelete(note.id)} title="Sil">
+            <Button variant="ghost" size="icon" onClick={() => onDelete(note.id)} title={translate("Sil")}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -448,7 +452,7 @@ function NoteCard({
         <div className="pt-2 border-t space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
-              <Paperclip className="h-3 w-3" /> Ekler
+              <Paperclip className="h-3 w-3" /> {translate("Ekler")}
             </span>
             <label className="cursor-pointer">
               <input
@@ -460,12 +464,12 @@ function NoteCard({
               />
               <span className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
                 {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
-                {uploading ? 'Yükleniyor…' : 'Dosya ekle'}
+                {uploading ? translate("Yükleniyor…") : translate("Dosya ekle")}
               </span>
             </label>
           </div>
           {attachments.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground italic">Henüz ek yok. PDF, Word, Excel ekleyebilirsiniz.</p>
+            <p className="text-[11px] text-muted-foreground italic">{translate("Henüz ek yok. PDF, Word, Excel ekleyebilirsiniz.")}</p>
           ) : (
             <ul className="space-y-1">
               {attachments.map((a) => (
@@ -479,10 +483,10 @@ function NoteCard({
                     {a.file_name}
                   </button>
                   <span className="text-[10px] text-muted-foreground shrink-0">{humanSize(a.size_bytes)}</span>
-                  <button onClick={() => openFile(a)} className="text-muted-foreground hover:text-foreground" title="Aç / indir">
+                  <button onClick={() => openFile(a)} className="text-muted-foreground hover:text-foreground" title={translate("Aç / indir")}>
                     <Download className="h-3.5 w-3.5" />
                   </button>
-                  <button onClick={() => removeAttachment(a)} className="text-muted-foreground hover:text-destructive" title="Sil">
+                  <button onClick={() => removeAttachment(a)} className="text-muted-foreground hover:text-destructive" title={translate("Sil")}>
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </li>
@@ -492,7 +496,7 @@ function NoteCard({
         </div>
 
         <div className="text-[11px] text-muted-foreground pt-1 border-t">
-          Güncellendi {formatDistanceToNow(new Date(note.updated_at), { addSuffix: true, locale: tr })}
+          {translate("Güncellendi")} {formatDistanceToNow(new Date(note.updated_at), { addSuffix: true, locale: getLocale() === "tr-TR" ? trLocale : enUS })}
         </div>
       </CardContent>
     </Card>

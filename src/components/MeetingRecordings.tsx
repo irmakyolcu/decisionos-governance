@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ interface MeetingRecordingsProps {
 }
 
 export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
+  useLanguage();
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -60,12 +62,12 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
 
     const maxSize = 20 * 1024 * 1024; // 20MB
     if (file.size > maxSize) {
-      toast({ title: 'Dosya çok büyük', description: 'Maksimum 20MB yüklenebilir.', variant: 'destructive' });
+      toast({ title: translate("Dosya çok büyük"), description: translate("Maksimum 20MB yüklenebilir."), variant: 'destructive' });
       return;
     }
 
     if (!user?.id || !workspace?.id) {
-      toast({ title: 'Oturum gerekli', description: 'Yükleme için çalışma alanına giriş yapın.', variant: 'destructive' });
+      toast({ title: translate("Oturum gerekli"), description: translate("Yükleme için çalışma alanına giriş yapın."), variant: 'destructive' });
       return;
     }
 
@@ -77,7 +79,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
       .upload(filePath, file);
 
     if (uploadError) {
-      toast({ title: 'Yükleme hatası', description: uploadError.message, variant: 'destructive' });
+      toast({ title: translate("Yükleme hatası"), description: uploadError.message, variant: 'destructive' });
       setUploading(false);
       return;
     }
@@ -95,9 +97,9 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
       });
 
     if (dbError) {
-      toast({ title: 'Kayıt hatası', description: dbError.message, variant: 'destructive' });
+      toast({ title: translate("Kayıt hatası"), description: dbError.message, variant: 'destructive' });
     } else {
-      toast({ title: 'Kayıt yüklendi', description: `${file.name} başarıyla yüklendi.` });
+      toast({ title: translate("Kayıt yüklendi"), description: `${file.name} başarıyla yüklendi.` });
       fetchRecordings();
     }
 
@@ -111,12 +113,12 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
       .remove([recording.file_path]);
 
     if (storageError) {
-      toast({ title: 'Silme hatası', description: storageError.message, variant: 'destructive' });
+      toast({ title: translate("Silme hatası"), description: storageError.message, variant: 'destructive' });
       return;
     }
 
     await supabase.from('meeting_recordings').delete().eq('id', recording.id);
-    toast({ title: 'Kayıt silindi' });
+    toast({ title: translate("Kayıt silindi") });
     fetchRecordings();
   };
 
@@ -152,7 +154,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
   return (
     <div className="enterprise-card">
       <div className="p-4 border-b border-border flex items-center justify-between">
-        <h3 className="font-semibold text-foreground text-sm">Toplantı Kayıtları</h3>
+        <h3 className="font-semibold text-foreground text-sm">{translate("Toplantı Kayıtları")}</h3>
         {canUpload && (
           <div>
             <input
@@ -173,7 +175,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
               ) : (
                 <Upload className="h-4 w-4" />
               )}
-              <span className="ml-1">{uploading ? 'Yükleniyor…' : 'Kayıt Yükle'}</span>
+              <span className="ml-1">{uploading ? translate("Yükleniyor…") : translate("Kayıt Yükle")}</span>
             </Button>
           </div>
         )}
@@ -186,7 +188,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
       ) : recordings.length === 0 ? (
         <div className="p-6 text-center">
           <FileAudio className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Bu toplantı için henüz kayıt yüklenmedi.</p>
+          <p className="text-sm text-muted-foreground">{translate("Bu toplantı için henüz kayıt yüklenmedi.")}</p>
         </div>
       ) : (
         <div className="divide-y divide-border/50">
@@ -198,7 +200,7 @@ export function MeetingRecordings({ meetingId }: MeetingRecordingsProps) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{rec.file_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {formatSize(rec.file_size)} · {new Date(rec.uploaded_at).toLocaleDateString('tr-TR')}
+                  {formatSize(rec.file_size)} · {new Date(rec.uploaded_at).toLocaleDateString(getLocale())}
                 </p>
               </div>
               <div className="flex items-center gap-1">
