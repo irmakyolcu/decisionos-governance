@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { appTranslations } from '@/lib/i18n/appTranslations';
+import { interfaceTranslations } from '@/lib/i18n/interfaceTranslations';
 
 export type Lang = 'en' | 'tr';
 
 type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
+  ...interfaceTranslations,
   'nav.signin': { en: 'Sign in', tr: 'Giriş Yap' },
   'nav.getStarted': { en: 'Book a Demo', tr: 'Demo Al' },
 
@@ -163,6 +165,29 @@ interface Ctx {
 
 const LanguageContext = createContext<Ctx | undefined>(undefined);
 
+let activeLanguage: Lang = 'tr';
+const displayDictionary = new Map<string, { en: string; tr: string }>();
+for (const [key, value] of Object.entries(dict)) {
+  displayDictionary.set(key, value);
+  displayDictionary.set(value.en, value);
+  displayDictionary.set(value.tr, value);
+}
+
+/** Display-only translation: unknown values (including user content) are preserved. */
+export function translate(value: unknown, params?: Record<string, unknown>): string {
+  if (value == null) return '';
+  const source = String(value);
+  const entry = displayDictionary.get(source) ?? displayDictionary.get(source.replace(/\s+/g, ' ').trim());
+  let text = entry?.[activeLanguage] ?? source;
+  if (params) text = text.replace(/\{(\w+)\}/g, (placeholder, key: string) =>
+    Object.prototype.hasOwnProperty.call(params, key) ? String(params[key] ?? '') : placeholder);
+  return text;
+}
+
+export function getLocale(): 'en-US' | 'tr-TR' {
+  return activeLanguage === 'tr' ? 'tr-TR' : 'en-US';
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
     try {
@@ -170,14 +195,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       return (stored === 'en' || stored === 'tr') ? stored : 'tr';
     } catch { return 'tr'; }
   });
+  activeLanguage = lang;
 
   useEffect(() => {
     try { localStorage.setItem('lang', lang); } catch { /* Storage may be disabled. */ }
     document.documentElement.lang = lang;
   }, [lang]);
 
-  const setLang = (l: Lang) => setLangState(l);
-  const t = (key: string) => dict[key]?.[lang] ?? key;
+  const setLang = (l: Lang) => { activeLanguage = l; setLangState(l); };
+  const t = (key: string) => translate(key);
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t, locale: lang === 'tr' ? 'tr-TR' : 'en-US' }}>
