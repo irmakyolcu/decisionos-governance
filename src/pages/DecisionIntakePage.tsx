@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,6 +35,7 @@ const delegationClass = (l: string) =>
       : 'bg-success/10 text-success border-success/30';
 
 export default function DecisionIntakePage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [rec, setRec] = useState<{ intake: DecisionIntake; recommendation: AIRecommendation } | null>(null);
@@ -94,8 +96,8 @@ export default function DecisionIntakePage() {
   return (
     <div className="space-y-6">
       <div className="page-header">
-        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Decision Intake</p>
-        <h1 className="page-title">Help teams move without waiting for the CEO</h1>
+        <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{t('intake.label')}</p>
+        <h1 className="page-title">{t('intake.title')}</h1>
         <p className="page-description">Submit a request. The Judgment Layer returns a CEO-aligned action, a strategic alignment score, the right delegation level, and a stakeholder message — in seconds.</p>
       </div>
 

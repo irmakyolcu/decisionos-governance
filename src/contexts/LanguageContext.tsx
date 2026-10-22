@@ -146,6 +146,11 @@ const dict: Dict = {
   'src.meetings': { en: 'Meetings', tr: 'Toplantılar' },
   'stack.layer': { en: 'Layer', tr: 'Katman' },
   ...appTranslations,
+  'intake.label': { en: 'Decision Intake', tr: 'Karar Talebi' },
+  'intake.title': {
+    en: 'Help teams move without waiting for the CEO',
+    tr: 'Ekiplerin CEO’yu beklemeden ilerlemesini sağlayın',
+  },
   'src.docs': { en: 'Docs', tr: 'Belgeler' },
 };
 
