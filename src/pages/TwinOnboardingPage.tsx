@@ -141,7 +141,7 @@ export default function TwinOnboardingPage() {
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><StepIcon className="h-5 w-5 text-primary" /></div>
             <div>
-              <CardTitle className="text-base">{translate("Step")} {step}: {STEPS[step - 1].title}</CardTitle>
+              <CardTitle className="text-base">{translate("Step")} {step}: {translate(STEPS[step - 1].title)}</CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">{translate(STEPS[step - 1].subtitle)}</p>
             </div>
           </div>

@@ -1,4 +1,5 @@
-import { useLanguage, translate } from "@/contexts/LanguageContext";
+import { tr as trLocale, enUS } from "date-fns/locale";
+import { useLanguage, translate , getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -495,7 +496,7 @@ function NoteCard({
         </div>
 
         <div className="text-[11px] text-muted-foreground pt-1 border-t">
-          {translate("Güncellendi")} {formatDistanceToNow(new Date(note.updated_at), { addSuffix: true, locale: tr })}
+          {translate("Güncellendi")} {formatDistanceToNow(new Date(note.updated_at), { addSuffix: true, locale: getLocale() === "tr-TR" ? trLocale : enUS })}
         </div>
       </CardContent>
     </Card>

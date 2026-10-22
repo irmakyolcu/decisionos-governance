@@ -40,9 +40,9 @@ export function StepAuditReportCard({ report }: { report: StepAuditReport }) {
       ) : (
         <div className="space-y-2">
           {sections.map((s) => (
-            <div key={s.title}>
+            <div key={translate(s.title)}>
               <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
-                <s.icon className="h-3.5 w-3.5" /> {s.title} ({s.items.length})
+                <s.icon className="h-3.5 w-3.5" /> {translate(s.title)} ({s.items.length})
               </p>
               <ul className="space-y-1">
                 {s.items.map((it, i) => (

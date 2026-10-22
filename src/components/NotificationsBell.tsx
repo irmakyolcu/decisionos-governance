@@ -1,4 +1,5 @@
-import { useLanguage, translate } from "@/contexts/LanguageContext";
+import { tr as trLocale, enUS } from "date-fns/locale";
+import { useLanguage, translate , getLocale } from "@/contexts/LanguageContext";
 import { Bell, CheckCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -119,7 +120,7 @@ export function NotificationsBell() {
                     </div>
                     {n.body && <p className="text-xs text-muted-foreground line-clamp-2">{n.body}</p>}
                     <span className="text-[10px] text-muted-foreground">
-                      {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(n.created_at), { addSuffix: true , locale: getLocale() === "tr-TR" ? trLocale : enUS})}
                     </span>
                   </div>
                 );

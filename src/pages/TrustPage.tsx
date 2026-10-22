@@ -49,13 +49,13 @@ export default function TrustPage() {
         {sections.map((s) => {
           const Icon = s.icon;
           return (
-            <div key={s.title} className="enterprise-card p-5">
+            <div key={translate(s.title)} className="enterprise-card p-5">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Icon className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground text-sm mb-1">{s.title}</h3>
+                  <h3 className="font-semibold text-foreground text-sm mb-1">{translate(s.title)}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
                 </div>
               </div>

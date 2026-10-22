@@ -136,9 +136,9 @@ export default function BookDemoPage() {
               t('Governance, audit trail, and role-based authority walkthrough'),
               t('Q&A with a solutions engineer — no sales pitch'),
             ].map((line) => (
-              <li key={line} className="flex items-start gap-3">
+              <li key={translate(line)} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground/90">{line}</span>
+                <span className="text-sm text-foreground/90">{translate(line)}</span>
               </li>
             ))}
           </ul>

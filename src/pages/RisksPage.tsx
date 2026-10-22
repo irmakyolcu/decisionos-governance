@@ -79,7 +79,7 @@ export default function RisksPage() {
               <div><Label>{translate("Category")}</Label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                  <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{translate(c.replace(/_/g, ' '))}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><Label>{translate("Severity")}</Label>

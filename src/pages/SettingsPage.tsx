@@ -51,8 +51,8 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-3 text-sm">
             {['New proposals', 'Approval requests', 'Meeting invites', 'AI evaluations complete'].map((item) => (
-              <div key={item} className="flex justify-between items-center py-2 border-b border-border/50">
-                <span className="text-muted-foreground">{item}</span>
+              <div key={translate(item)} className="flex justify-between items-center py-2 border-b border-border/50">
+                <span className="text-muted-foreground">{translate(item)}</span>
                 <div className="h-5 w-9 bg-primary rounded-full relative"><div className="h-4 w-4 bg-primary-foreground rounded-full absolute right-0.5 top-0.5" /></div>
               </div>
             ))}

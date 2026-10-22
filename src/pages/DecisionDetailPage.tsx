@@ -543,7 +543,7 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
           <div className="grid sm:grid-cols-2 gap-2 text-xs">
             {Object.entries(ind).map(([k, v]) => (
               <div key={k} className="rounded border p-2 bg-muted/30">
-                <p className="text-[10px] uppercase text-muted-foreground">{k.replace(/_/g, ' ')}</p>
+                <p className="text-[10px] uppercase text-muted-foreground">{translate(k.replace(/_/g, ' '))}</p>
                 <p>{String(v)}</p>
               </div>
             ))}

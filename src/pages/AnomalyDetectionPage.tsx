@@ -1,3 +1,4 @@
+import { tr as trLocale, enUS } from "date-fns/locale";
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
@@ -177,7 +178,7 @@ export default function AnomalyDetectionPage() {
                       <Badge variant="outline" className={SEVERITY[a.severity]}>{translate(a.severity)}</Badge>
                       <Badge variant="outline" className="text-[10px]">{a.detector}</Badge>
                       <span className="text-[10px] text-muted-foreground">
-                        {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(a.created_at), { addSuffix: true , locale: getLocale() === "tr-TR" ? trLocale : enUS})}
                       </span>
                     </div>
                   </div>
