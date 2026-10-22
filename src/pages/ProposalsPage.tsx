@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useState, useMemo } from 'react';
 import { useProposals } from '@/hooks/useProposals';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -9,6 +10,7 @@ import { CreateProposalDialog } from '@/components/CreateProposalDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProposalsPage() {
+  useLanguage();
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
   const { proposals, loading } = useProposals();
   const visible = useMemo(() => filterProposalsByRole(proposals, viewRole), [proposals, viewRole]);
@@ -17,8 +19,8 @@ export default function ProposalsPage() {
     <div>
       <div className="page-header flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title">Proposals</h1>
-          <p className="page-description">Decision proposals visible based on your role. Upper levels see all proposals below.</p>
+          <h1 className="page-title">{translate("Proposals")}</h1>
+          <p className="page-description">{translate("Decision proposals visible based on your role. Upper levels see all proposals below.")}</p>
         </div>
         <CreateProposalDialog />
       </div>
@@ -27,7 +29,7 @@ export default function ProposalsPage() {
 
       <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
         <Eye className="h-3.5 w-3.5" />
-        <span>Showing <strong className="text-foreground">{visible.length}</strong> of {proposals.length} proposals visible to <strong className="text-foreground">{viewRole}</strong> level</span>
+        <span>{translate("Showing")} <strong className="text-foreground">{visible.length}</strong> {translate("of")} {proposals.length} {translate("proposals visible to")} <strong className="text-foreground">{viewRole}</strong> {translate("level")}</span>
       </div>
 
       <div className="enterprise-card overflow-hidden">
@@ -38,12 +40,12 @@ export default function ProposalsPage() {
         ) : (
           <table className="data-table">
             <thead>
-              <tr><th>Proposal</th><th>Department</th><th>Budget</th><th>Status</th><th>Submitted By</th><th>Authority Level</th><th>Date</th></tr>
+              <tr><th>{translate("Proposal")}</th><th>{translate("Department")}</th><th>{translate("Budget")}</th><th>{translate("Status")}</th><th>{translate("Submitted By")}</th><th>{translate("Authority Level")}</th><th>{translate("Date")}</th></tr>
             </thead>
             <tbody>
               {visible.length === 0 ? (
                 <tr><td colSpan={7} className="text-center text-muted-foreground py-8">
-                  {proposals.length === 0 ? 'Henüz öneri yok. İlk önerinizi sunun.' : 'No proposals visible at this authority level.'}
+                  {proposals.length === 0 ? translate("Henüz öneri yok. İlk önerinizi sunun.") : translate("No proposals visible at this authority level.")}
                 </td></tr>
               ) : (
                 visible.map((p) => (
@@ -58,8 +60,8 @@ export default function ProposalsPage() {
                       </div>
                     </td>
                     <td className="text-muted-foreground">{p.department}</td>
-                    <td className="font-mono text-sm">€{p.budget.toLocaleString()}</td>
-                    <td><StatusBadge status={p.status} /></td>
+                    <td className="font-mono text-sm">€{p.budget.toLocaleString(getLocale())}</td>
+                    <td><StatusBadge status={translate(p.status)} /></td>
                     <td className="text-muted-foreground">{p.submittedBy.name}</td>
                     <td>
                       <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
@@ -67,10 +69,10 @@ export default function ProposalsPage() {
                         p.submittedBy.role === 'Manager' ? 'bg-info/10 text-info' :
                         'bg-muted text-muted-foreground'
                       }`}>
-                        {p.submittedBy.role}
+                        {translate(p.submittedBy.role)}
                       </span>
                     </td>
-                    <td className="text-muted-foreground">{p.submittedAt.toLocaleDateString()}</td>
+                    <td className="text-muted-foreground">{p.submittedAt.toLocaleDateString(getLocale())}</td>
                   </tr>
                 ))
               )}

@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ const sensColor: Record<string, string> = {
 };
 
 export default function StructuredMemoryPage() {
+  useLanguage();
   const { rows, refetch } = useTable<any>('memory_entries');
   const { workspace } = useWorkspace();
   const { user } = useAuth();
@@ -78,27 +80,27 @@ export default function StructuredMemoryPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2"><BookOpen className="h-7 w-7" /> Decision Memory</h1>
-          <p className="text-muted-foreground mt-1">Structured library of past decisions. Sensitivity controls how the Twin uses each entry.</p>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2"><BookOpen className="h-7 w-7" /> {translate("Decision Memory")}</h1>
+          <p className="text-muted-foreground mt-1">{translate("Structured library of past decisions. Sensitivity controls how the Twin uses each entry.")}</p>
         </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
-          <DialogTrigger asChild><Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />Add Entry</Button></DialogTrigger>
+          <DialogTrigger asChild><Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />{translate("Add Entry")}</Button></DialogTrigger>
           <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>{editing ? 'Kaydı düzenle' : 'New memory entry'}</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{editing ? translate("Kaydı düzenle") : translate("New memory entry")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} /></div>
-              <div><Label>Summary</Label><Textarea value={form.summary} onChange={(e) => setForm({...form, summary: e.target.value})} /></div>
-              <div><Label>Context</Label><Textarea value={form.context} onChange={(e) => setForm({...form, context: e.target.value})} rows={2} /></div>
-              <div><Label>Outcome</Label><Textarea value={form.outcome} onChange={(e) => setForm({...form, outcome: e.target.value})} rows={2} /></div>
-              <div><Label>Tags (comma-separated)</Label><Input value={form.tags} onChange={(e) => setForm({...form, tags: e.target.value})} placeholder="hiring, pricing, strategy" /></div>
-              <div><Label>Sensitivity</Label>
+              <div><Label>{translate("Title")}</Label><Input value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} /></div>
+              <div><Label>{translate("Summary")}</Label><Textarea value={form.summary} onChange={(e) => setForm({...form, summary: e.target.value})} /></div>
+              <div><Label>{translate("Context")}</Label><Textarea value={form.context} onChange={(e) => setForm({...form, context: e.target.value})} rows={2} /></div>
+              <div><Label>{translate("Outcome")}</Label><Textarea value={form.outcome} onChange={(e) => setForm({...form, outcome: e.target.value})} rows={2} /></div>
+              <div><Label>{translate("Tags (comma-separated)")}</Label><Input value={form.tags} onChange={(e) => setForm({...form, tags: e.target.value})} placeholder={translate("hiring, pricing, strategy")} /></div>
+              <div><Label>{translate("Sensitivity")}</Label>
                 <Select value={form.sensitivity} onValueChange={(v) => setForm({...form, sensitivity: v})}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{SENS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  <SelectContent>{SENS.map(s => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
-            <DialogFooter><Button onClick={save}>{editing ? 'Güncelle' : 'Save'}</Button></DialogFooter>
+            <DialogFooter><Button onClick={save}>{editing ? translate("Güncelle") : translate("Save")}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
@@ -107,19 +109,19 @@ export default function StructuredMemoryPage() {
       <div className="flex gap-2">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title, summary, tags…" className="pl-8" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={translate("Search title, summary, tags…")} className="pl-8" />
         </div>
         <Select value={sensFilter} onValueChange={setSensFilter}>
           <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All sensitivities</SelectItem>
-            {SENS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            <SelectItem value="all">{translate("All sensitivities")}</SelectItem>
+            {SENS.map(s => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.length === 0 && <p className="text-sm text-muted-foreground col-span-full">No entries match.</p>}
+        {filtered.length === 0 && <p className="text-sm text-muted-foreground col-span-full">{translate("No entries match.")}</p>}
         {filtered.map((e) => (
           <Card key={e.id}>
             <CardHeader className="pb-2">
@@ -133,14 +135,14 @@ export default function StructuredMemoryPage() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {e.summary && <p>{e.summary}</p>}
-              {e.outcome && <p className="text-xs"><strong>Outcome:</strong> {e.outcome}</p>}
+              {e.outcome && <p className="text-xs"><strong>{translate("Outcome:")}</strong> {e.outcome}</p>}
               {e.tags?.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {e.tags.map((t: string) => <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>)}
                 </div>
               )}
               <div className="flex items-center justify-between pt-1">
-                <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString()}</p>
+                <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString(getLocale())}</p>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(e)}><Pencil className="h-3.5 w-3.5" /></Button>
                   <AlertDialog>
@@ -149,12 +151,12 @@ export default function StructuredMemoryPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Kaydı sil?</AlertDialogTitle>
-                        <AlertDialogDescription>"{e.title}" hafızadan kalıcı olarak silinecek.</AlertDialogDescription>
+                        <AlertDialogTitle>{translate("Kaydı sil?")}</AlertDialogTitle>
+                        <AlertDialogDescription>"{e.title}{translate("\" hafızadan kalıcı olarak silinecek.")}</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => del(e.id)}>Sil</AlertDialogAction>
+                        <AlertDialogCancel>{translate("Vazgeç")}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => del(e.id)}>{translate("Sil")}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

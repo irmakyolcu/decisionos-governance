@@ -49,6 +49,7 @@ export function ApprovalStatusBadge({ status }: { status: string }) {
 }
 
 export function ContentHashChip({ hash, version }: { hash?: string | null; version: number }) {
+  useLanguage();
   if (!hash) return <span className="text-xs text-muted-foreground">v{version}</span>;
   return (
     <span className="text-xs font-mono text-muted-foreground" title={hash}>

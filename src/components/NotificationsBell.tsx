@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { Bell, CheckCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -29,6 +30,7 @@ const SEVERITY_STYLES: Record<string, string> = {
 };
 
 export function NotificationsBell() {
+  useLanguage();
   const { user } = useAuth();
   const { workspace } = useWorkspace();
   const [items, setItems] = useState<Notification[]>([]);
@@ -83,7 +85,7 @@ export function NotificationsBell() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="relative p-2 rounded-md hover:bg-muted transition-colors" aria-label="Notifications">
+        <button className="relative p-2 rounded-md hover:bg-muted transition-colors" aria-label={translate("Notifications")}>
           <Bell className="h-4 w-4 text-muted-foreground" />
           {unread > 0 && (
             <span className="absolute top-0.5 right-0.5 min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground rounded-full text-[10px] font-bold flex items-center justify-center">
@@ -94,16 +96,16 @@ export function NotificationsBell() {
       </PopoverTrigger>
       <PopoverContent className="w-96 p-0" align="end">
         <div className="flex items-center justify-between px-4 py-3 border-b">
-          <div className="text-sm font-semibold">Notifications</div>
+          <div className="text-sm font-semibold">{translate("Notifications")}</div>
           {unread > 0 && (
             <Button variant="ghost" size="sm" onClick={markAllRead} className="h-7 text-xs gap-1">
-              <CheckCheck className="h-3 w-3" /> Mark all read
+              <CheckCheck className="h-3 w-3" /> {translate("Mark all read")}
             </Button>
           )}
         </div>
         <ScrollArea className="max-h-96">
           {items.length === 0 ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">No notifications yet</div>
+            <div className="p-8 text-center text-sm text-muted-foreground">{translate("No notifications yet")}</div>
           ) : (
             <div className="divide-y">
               {items.map((n) => {
@@ -112,7 +114,7 @@ export function NotificationsBell() {
                     <div className="flex items-start justify-between gap-2">
                       <span className="text-sm font-medium text-foreground">{n.title}</span>
                       <Badge variant="outline" className={`text-[10px] ${SEVERITY_STYLES[n.severity] ?? ''}`}>
-                        {n.severity}
+                        {translate(n.severity)}
                       </Badge>
                     </div>
                     {n.body && <p className="text-xs text-muted-foreground line-clamp-2">{n.body}</p>}

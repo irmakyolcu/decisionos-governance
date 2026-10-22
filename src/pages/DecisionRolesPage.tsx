@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { UserCog, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,6 +33,7 @@ const ROLE_STYLE: Record<Role, string> = {
 };
 
 export default function DecisionRolesPage() {
+  useLanguage();
   const { workspace, role } = useWorkspace();
   const { user } = useAuth();
   const isWriter = role === 'admin' || role === 'approver';
@@ -105,27 +107,26 @@ export default function DecisionRolesPage() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          <UserCog className="h-6 w-6 text-primary" /> Decision Roles
+          <UserCog className="h-6 w-6 text-primary" /> {translate("Decision Roles")}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Assign decision-scoped roles (approver, legal, compliance, observer, contributor) per decision.
-          Workspace-level roles still control access; these add per-decision responsibilities.
+          {translate("Assign decision-scoped roles (approver, legal, compliance, observer, contributor) per decision. Workspace-level roles still control access; these add per-decision responsibilities.")}
         </p>
       </div>
 
       {isWriter && (
         <Card>
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Plus className="h-4 w-4" /> Assign role</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Plus className="h-4 w-4" /> {translate("Assign role")}</CardTitle></CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-4 gap-3">
               <Select value={selectedDecision} onValueChange={setSelectedDecision}>
-                <SelectTrigger><SelectValue placeholder="Decision" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={translate("Decision")} /></SelectTrigger>
                 <SelectContent>
                   {decisions.map((d) => <SelectItem key={d.id} value={d.id}>{d.title}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={selectedUser} onValueChange={setSelectedUser}>
-                <SelectTrigger><SelectValue placeholder="Member" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={translate("Member")} /></SelectTrigger>
                 <SelectContent>
                   {members.map((m) => <SelectItem key={m.user_id} value={m.user_id}>{m.display_name ?? m.user_id.slice(0, 8)}</SelectItem>)}
                 </SelectContent>
@@ -136,7 +137,7 @@ export default function DecisionRolesPage() {
                   {ROLES.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button onClick={assign}>Assign</Button>
+              <Button onClick={assign}>{translate("Assign")}</Button>
             </div>
           </CardContent>
         </Card>
@@ -156,7 +157,7 @@ export default function DecisionRolesPage() {
                   <div key={r.id} className="flex items-center justify-between border-b last:border-0 py-2 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="text-foreground">{nameFor(r.user_id)}</span>
-                      <Badge variant="outline" className={ROLE_STYLE[r.role]}>{r.role}</Badge>
+                      <Badge variant="outline" className={ROLE_STYLE[r.role]}>{translate(r.role)}</Badge>
                     </div>
                     {isWriter && (
                       <Button size="sm" variant="ghost" onClick={() => remove(r.id)}>
@@ -171,7 +172,7 @@ export default function DecisionRolesPage() {
         })}
         {assignments.length === 0 && (
           <Card><CardContent className="p-12 text-center text-sm text-muted-foreground">
-            No decision-scoped roles yet. Assign one above to surface it here.
+            {translate("No decision-scoped roles yet. Assign one above to surface it here.")}
           </CardContent></Card>
         )}
       </div>

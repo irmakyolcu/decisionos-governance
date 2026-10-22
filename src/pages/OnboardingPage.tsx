@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,6 +11,7 @@ import { Building2, Loader2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function OnboardingPage() {
+  useLanguage();
   const [companyName, setCompanyName] = useState('');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<'form' | 'creating'>('form');
@@ -33,7 +35,7 @@ export default function OnboardingPage() {
       .single();
 
     if (wsError || !ws) {
-      toast({ title: 'Hata', description: wsError?.message || 'Workspace oluşturulamadı.', variant: 'destructive' });
+      toast({ title: translate("Hata"), description: wsError?.message || 'Workspace oluşturulamadı.', variant: 'destructive' });
       setStep('form');
       setLoading(false);
       return;
@@ -45,7 +47,7 @@ export default function OnboardingPage() {
       .insert({ workspace_id: ws.id, user_id: user.id, role: 'admin' });
 
     if (memberError) {
-      toast({ title: 'Hata', description: memberError.message, variant: 'destructive' });
+      toast({ title: translate("Hata"), description: memberError.message, variant: 'destructive' });
       setStep('form');
       setLoading(false);
       return;
@@ -73,13 +75,13 @@ export default function OnboardingPage() {
           </div>
           <div>
             <h2 className="text-xl font-semibold text-foreground mb-2">
-              Workspace oluşturuluyor...
+              {translate("Workspace oluşturuluyor...")}
             </h2>
             <p className="text-muted-foreground text-sm">
-              <span className="font-medium text-foreground">{companyName}</span> için her şey hazırlanıyor.
+              <span className="font-medium text-foreground">{companyName}</span> {translate("için her şey hazırlanıyor.")}
             </p>
             <p className="text-muted-foreground text-xs mt-2">
-              Sonraki adım: Digital Twin kurulumu
+              {translate("Sonraki adım: Digital Twin kurulumu")}
             </p>
           </div>
           <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
@@ -95,17 +97,17 @@ export default function OnboardingPage() {
           <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Building2 className="h-7 w-7 text-primary" />
           </div>
-          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Kurulum — Adım 1 / 2</p>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Hoş geldiniz!</h1>
+          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Kurulum — Adım 1 / 2")}</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{translate("Hoş geldiniz!")}</h1>
           <p className="text-muted-foreground text-sm">
-            Önce şirket workspace'inizi oluşturun, ardından Digital Twin kurulumuna geçelim.
+            {translate("Önce şirket workspace'inizi oluşturun, ardından Digital Twin kurulumuna geçelim.")}
           </p>
         </div>
 
         <div className="enterprise-card p-6">
           <form onSubmit={handleCreate} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="companyName">Şirket Adı</Label>
+              <Label htmlFor="companyName">{translate("Şirket Adı")}</Label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -122,7 +124,7 @@ export default function OnboardingPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading || !companyName.trim()}>
-              Workspace Oluştur
+              {translate("Workspace Oluştur")}
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </form>

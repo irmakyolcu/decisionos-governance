@@ -12,7 +12,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
 
 // Replace with your real calendar link (Calendly, Cal.com, HubSpot, etc.)
@@ -209,7 +209,7 @@ export default function BookDemoPage() {
                     <Input
                       id="role"
                       autoComplete="organization-title"
-                      value={values.role}
+                      value={translate(values.role)}
                       onChange={(e) => set('role', e.target.value)}
                       placeholder={t('Head of Ops')}
                       maxLength={80}
@@ -271,9 +271,10 @@ function Field({
   error?: string;
   children: React.ReactNode;
 }) {
+  useLanguage();
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={htmlFor} className="text-sm">{label}</Label>
+      <Label htmlFor={htmlFor} className="text-sm">{translate(label)}</Label>
       {children}
       {error && <p className="text-xs text-destructive" role="alert">{error}</p>}
     </div>

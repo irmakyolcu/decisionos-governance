@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,6 +22,7 @@ const STATUSES = ['Draft', 'Pending', 'Under Review', 'Approved', 'Rejected', 'E
 const RISKS = ['Low', 'Medium', 'High', 'Critical'] as const;
 
 export default function DecisionDetailPage() {
+  useLanguage();
   const { id } = useParams<{ id: string }>();
   const nav = useNavigate();
   const { workspace } = useWorkspace();
@@ -130,17 +132,17 @@ export default function DecisionDetailPage() {
   }
 
   if (loading) return <div className="p-6 space-y-3"><Skeleton className="h-8 w-64" /><Skeleton className="h-64 w-full" /></div>;
-  if (!decision) return <div className="p-6"><p className="text-muted-foreground">Karar bulunamadı.</p><Link to="/decisions/list" className="text-primary text-sm">← Geri</Link></div>;
+  if (!decision) return <div className="p-6"><p className="text-muted-foreground">{translate("Karar bulunamadı.")}</p><Link to="/decisions/list" className="text-primary text-sm">{translate("← Geri")}</Link></div>;
 
   const latest = assessments[0];
 
   return (
     <div className="p-6 space-y-6 max-w-5xl">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild><Link to="/decisions/list"><ArrowLeft className="h-4 w-4 mr-1" />Kararlar</Link></Button>
+        <Button variant="ghost" size="sm" asChild><Link to="/decisions/list"><ArrowLeft className="h-4 w-4 mr-1" />{translate("Kararlar")}</Link></Button>
         {locked && (
           <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/40">
-            <Lock className="h-3 w-3 mr-1" /> Kilitli (immutable)
+            <Lock className="h-3 w-3 mr-1" /> {translate("Kilitli (immutable)")}
           </Badge>
         )}
       </div>
@@ -149,23 +151,23 @@ export default function DecisionDetailPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{decision.title}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {profiles.get(decision.created_by)?.display_name ?? 'Bilinmiyor'} · {new Date(decision.created_at).toLocaleString()}
+            {profiles.get(decision.created_by)?.display_name ?? 'Bilinmiyor'} · {new Date(decision.created_at).toLocaleString(getLocale())}
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={save} disabled={saving || locked}><Save className="h-4 w-4 mr-2" />{saving ? 'Kaydediliyor…' : 'Kaydet'}</Button>
+          <Button onClick={save} disabled={saving || locked}><Save className="h-4 w-4 mr-2" />{saving ? translate("Kaydediliyor…") : translate("Kaydet")}</Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="icon" disabled={locked}><Trash2 className="h-4 w-4" /></Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Kararı sil?</AlertDialogTitle>
-                <AlertDialogDescription>Bu işlem geri alınamaz. Tüm bağlı yorum, kanıt ve geçmiş kayıtları silinir.</AlertDialogDescription>
+                <AlertDialogTitle>{translate("Kararı sil?")}</AlertDialogTitle>
+                <AlertDialogDescription>{translate("Bu işlem geri alınamaz. Tüm bağlı yorum, kanıt ve geçmiş kayıtları silinir.")}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                <AlertDialogAction onClick={remove}>Sil</AlertDialogAction>
+                <AlertDialogCancel>{translate("Vazgeç")}</AlertDialogCancel>
+                <AlertDialogAction onClick={remove}>{translate("Sil")}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -179,8 +181,8 @@ export default function DecisionDetailPage() {
           <CardContent className="pt-4 flex gap-3 items-start">
             <ShieldCheck className="h-5 w-5 text-amber-600 mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium">Bu karar kilitli.</p>
-              <p className="text-muted-foreground">Approved/Executed durumundaki kararlar veritabanı seviyesinde değiştirilemez. Yalnızca <strong>Approved → Executed</strong> geçişi yapılabilir.</p>
+              <p className="font-medium">{translate("Bu karar kilitli.")}</p>
+              <p className="text-muted-foreground">{translate("Approved/Executed durumundaki kararlar veritabanı seviyesinde değiştirilemez. Yalnızca")} <strong>{translate("Approved → Executed")}</strong> {translate("geçişi yapılabilir.")}</p>
             </div>
           </CardContent>
         </Card>
@@ -188,31 +190,31 @@ export default function DecisionDetailPage() {
 
       <Tabs defaultValue="details">
         <TabsList>
-          <TabsTrigger value="details">Detaylar</TabsTrigger>
-          <TabsTrigger value="risk"><Gauge className="h-3.5 w-3.5 mr-1" />AI Risk ({assessments.length})</TabsTrigger>
-          <TabsTrigger value="macro"><Globe2 className="h-3.5 w-3.5 mr-1" />Makro & Jeopolitik ({macros.length})</TabsTrigger>
-          <TabsTrigger value="context"><Activity className="h-3.5 w-3.5 mr-1" />Bağlam & Sonuç</TabsTrigger>
-          <TabsTrigger value="sources"><FileText className="h-3.5 w-3.5 mr-1" />Kaynaklar ({evidence.length})</TabsTrigger>
-          <TabsTrigger value="history"><History className="h-3.5 w-3.5 mr-1" />Geçmiş ({history.length})</TabsTrigger>
+          <TabsTrigger value="details">{translate("Detaylar")}</TabsTrigger>
+          <TabsTrigger value="risk"><Gauge className="h-3.5 w-3.5 mr-1" />{translate("AI Risk (")}{assessments.length})</TabsTrigger>
+          <TabsTrigger value="macro"><Globe2 className="h-3.5 w-3.5 mr-1" />{translate("Makro & Jeopolitik (")}{macros.length})</TabsTrigger>
+          <TabsTrigger value="context"><Activity className="h-3.5 w-3.5 mr-1" />{translate("Bağlam & Sonuç")}</TabsTrigger>
+          <TabsTrigger value="sources"><FileText className="h-3.5 w-3.5 mr-1" />{translate("Kaynaklar (")}{evidence.length})</TabsTrigger>
+          <TabsTrigger value="history"><History className="h-3.5 w-3.5 mr-1" />{translate("Geçmiş (")}{history.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="details" className="space-y-4 mt-4">
           <div className="grid gap-4">
-            <div><Label>Başlık</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} disabled={locked} /></div>
-            <div><Label>Açıklama</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} disabled={locked} /></div>
-            <div><Label>Problem ifadesi</Label><Textarea value={form.problem_statement} onChange={(e) => setForm({ ...form, problem_statement: e.target.value })} disabled={locked} rows={2} /></div>
+            <div><Label>{translate("Başlık")}</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} disabled={locked} /></div>
+            <div><Label>{translate("Açıklama")}</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} disabled={locked} /></div>
+            <div><Label>{translate("Problem ifadesi")}</Label><Textarea value={form.problem_statement} onChange={(e) => setForm({ ...form, problem_statement: e.target.value })} disabled={locked} rows={2} /></div>
             <div className="grid grid-cols-3 gap-3">
-              <div><Label>Bütçe (€)</Label><Input type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} disabled={locked} /></div>
+              <div><Label>{translate("Bütçe (€)")}</Label><Input type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} disabled={locked} /></div>
               <div><Label>Risk</Label>
-                <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked}>
+                <Select value={translate(form.risk_level)} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{RISKS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Durum</Label>
-                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+              <div><Label>{translate("Durum")}</Label>
+                <Select value={translate(form.status)} onValueChange={(v) => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  <SelectContent>{STATUSES.map(s => <SelectItem key={translate(s)} value={translate(s)}>{translate(s)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
@@ -222,15 +224,15 @@ export default function DecisionDetailPage() {
         <TabsContent value="risk" className="mt-4 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Her değerlendirme append-only olarak saklanır — düzenlenemez, silinemez. Tam denetim izi.
+              {translate("Her değerlendirme append-only olarak saklanır — düzenlenemez, silinemez. Tam denetim izi.")}
             </p>
             <Button size="sm" onClick={() => runRiskAssessment('manual')} disabled={assessing}>
-              {assessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Değerlendiriliyor…</> : <><Sparkles className="h-4 w-4 mr-2" />Yeniden Değerlendir</>}
+              {assessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{translate("Değerlendiriliyor…")}</> : <><Sparkles className="h-4 w-4 mr-2" />{translate("Yeniden Değerlendir")}</>}
             </Button>
           </div>
           {assessments.length === 0 && (
             <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">
-              Henüz AI değerlendirmesi yok. "Yeniden Değerlendir" ile ilkini oluştur.
+              {translate("Henüz AI değerlendirmesi yok. \"Yeniden Değerlendir\" ile ilkini oluştur.")}
             </CardContent></Card>
           )}
           {assessments.map((a, idx) => (
@@ -241,15 +243,15 @@ export default function DecisionDetailPage() {
         <TabsContent value="macro" className="mt-4 space-y-3">
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
-              Sektör, ulusal + küresel ekonomi, savaş / yaptırım / enerji / enflasyon / kur gibi makro etkenlerin bu karara etkisi. Append-only.
+              {translate("Sektör, ulusal + küresel ekonomi, savaş / yaptırım / enerji / enflasyon / kur gibi makro etkenlerin bu karara etkisi. Append-only.")}
             </p>
             <Button size="sm" onClick={() => runMacroAssessment('manual')} disabled={macroAssessing}>
-              {macroAssessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Analiz ediliyor…</> : <><Globe2 className="h-4 w-4 mr-2" />Makro değerlendirme al</>}
+              {macroAssessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{translate("Analiz ediliyor…")}</> : <><Globe2 className="h-4 w-4 mr-2" />{translate("Makro değerlendirme al")}</>}
             </Button>
           </div>
           {macros.length === 0 && (
             <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">
-              Henüz makro değerlendirme yok. "Makro değerlendirme al" ile ilkini oluştur.
+              {translate("Henüz makro değerlendirme yok. \"Makro değerlendirme al\" ile ilkini oluştur.")}
             </CardContent></Card>
           )}
           {macros.map((m, idx) => (
@@ -266,7 +268,7 @@ export default function DecisionDetailPage() {
         </TabsContent>
 
         <TabsContent value="history" className="mt-4 space-y-2">
-          {history.length === 0 && <p className="text-sm text-muted-foreground">Henüz kayıt yok.</p>}
+          {history.length === 0 && <p className="text-sm text-muted-foreground">{translate("Henüz kayıt yok.")}</p>}
           {history.map((h) => (
             <Card key={h.id}>
               <CardContent className="py-3 text-sm">
@@ -276,18 +278,18 @@ export default function DecisionDetailPage() {
                     {h.field_name && <span className="font-mono text-xs text-muted-foreground">{h.field_name}</span>}
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {profiles.get(h.changed_by)?.display_name ?? '—'} · {new Date(h.created_at).toLocaleString()}
+                    {profiles.get(h.changed_by)?.display_name ?? '—'} · {new Date(h.created_at).toLocaleString(getLocale())}
                   </span>
                 </div>
                 {h.note && <p className="mt-1 text-muted-foreground">{h.note}</p>}
                 {(h.old_value || h.new_value) && (
                   <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                     <div className="rounded bg-destructive/5 border border-destructive/20 p-2">
-                      <p className="text-[10px] uppercase text-destructive mb-0.5">Önceki</p>
+                      <p className="text-[10px] uppercase text-destructive mb-0.5">{translate("Önceki")}</p>
                       <p className="font-mono break-words">{formatVal(h.old_value)}</p>
                     </div>
                     <div className="rounded bg-emerald-500/5 border border-emerald-500/20 p-2">
-                      <p className="text-[10px] uppercase text-emerald-700 mb-0.5">Yeni</p>
+                      <p className="text-[10px] uppercase text-emerald-700 mb-0.5">{translate("Yeni")}</p>
                       <p className="font-mono break-words">{formatVal(h.new_value)}</p>
                     </div>
                   </div>
@@ -310,15 +312,16 @@ function riskColor(level: string) {
 }
 
 function RiskSummaryCard({ latest, count, onRun, assessing }: { latest: any; count: number; onRun: () => void; assessing: boolean }) {
+  useLanguage();
   if (!latest) {
     return (
       <Card className="border-dashed">
         <CardContent className="py-4 flex items-center justify-between gap-4">
           <div className="text-sm text-muted-foreground flex items-center gap-2">
-            <Gauge className="h-4 w-4" /> Bu karar henüz AI tarafından risk açısından değerlendirilmedi.
+            <Gauge className="h-4 w-4" /> {translate("Bu karar henüz AI tarafından risk açısından değerlendirilmedi.")}
           </div>
           <Button size="sm" onClick={onRun} disabled={assessing}>
-            {assessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Değerlendiriliyor…</> : <><Sparkles className="h-4 w-4 mr-2" />İlk değerlendirmeyi al</>}
+            {assessing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{translate("Değerlendiriliyor…")}</> : <><Sparkles className="h-4 w-4 mr-2" />{translate("İlk değerlendirmeyi al")}</>}
           </Button>
         </CardContent>
       </Card>
@@ -336,26 +339,26 @@ function RiskSummaryCard({ latest, count, onRun, assessing }: { latest: any; cou
               <div className="text-[10px] uppercase text-muted-foreground">/100 risk</div>
             </div>
             <div>
-              <Badge variant="outline" className={riskColor(latest.risk_level)}>{latest.risk_level}</Badge>
-              {latest.confidence != null && <span className="ml-2 text-xs text-muted-foreground">Güven: {Number(latest.confidence).toFixed(0)}%</span>}
+              <Badge variant="outline" className={riskColor(latest.risk_level)}>{translate(latest.risk_level)}</Badge>
+              {latest.confidence != null && <span className="ml-2 text-xs text-muted-foreground">{translate("Güven:")} {Number(latest.confidence).toFixed(0)}%</span>}
               {latest.verdict && <p className="text-sm font-medium mt-1">{latest.verdict}</p>}
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
             {delta != null && (
               <Badge variant="outline" className={delta > 0 ? 'text-red-700 border-red-500/40' : delta < 0 ? 'text-emerald-700 border-emerald-500/40' : ''}>
-                {deltaIcon}<span className="ml-1">{delta > 0 ? '+' : ''}{Number(delta).toFixed(0)} vs önceki</span>
+                {deltaIcon}<span className="ml-1">{delta > 0 ? '+' : ''}{Number(delta).toFixed(0)} {translate("vs önceki")}</span>
               </Badge>
             )}
-            <span className="text-[11px] text-muted-foreground">{count} kayıt</span>
+            <span className="text-[11px] text-muted-foreground">{count} {translate("kayıt")}</span>
             <Button size="sm" variant="outline" onClick={onRun} disabled={assessing}>
-              {assessing ? <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />…</> : <><Sparkles className="h-3.5 w-3.5 mr-1" />Yeniden değerlendir</>}
+              {assessing ? <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />…</> : <><Sparkles className="h-3.5 w-3.5 mr-1" />{translate("Yeniden değerlendir")}</>}
             </Button>
           </div>
         </div>
         {latest.comparison_note && (
           <div className="text-xs bg-muted/50 rounded p-2 border">
-            <span className="font-semibold">Karşılaştırma:</span> {latest.comparison_note}
+            <span className="font-semibold">{translate("Karşılaştırma:")}</span> {latest.comparison_note}
           </div>
         )}
       </CardContent>
@@ -364,6 +367,7 @@ function RiskSummaryCard({ latest, count, onRun, assessing }: { latest: any; cou
 }
 
 function AssessmentCard({ a, isLatest, author }: { a: any; isLatest: boolean; author?: string }) {
+  useLanguage();
   const delta = a.score_delta;
   return (
     <Card className={isLatest ? 'border-primary/40' : ''}>
@@ -371,11 +375,11 @@ function AssessmentCard({ a, isLatest, author }: { a: any; isLatest: boolean; au
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold tabular-nums">{Number(a.risk_score).toFixed(0)}<span className="text-xs text-muted-foreground">/100</span></span>
-            <Badge variant="outline" className={riskColor(a.risk_level)}>{a.risk_level}</Badge>
-            {isLatest && <Badge variant="secondary" className="text-[10px]">En güncel</Badge>}
+            <Badge variant="outline" className={riskColor(a.risk_level)}>{translate(a.risk_level)}</Badge>
+            {isLatest && <Badge variant="secondary" className="text-[10px]">{translate("En güncel")}</Badge>}
             {a.previous_score != null && (
               <span className="text-xs text-muted-foreground">
-                Önceden %{Number(a.previous_score).toFixed(0)} → şimdi %{Number(a.risk_score).toFixed(0)}
+                {translate("Önceden %")}{Number(a.previous_score).toFixed(0)} {translate("→ şimdi %")}{Number(a.risk_score).toFixed(0)}
                 {delta != null && (
                   <span className={delta > 0 ? 'text-red-600 ml-1' : delta < 0 ? 'text-emerald-600 ml-1' : 'ml-1'}>
                     ({delta > 0 ? '+' : ''}{Number(delta).toFixed(0)})
@@ -385,13 +389,13 @@ function AssessmentCard({ a, isLatest, author }: { a: any; isLatest: boolean; au
             )}
           </div>
           <span className="text-[11px] text-muted-foreground">
-            {author ?? 'AI'} · {new Date(a.created_at).toLocaleString('tr-TR')} · {a.trigger_reason}
+            {author ?? 'AI'} · {new Date(a.created_at).toLocaleString(getLocale())} · {a.trigger_reason}
           </span>
         </div>
         {a.verdict && <p className="text-sm font-medium">{a.verdict}</p>}
         <p className="text-sm text-muted-foreground">{a.commentary}</p>
         {a.comparison_note && (
-          <p className="text-xs bg-muted/40 border rounded p-2"><span className="font-semibold">Karşılaştırma:</span> {a.comparison_note}</p>
+          <p className="text-xs bg-muted/40 border rounded p-2"><span className="font-semibold">{translate("Karşılaştırma:")}</span> {a.comparison_note}</p>
         )}
       </CardContent>
     </Card>
@@ -405,6 +409,7 @@ function formatVal(v: any) {
 }
 
 function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisionId: string; workspaceId: string; evidence: any[]; onChange: () => void }) {
+  useLanguage();
   const [form, setForm] = useState({ source: '', summary: '', owner: '', reliability: 'medium', supports: '' });
   const [adding, setAdding] = useState(false);
 
@@ -432,27 +437,27 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
   return (
     <div className="space-y-4">
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Plus className="h-4 w-4" />Yeni kaynak</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Plus className="h-4 w-4" />{translate("Yeni kaynak")}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
-          <Input placeholder="Kaynak (belge, URL, kişi, sistem)" value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
-          <Textarea placeholder="Özet / kanıt içeriği" rows={2} value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} />
+          <Input placeholder={translate("Kaynak (belge, URL, kişi, sistem)")} value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
+          <Textarea placeholder={translate("Özet / kanıt içeriği")} rows={2} value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} />
           <div className="grid grid-cols-3 gap-2">
-            <Input placeholder="Sahip" value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} />
+            <Input placeholder={translate("Sahip")} value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} />
             <Select value={form.reliability} onValueChange={(v) => setForm({ ...form, reliability: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="high">Yüksek güvenilirlik</SelectItem>
-                <SelectItem value="medium">Orta</SelectItem>
-                <SelectItem value="low">Düşük</SelectItem>
+                <SelectItem value="high">{translate("Yüksek güvenilirlik")}</SelectItem>
+                <SelectItem value="medium">{translate("Orta")}</SelectItem>
+                <SelectItem value="low">{translate("Düşük")}</SelectItem>
               </SelectContent>
             </Select>
-            <Input placeholder="Neyi destekliyor?" value={form.supports} onChange={(e) => setForm({ ...form, supports: e.target.value })} />
+            <Input placeholder={translate("Neyi destekliyor?")} value={form.supports} onChange={(e) => setForm({ ...form, supports: e.target.value })} />
           </div>
-          <Button onClick={add} disabled={adding || !form.source.trim()} size="sm"><Plus className="h-4 w-4 mr-1" />Ekle</Button>
+          <Button onClick={add} disabled={adding || !form.source.trim()} size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Ekle")}</Button>
         </CardContent>
       </Card>
 
-      {evidence.length === 0 && <p className="text-sm text-muted-foreground">Henüz kaynak yok.</p>}
+      {evidence.length === 0 && <p className="text-sm text-muted-foreground">{translate("Henüz kaynak yok.")}</p>}
       {evidence.map((e) => (
         <Card key={e.id}>
           <CardContent className="py-3 flex items-start justify-between gap-3">
@@ -463,7 +468,7 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
                 {e.is_verified && <Badge variant="secondary">verified</Badge>}
               </div>
               {e.summary && <p className="text-sm text-muted-foreground mt-1">{e.summary}</p>}
-              <p className="text-xs text-muted-foreground mt-1">{e.owner ?? '—'} · {new Date(e.created_at).toLocaleDateString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">{e.owner ?? '—'} · {new Date(e.created_at).toLocaleDateString(getLocale())}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={() => del(e.id)}><Trash2 className="h-4 w-4" /></Button>
           </CardContent>
@@ -490,6 +495,7 @@ function outlookBadge(o?: string) {
 }
 
 function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?: string }) {
+  useLanguage();
   const ob = outlookBadge(m.outlook);
   const ind = m.indicators || {};
   const risks: any[] = Array.isArray(m.risks) ? m.risks : [];
@@ -509,8 +515,8 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 {m.macro_level && <Badge variant="outline" className={macroColor(m.macro_level)}>{m.macro_level}</Badge>}
-                <Badge variant="outline" className={ob.cls}>{ob.label}</Badge>
-                {isLatest && <Badge variant="secondary" className="text-[10px]">En güncel</Badge>}
+                <Badge variant="outline" className={ob.cls}>{translate(ob.label)}</Badge>
+                {isLatest && <Badge variant="secondary" className="text-[10px]">{translate("En güncel")}</Badge>}
                 {m.sector && <Badge variant="secondary" className="text-[10px]">{m.sector}</Badge>}
               </div>
               {m.headline && <p className="text-sm font-medium mt-1">{m.headline}</p>}
@@ -520,7 +526,7 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
             </div>
           </div>
           <span className="text-[11px] text-muted-foreground text-right">
-            {author ?? 'AI'} · {new Date(m.created_at).toLocaleString('tr-TR')}<br />
+            {author ?? 'AI'} · {new Date(m.created_at).toLocaleString(getLocale())}<br />
             {m.trigger_reason}
           </span>
         </div>
@@ -529,7 +535,7 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
 
         {m.geopolitical_notes && (
           <div className="text-xs bg-amber-500/5 border border-amber-500/30 rounded p-2">
-            <span className="font-semibold">Jeopolitik:</span> {m.geopolitical_notes}
+            <span className="font-semibold">{translate("Jeopolitik:")}</span> {m.geopolitical_notes}
           </div>
         )}
 
@@ -548,12 +554,12 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
           <div className="grid sm:grid-cols-2 gap-3">
             {risks.length > 0 && (
               <div>
-                <p className="text-xs font-semibold flex items-center gap-1 mb-1"><AlertTriangle className="h-3 w-3 text-red-600" />Riskler</p>
+                <p className="text-xs font-semibold flex items-center gap-1 mb-1"><AlertTriangle className="h-3 w-3 text-red-600" />{translate("Riskler")}</p>
                 <ul className="space-y-1">
                   {risks.map((r, i) => (
                     <li key={i} className="text-xs rounded border bg-red-500/5 border-red-500/20 p-2">
                       <span className="font-medium">{r.title}</span>
-                      {r.severity && <Badge variant="outline" className="ml-1 text-[9px] py-0">{r.severity}</Badge>}
+                      {r.severity && <Badge variant="outline" className="ml-1 text-[9px] py-0">{translate(r.severity)}</Badge>}
                       {r.detail && <p className="text-muted-foreground mt-0.5">{r.detail}</p>}
                     </li>
                   ))}
@@ -562,7 +568,7 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
             )}
             {opps.length > 0 && (
               <div>
-                <p className="text-xs font-semibold flex items-center gap-1 mb-1"><Lightbulb className="h-3 w-3 text-emerald-600" />Fırsatlar</p>
+                <p className="text-xs font-semibold flex items-center gap-1 mb-1"><Lightbulb className="h-3 w-3 text-emerald-600" />{translate("Fırsatlar")}</p>
                 <ul className="space-y-1">
                   {opps.map((r, i) => (
                     <li key={i} className="text-xs rounded border bg-emerald-500/5 border-emerald-500/20 p-2">
@@ -577,7 +583,7 @@ function MacroCard({ m, isLatest, author }: { m: any; isLatest: boolean; author?
         )}
 
         {sources.length > 0 && (
-          <p className="text-[11px] text-muted-foreground">Referans alanları: {sources.map((s: any) => typeof s === 'string' ? s : (s?.title || '')).filter(Boolean).join(' · ')}</p>
+          <p className="text-[11px] text-muted-foreground">{translate("Referans alanları:")} {sources.map((s: any) => typeof s === 'string' ? s : (s?.title || '')).filter(Boolean).join(' · ')}</p>
         )}
       </CardContent>
     </Card>

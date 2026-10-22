@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
@@ -6,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Shield, ScrollText } from 'lucide-react';
 
 export default function AdminPermissionsPage() {
+  useLanguage();
   const { workspace, role } = useWorkspace();
   const [logs, setLogs] = useState<any[]>([]);
 
@@ -18,32 +20,32 @@ export default function AdminPermissionsPage() {
     return (
       <Card className="p-8 text-center">
         <Shield className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">Admin access required.</p>
+        <p className="text-sm text-muted-foreground">{translate("Admin access required.")}</p>
       </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold">Admin & Permissions</h1><p className="text-sm text-muted-foreground">Workspace settings, permissions, audit log.</p></div>
+      <div><h1 className="text-2xl font-bold">{translate("Admin & Permissions")}</h1><p className="text-sm text-muted-foreground">{translate("Workspace settings, permissions, audit log.")}</p></div>
 
       <Card className="p-6">
-        <h2 className="font-semibold mb-3">Permission Model</h2>
+        <h2 className="font-semibold mb-3">{translate("Permission Model")}</h2>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between"><span>Admin</span><Badge>Full access</Badge></div>
-          <div className="flex justify-between"><span>Approver</span><Badge variant="secondary">Read + write, no admin</Badge></div>
-          <div className="flex justify-between"><span>Viewer</span><Badge variant="outline">Read-only, respects confidentiality</Badge></div>
+          <div className="flex justify-between"><span>{translate("Admin")}</span><Badge>{translate("Full access")}</Badge></div>
+          <div className="flex justify-between"><span>{translate("Approver")}</span><Badge variant="secondary">{translate("Read + write, no admin")}</Badge></div>
+          <div className="flex justify-between"><span>{translate("Viewer")}</span><Badge variant="outline">{translate("Read-only, respects confidentiality")}</Badge></div>
         </div>
       </Card>
 
       <Card className="p-6">
-        <div className="flex items-center gap-2 mb-3"><ScrollText className="h-4 w-4" /><h2 className="font-semibold">Audit Log</h2></div>
-        {logs.length === 0 ? <p className="text-sm text-muted-foreground">No events yet.</p> : (
+        <div className="flex items-center gap-2 mb-3"><ScrollText className="h-4 w-4" /><h2 className="font-semibold">{translate("Audit Log")}</h2></div>
+        {logs.length === 0 ? <p className="text-sm text-muted-foreground">{translate("No events yet.")}</p> : (
           <div className="space-y-1 text-xs">
             {logs.map((l) => (
               <div key={l.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                <div><span className="font-medium">{l.action}</span> {l.entity_type && <span className="text-muted-foreground">on {l.entity_type}</span>}</div>
-                <div className="text-muted-foreground">{new Date(l.created_at).toLocaleString()}</div>
+                <div><span className="font-medium">{l.action}</span> {l.entity_type && <span className="text-muted-foreground">{translate("on")} {l.entity_type}</span>}</div>
+                <div className="text-muted-foreground">{new Date(l.created_at).toLocaleString(getLocale())}</div>
               </div>
             ))}
           </div>

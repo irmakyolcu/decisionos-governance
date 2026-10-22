@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { toast } from 'sonner';
 const db = supabase as any;
 
 export default function ApprovalCenterPage() {
+  useLanguage();
   const { rows: actions, refetch } = useTable<any>('action_proposals');
   const { rows: approvals, refetch: refetchA } = useTable<any>('action_approvals');
   const { workspace } = useWorkspace();
@@ -63,7 +65,7 @@ export default function ApprovalCenterPage() {
     refetch(); refetchA();
   }
 
-  const list = (rows: any[]) => rows.length === 0 ? <p className="text-sm text-muted-foreground p-4">Nothing here.</p> : (
+  const list = (rows: any[]) => rows.length === 0 ? <p className="text-sm text-muted-foreground p-4">{translate("Nothing here.")}</p> : (
     <ul className="divide-y">
       {rows.map((a) => (
         <li key={a.id} className="flex items-center justify-between gap-3 p-4 hover:bg-muted/50">
@@ -74,13 +76,13 @@ export default function ApprovalCenterPage() {
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">{a.reason}</p>
             <div className="flex items-center gap-2 mt-2">
-              <ApprovalStatusBadge status={a.approval_status} />
-              <AuthorityLevelBadge level={a.authority_level} />
-              <RiskBadge level={a.risk_level} />
-              <span className="text-xs text-muted-foreground">{myApprovals(a.id, a.version).length}/{a.required_approver_count} approvals</span>
+              <ApprovalStatusBadge status={translate(a.approval_status)} />
+              <AuthorityLevelBadge level={translate(a.authority_level)} />
+              <RiskBadge level={translate(a.risk_level)} />
+              <span className="text-xs text-muted-foreground">{myApprovals(a.id, a.version).length}/{a.required_approver_count} {translate("approvals")}</span>
             </div>
           </div>
-          <Button size="sm" onClick={() => setSelected(a)}>Review</Button>
+          <Button size="sm" onClick={() => setSelected(a)}>{translate("Review")}</Button>
         </li>
       ))}
     </ul>
@@ -89,22 +91,22 @@ export default function ApprovalCenterPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Approval Center</h1>
-        <p className="text-muted-foreground mt-1">Decision approval and execution approval are tracked separately. Approving a decision never auto-approves its execution.</p>
+        <h1 className="text-3xl font-bold tracking-tight">{translate("Approval Center")}</h1>
+        <p className="text-muted-foreground mt-1">{translate("Decision approval and execution approval are tracked separately. Approving a decision never auto-approves its execution.")}</p>
       </div>
 
       <Card>
         <CardContent className="pt-6">
           <Tabs defaultValue="me">
             <TabsList className="grid grid-cols-4 lg:grid-cols-8 mb-4">
-              <TabsTrigger value="me">Awaiting Me ({awaitingMe.length})</TabsTrigger>
-              <TabsTrigger value="high">High Risk ({highRisk.length})</TabsTrigger>
-              <TabsTrigger value="dec">Decisions ({decisionApprovals.length})</TabsTrigger>
-              <TabsTrigger value="exec">Execution ({execApprovals.length})</TabsTrigger>
-              <TabsTrigger value="cond">Conditional</TabsTrigger>
-              <TabsTrigger value="rej">Rejected ({rejected.length})</TabsTrigger>
-              <TabsTrigger value="exp">Expired ({expired.length})</TabsTrigger>
-              <TabsTrigger value="done">Completed ({completed.length})</TabsTrigger>
+              <TabsTrigger value="me">{translate("Awaiting Me (")}{awaitingMe.length})</TabsTrigger>
+              <TabsTrigger value="high">{translate("High Risk (")}{highRisk.length})</TabsTrigger>
+              <TabsTrigger value="dec">{translate("Decisions (")}{decisionApprovals.length})</TabsTrigger>
+              <TabsTrigger value="exec">{translate("Execution (")}{execApprovals.length})</TabsTrigger>
+              <TabsTrigger value="cond">{translate("Conditional")}</TabsTrigger>
+              <TabsTrigger value="rej">{translate("Rejected (")}{rejected.length})</TabsTrigger>
+              <TabsTrigger value="exp">{translate("Expired (")}{expired.length})</TabsTrigger>
+              <TabsTrigger value="done">{translate("Completed (")}{completed.length})</TabsTrigger>
             </TabsList>
             <TabsContent value="me">{list(awaitingMe)}</TabsContent>
             <TabsContent value="high">{list(highRisk)}</TabsContent>
@@ -126,24 +128,24 @@ export default function ApprovalCenterPage() {
           {selected && (
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <AuthorityLevelBadge level={selected.authority_level} />
-                <RiskBadge level={selected.risk_level} />
-                <ApprovalStatusBadge status={selected.approval_status} />
+                <AuthorityLevelBadge level={translate(selected.authority_level)} />
+                <RiskBadge level={translate(selected.risk_level)} />
+                <ApprovalStatusBadge status={translate(selected.approval_status)} />
                 <ContentHashChip hash={selected.content_hash} version={selected.version} />
               </div>
               {selected.authority_level === 'commit' && (
                 <Card className="border-red-500/40 bg-red-500/5">
                   <CardContent className="pt-4 text-sm">
-                    This action requires <strong>{selected.required_approver_count} distinct approvals</strong> and will not execute until every approver authorizes the exact same version. Editing the payload invalidates prior approvals.
+                    {translate("This action requires")} <strong>{selected.required_approver_count} {translate("distinct approvals")}</strong> {translate("and will not execute until every approver authorizes the exact same version. Editing the payload invalidates prior approvals.")}
                   </CardContent>
                 </Card>
               )}
               <div>
-                <p className="text-xs uppercase text-muted-foreground tracking-wide mb-1">Reason</p>
+                <p className="text-xs uppercase text-muted-foreground tracking-wide mb-1">{translate("Reason")}</p>
                 <p className="text-sm">{selected.reason}</p>
               </div>
               <div>
-                <p className="text-xs uppercase text-muted-foreground tracking-wide mb-1">Proposed payload</p>
+                <p className="text-xs uppercase text-muted-foreground tracking-wide mb-1">{translate("Proposed payload")}</p>
                 <pre className="text-xs bg-muted p-3 rounded overflow-x-auto">{JSON.stringify(selected.proposed_payload, null, 2)}</pre>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -153,12 +155,12 @@ export default function ApprovalCenterPage() {
                   </Button>
                 ))}
               </div>
-              <Textarea placeholder="Rationale (required for reject / conditional)" value={rationale} onChange={(e) => setRationale(e.target.value)} />
+              <Textarea placeholder={translate("Rationale (required for reject / conditional)")} value={rationale} onChange={(e) => setRationale(e.target.value)} />
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSelected(null)}>Cancel</Button>
-            <Button onClick={submitVote} disabled={(vote !== 'approve') && !rationale.trim()}>Submit vote</Button>
+            <Button variant="outline" onClick={() => setSelected(null)}>{translate("Cancel")}</Button>
+            <Button onClick={submitVote} disabled={(vote !== 'approve') && !rationale.trim()}>{translate("Submit vote")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

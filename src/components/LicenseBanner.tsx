@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { AlertTriangle, ShieldOff } from 'lucide-react';
 import { useLicense } from '@/hooks/useLicense';
 
@@ -6,6 +7,7 @@ import { useLicense } from '@/hooks/useLicense';
  * a valid, non-expiring license is active.
  */
 export function LicenseBanner() {
+  useLanguage();
   const { info, loading } = useLicense();
   if (loading || !info || info.license.mode === 'cloud') return null;
 
@@ -16,8 +18,7 @@ export function LicenseBanner() {
       <div className="flex items-center gap-2 px-6 py-2 text-sm bg-destructive/10 text-destructive border-b border-destructive/30">
         <ShieldOff className="h-4 w-4 shrink-0" />
         <span>
-          Bu kurulum lisanssız ({reason}). Yöneticiniz lisans anahtarını girene kadar
-          AI ve raporlama özellikleri devre dışı.
+          {translate("Bu kurulum lisanssız (")}{reason}{translate("). Yöneticiniz lisans anahtarını girene kadar AI ve raporlama özellikleri devre dışı.")}
         </span>
       </div>
     );
@@ -27,7 +28,7 @@ export function LicenseBanner() {
     return (
       <div className="flex items-center gap-2 px-6 py-2 text-sm bg-destructive/10 text-destructive border-b border-destructive/30">
         <AlertTriangle className="h-4 w-4 shrink-0" />
-        <span>Lisans süresi doldu. Ek süre bitmeden yenileyin.</span>
+        <span>{translate("Lisans süresi doldu. Ek süre bitmeden yenileyin.")}</span>
       </div>
     );
   }
@@ -37,8 +38,8 @@ export function LicenseBanner() {
       <div className="flex items-center gap-2 px-6 py-2 text-sm bg-warning/10 text-warning-foreground border-b border-warning/30">
         <AlertTriangle className="h-4 w-4 shrink-0" />
         <span>
-          {customer} lisansı {days_remaining} gün sonra sona eriyor
-          {expires_at ? ` (${new Date(expires_at).toLocaleDateString()})` : ''}.
+          {customer} {translate("lisansı")} {days_remaining} {translate("gün sonra sona eriyor")}
+          {expires_at ? ` (${new Date(expires_at).toLocaleDateString(getLocale())})` : ''}.
         </span>
       </div>
     );

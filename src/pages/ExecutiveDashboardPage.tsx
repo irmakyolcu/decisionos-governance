@@ -5,7 +5,7 @@ import { AlertTriangle, Clock, CheckCircle2, Activity, ShieldAlert, Plus } from 
 import { useTable } from '@/hooks/useGovernance';
 import { ApprovalStatusBadge, RiskBadge, AuthorityLevelBadge } from '@/components/governance/StatusBadges';
 
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage , translate } from '@/contexts/LanguageContext';
 
 export default function ExecutiveDashboardPage() {
   const { t, locale } = useLanguage();
@@ -60,8 +60,8 @@ export default function ExecutiveDashboardPage() {
                     <p className="text-xs text-muted-foreground">{a._why}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <AuthorityLevelBadge level={a.authority_level} />
-                    <RiskBadge level={a.risk_level} />
+                    <AuthorityLevelBadge level={translate(a.authority_level)} />
+                    <RiskBadge level={translate(a.risk_level)} />
                     <Button size="sm" variant="outline" onClick={() => nav('/approvals-center')}>{t('Review')}</Button>
                   </div>
                 </li>
@@ -113,8 +113,8 @@ export default function ExecutiveDashboardPage() {
                     <p className="text-xs text-muted-foreground">{a.action_type} → {a.target_system || t('internal')}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <ApprovalStatusBadge status={a.approval_status} />
-                    <AuthorityLevelBadge level={a.authority_level} />
+                    <ApprovalStatusBadge status={translate(a.approval_status)} />
+                    <AuthorityLevelBadge level={translate(a.authority_level)} />
                   </div>
                 </li>
               ))}
@@ -127,12 +127,13 @@ export default function ExecutiveDashboardPage() {
 }
 
 function MetricCard({ icon: Icon, label, value, onClick, tone }: any) {
+  useLanguage();
   return (
     <Card className={onClick ? 'cursor-pointer hover:border-primary/50 transition-colors' : ''} onClick={onClick}>
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="text-sm text-muted-foreground">{translate(label)}</p>
             <p className="text-3xl font-bold mt-1">{value}</p>
           </div>
           <Icon className={`h-8 w-8 ${tone === 'risk' ? 'text-red-500' : tone === 'ok' ? 'text-emerald-500' : 'text-muted-foreground'}`} />

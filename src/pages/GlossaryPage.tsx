@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ const seed: Term[] = [
 ];
 
 export default function GlossaryPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const key = workspace ? `mem:glossary:${workspace.id}` : 'mem:glossary';
   const [rows, setRows] = useState<Term[]>([]);
@@ -64,23 +66,23 @@ export default function GlossaryPage() {
     <div className="space-y-6">
       <div className="page-header flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="page-title flex items-center gap-2"><BookMarked className="h-6 w-6 text-primary" /> Glossary</h1>
-          <p className="page-description">Canonical definitions for internal terminology, acronyms and metrics.</p>
+          <h1 className="page-title flex items-center gap-2"><BookMarked className="h-6 w-6 text-primary" /> {translate("Glossary")}</h1>
+          <p className="page-description">{translate("Canonical definitions for internal terminology, acronyms and metrics.")}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-2" /> New Term</Button></DialogTrigger>
+          <DialogTrigger asChild><Button size="sm"><Plus className="h-4 w-4 mr-2" /> {translate("New Term")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Add term</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{translate("Add term")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Term</Label><Input value={form.term} onChange={(e) => setForm({ ...form, term: e.target.value })} /></div>
-              <div><Label>Definition</Label><Textarea rows={3} value={form.definition} onChange={(e) => setForm({ ...form, definition: e.target.value })} /></div>
+              <div><Label>{translate("Term")}</Label><Input value={form.term} onChange={(e) => setForm({ ...form, term: e.target.value })} /></div>
+              <div><Label>{translate("Definition")}</Label><Textarea rows={3} value={form.definition} onChange={(e) => setForm({ ...form, definition: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Aliases</Label><Input value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} placeholder="Comma separated" /></div>
-                <div><Label>Category</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
+                <div><Label>{translate("Aliases")}</Label><Input value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} placeholder={translate("Comma separated")} /></div>
+                <div><Label>{translate("Category")}</Label><Input value={translate(form.category)} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
               </div>
-              <div><Label>Owner</Label><Input value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} /></div>
+              <div><Label>{translate("Owner")}</Label><Input value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} /></div>
             </div>
-            <DialogFooter><Button onClick={save}>Save</Button></DialogFooter>
+            <DialogFooter><Button onClick={save}>{translate("Save")}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
@@ -88,7 +90,7 @@ export default function GlossaryPage() {
       <Card><CardContent className="p-4">
         <div className="relative max-w-md">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search terms, aliases…" className="pl-9" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={translate("Search terms, aliases…")} className="pl-9" />
         </div>
       </CardContent></Card>
 
@@ -107,12 +109,12 @@ export default function GlossaryPage() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold">{t.term}</h3>
-                          {t.category && <Badge variant="outline" className="text-xs">{t.category}</Badge>}
+                          {t.category && <Badge variant="outline" className="text-xs">{translate(t.category)}</Badge>}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1.5">{t.definition}</p>
                         <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
-                          {t.aliases && <span>Also: {t.aliases}</span>}
-                          {t.owner && <span>Owner: {t.owner}</span>}
+                          {t.aliases && <span>{translate("Also:")} {t.aliases}</span>}
+                          {t.owner && <span>{translate("Owner:")} {t.owner}</span>}
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => remove(t.id)}><Trash2 className="h-4 w-4" /></Button>
@@ -125,7 +127,7 @@ export default function GlossaryPage() {
         ))}
         {grouped.length === 0 && (
           <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">
-            <BookMarked className="h-6 w-6 mx-auto mb-2 opacity-50" /> No terms match.
+            <BookMarked className="h-6 w-6 mx-auto mb-2 opacity-50" /> {translate("No terms match.")}
           </CardContent></Card>
         )}
       </div>

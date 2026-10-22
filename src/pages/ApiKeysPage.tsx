@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,6 +46,7 @@ interface Key {
 }
 
 export default function ApiKeysPage() {
+  useLanguage();
   const { user } = useAuth();
   const { workspace, role } = useWorkspace();
   const isAdmin = role === 'admin';
@@ -93,7 +95,7 @@ export default function ApiKeysPage() {
     return (
       <div className="p-6"><Card><CardContent className="p-8 text-center text-sm text-muted-foreground">
         <ShieldAlert className="h-8 w-8 mx-auto mb-2 text-warning" />
-        Sadece workspace admin'leri API anahtarlarını yönetebilir.
+        {translate("Sadece workspace admin'leri API anahtarlarını yönetebilir.")}
       </CardContent></Card></div>
     );
   }
@@ -102,37 +104,37 @@ export default function ApiKeysPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><KeyRound className="h-6 w-6 text-primary" />API Anahtarları</h1>
-          <p className="text-sm text-muted-foreground mt-1">Dışarıdaki sistemlerin DecisionOS ile veri alışverişi yapması için anahtar oluşturun.</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><KeyRound className="h-6 w-6 text-primary" />{translate("API Anahtarları")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{translate("Dışarıdaki sistemlerin DecisionOS ile veri alışverişi yapması için anahtar oluşturun.")}</p>
         </div>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setNewKey(null); }}>
-          <DialogTrigger asChild><Button>Yeni Anahtar</Button></DialogTrigger>
+          <DialogTrigger asChild><Button>{translate("Yeni Anahtar")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>{newKey ? 'Anahtarınız hazır' : 'API Anahtarı Oluştur'}</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{newKey ? translate("Anahtarınız hazır") : translate("API Anahtarı Oluştur")}</DialogTitle></DialogHeader>
             {newKey ? (
               <div className="space-y-3">
-                <p className="text-sm text-warning">Bu değer bir daha gösterilmeyecek. Güvenli bir yere kaydedin.</p>
+                <p className="text-sm text-warning">{translate("Bu değer bir daha gösterilmeyecek. Güvenli bir yere kaydedin.")}</p>
                 <div className="flex gap-2">
                   <Input readOnly value={newKey} className="font-mono text-xs" />
                   <Button size="icon" variant="outline" onClick={() => { navigator.clipboard.writeText(newKey); toast.success('Kopyalandı'); }}><Copy className="h-4 w-4" /></Button>
                 </div>
-                <Button className="w-full" onClick={() => { setOpen(false); setNewKey(null); }}>Tamam</Button>
+                <Button className="w-full" onClick={() => { setOpen(false); setNewKey(null); }}>{translate("Tamam")}</Button>
               </div>
             ) : (
               <div className="space-y-3">
-                <div><Label>Ad</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Örn: Zapier entegrasyonu" /></div>
-                <div><Label>Rol</Label>
-                  <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
+                <div><Label>{translate("Ad")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={translate("Örn: Zapier entegrasyonu")} /></div>
+                <div><Label>{translate("Rol")}</Label>
+                  <Select value={translate(form.role)} onValueChange={(v) => setForm({ ...form, role: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="viewer">Viewer (sadece okuma)</SelectItem>
-                      <SelectItem value="writer">Writer (okuma + yazma)</SelectItem>
-                      <SelectItem value="admin">Admin (tam erişim)</SelectItem>
+                      <SelectItem value="viewer">{translate("Viewer (sadece okuma)")}</SelectItem>
+                      <SelectItem value="writer">{translate("Writer (okuma + yazma)")}</SelectItem>
+                      <SelectItem value="admin">{translate("Admin (tam erişim)")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label>Scope'lar</Label>
+                  <Label>{translate("Scope'lar")}</Label>
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     {ALL_SCOPES.map((s) => (
                       <label key={s} className="flex items-center gap-2 text-xs cursor-pointer">
@@ -142,7 +144,7 @@ export default function ApiKeysPage() {
                     ))}
                   </div>
                 </div>
-                <Button className="w-full" onClick={create} disabled={!form.name.trim() || form.scopes.length === 0}>Oluştur</Button>
+                <Button className="w-full" onClick={create} disabled={!form.name.trim() || form.scopes.length === 0}>{translate("Oluştur")}</Button>
               </div>
             )}
           </DialogContent>
@@ -150,23 +152,22 @@ export default function ApiKeysPage() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Endpoint</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{translate("Endpoint")}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           <div className="flex gap-2">
             <Input readOnly value={API_BASE} className="font-mono text-xs" />
             <Button size="icon" variant="outline" onClick={() => { navigator.clipboard.writeText(API_BASE); toast.success('Kopyalandı'); }}><Copy className="h-4 w-4" /></Button>
           </div>
-          <p className="text-xs text-muted-foreground">Anahtarınızı <code className="bg-muted px-1 rounded">X-API-Key</code> header'ında gönderin. Detay için <code className="bg-muted px-1 rounded">GET {API_BASE}/v1</code></p>
+          <p className="text-xs text-muted-foreground">{translate("Anahtarınızı")} <code className="bg-muted px-1 rounded">X-API-Key</code> {translate("header'ında gönderin. Detay için")} <code className="bg-muted px-1 rounded">GET {API_BASE}/v1</code></p>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle className="text-sm">Dışarı Veri Aktarımı (Export)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">{translate("Dışarı Veri Aktarımı (Export)")}</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              Karar, bilgi, süreç, proje, müşteri, risk, toplantı ve denetim kayıtlarını JSON veya CSV olarak dışa aktarır.
-              Her varlık için ilgili <code className="bg-muted px-1 rounded">*:read</code> scope'u gerekir.
+              {translate("Karar, bilgi, süreç, proje, müşteri, risk, toplantı ve denetim kayıtlarını JSON veya CSV olarak dışa aktarır. Her varlık için ilgili")} <code className="bg-muted px-1 rounded">*:read</code> {translate("scope'u gerekir.")}
             </p>
             <pre className="bg-muted rounded p-3 text-[11px] overflow-x-auto whitespace-pre-wrap">{`curl -H "X-API-Key: dos_..." \\
   "${API_BASE}/v1/export?entities=decisions,knowledge&since=2026-01-01&limit=500"
@@ -178,11 +179,11 @@ curl -H "X-API-Key: dos_..." \\
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-sm">İçeri Veri Akışı (Import)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">{translate("İçeri Veri Akışı (Import)")}</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              Toplu kayıt gönderir (maks. 500). Desteklenen varlıklar: decisions, knowledge, processes, risks.
-              <code className="bg-muted px-1 rounded ml-1">dry_run: true</code> ile yazmadan doğrulama yapabilirsiniz.
+              {translate("Toplu kayıt gönderir (maks. 500). Desteklenen varlıklar: decisions, knowledge, processes, risks.")}
+              <code className="bg-muted px-1 rounded ml-1">dry_run: true</code> {translate("ile yazmadan doğrulama yapabilirsiniz.")}
             </p>
             <pre className="bg-muted rounded p-3 text-[11px] overflow-x-auto whitespace-pre-wrap">{`curl -X POST -H "X-API-Key: dos_..." \\
   -H "Content-Type: application/json" \\
@@ -199,10 +200,10 @@ curl -H "X-API-Key: dos_..." \\
 
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Aktif Anahtarlar</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">{translate("Aktif Anahtarlar")}</CardTitle></CardHeader>
         <CardContent>
-          {loading ? <p className="text-sm text-muted-foreground">Yükleniyor…</p>
-            : keys.length === 0 ? <p className="text-sm text-muted-foreground">Henüz anahtar yok.</p>
+          {loading ? <p className="text-sm text-muted-foreground">{translate("Yükleniyor…")}</p>
+            : keys.length === 0 ? <p className="text-sm text-muted-foreground">{translate("Henüz anahtar yok.")}</p>
             : (
               <div className="space-y-2">
                 {keys.map((k) => (
@@ -210,12 +211,12 @@ curl -H "X-API-Key: dos_..." \\
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{k.name}</span>
-                        <Badge variant="outline" className="text-[10px]">{k.role}</Badge>
-                        {k.revoked_at && <Badge variant="destructive" className="text-[10px]">İptal edildi</Badge>}
+                        <Badge variant="outline" className="text-[10px]">{translate(k.role)}</Badge>
+                        {k.revoked_at && <Badge variant="destructive" className="text-[10px]">{translate("İptal edildi")}</Badge>}
                       </div>
                       <div className="text-xs text-muted-foreground font-mono mt-1">{k.prefix}…</div>
                       <div className="text-[10px] text-muted-foreground mt-1">
-                        {k.scopes.join(' · ')} · Son kullanım: {k.last_used_at ? new Date(k.last_used_at).toLocaleString() : 'hiç'}
+                        {k.scopes.join(' · ')} {translate("· Son kullanım:")} {k.last_used_at ? new Date(k.last_used_at).toLocaleString(getLocale()) : translate("hiç")}
                       </div>
                     </div>
                     {!k.revoked_at && (

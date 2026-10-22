@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,6 +23,7 @@ const SUGGESTIONS = [
 ];
 
 export default function AskDecisionOSPage() {
+  useLanguage();
   const { user } = useAuth();
   const { workspace } = useWorkspace();
   const { toast } = useToast();
@@ -75,7 +77,7 @@ export default function AskDecisionOSPage() {
       }
       setMessages((m) => [...m, { ...asstMsg, id: savedId }]);
     } catch (e: any) {
-      toast({ title: 'Error', description: e.message ?? 'Failed to get answer', variant: 'destructive' });
+      toast({ title: translate("Error"), description: e.message ?? 'Failed to get answer', variant: 'destructive' });
       setMessages((m) => m.slice(0, -1));
     } finally { setLoading(false); }
   };
@@ -83,7 +85,7 @@ export default function AskDecisionOSPage() {
   const feedback = async (msg: Msg, rating: 'correct' | 'partial' | 'incorrect') => {
     if (!msg.id || !workspace || !user) return;
     await supabase.from('answer_feedback').insert({ message_id: msg.id, workspace_id: workspace.id, user_id: user.id, rating });
-    toast({ title: 'Thanks', description: 'Feedback recorded.' });
+    toast({ title: translate("Thanks"), description: translate("Feedback recorded.") });
   };
 
   return (
@@ -93,9 +95,9 @@ export default function AskDecisionOSPage() {
           <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
             <Sparkles className="h-4 w-4 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Ask DecisionOS</h1>
+          <h1 className="text-2xl font-bold">{translate("Ask DecisionOS")}</h1>
         </div>
-        <p className="text-sm text-muted-foreground">Ask anything about your company. Answers cite the source and respect your permissions.</p>
+        <p className="text-sm text-muted-foreground">{translate("Ask anything about your company. Answers cite the source and respect your permissions.")}</p>
       </div>
 
       <div className="flex-1 overflow-auto space-y-4 pr-1">
@@ -119,13 +121,13 @@ export default function AskDecisionOSPage() {
                   <Sparkles className="h-3 w-3 text-primary" />
                   <span>DecisionOS</span>
                   {typeof m.confidence === 'number' && (
-                    <Badge variant="outline" className="ml-auto text-[10px]">confidence {(m.confidence * 100).toFixed(0)}%</Badge>
+                    <Badge variant="outline" className="ml-auto text-[10px]">{translate("confidence")} {(m.confidence * 100).toFixed(0)}%</Badge>
                   )}
                 </div>
                 <div className="text-sm whitespace-pre-wrap leading-relaxed">{m.content}</div>
                 {m.citations && m.citations.length > 0 && (
                   <div className="space-y-1.5">
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Sources</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{translate("Sources")}</div>
                     {m.citations.map((c) => (
                       <div key={c.index} className="text-xs p-2 rounded-md bg-muted/40 border border-border flex gap-2">
                         <div className="font-mono text-primary shrink-0">[{c.index}]</div>
@@ -143,7 +145,7 @@ export default function AskDecisionOSPage() {
                 {m.suggested_action && (
                   <div className="text-xs p-2 rounded-md bg-primary/5 border border-primary/20 flex items-start gap-2">
                     <ArrowRight className="h-3 w-3 text-primary mt-0.5" />
-                    <span><span className="font-medium">Suggested next: </span>{m.suggested_action}</span>
+                    <span><span className="font-medium">{translate("Suggested next:")} </span>{m.suggested_action}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1 pt-1">
@@ -155,7 +157,7 @@ export default function AskDecisionOSPage() {
             )}
           </div>
         ))}
-        {loading && <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Thinking...</div>}
+        {loading && <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> {translate("Thinking...")}</div>}
         <div ref={endRef} />
       </div>
 
@@ -164,7 +166,7 @@ export default function AskDecisionOSPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(input); } }}
-          placeholder="Ask about a decision, client, process, or policy..."
+          placeholder={translate("Ask about a decision, client, process, or policy...")}
           className="min-h-[60px] resize-none"
           disabled={loading}
         />

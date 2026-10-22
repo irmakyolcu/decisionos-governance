@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -193,6 +194,7 @@ const STATUS_STYLES: Record<Status, string> = {
 };
 
 export default function SecurityAuditPage() {
+  useLanguage();
   const [q, setQ] = useState('');
   const [statusFilter, setStatusFilter] = useState<Status | 'all'>('all');
 
@@ -229,32 +231,32 @@ export default function SecurityAuditPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6" /> Security Audit History
+            <ShieldCheck className="h-6 w-6" /> {translate("Security Audit History")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Timeline of security findings raised against DecisionOS and how each one was resolved.
+            {translate("Timeline of security findings raised against DecisionOS and how each one was resolved.")}
           </p>
         </div>
         <Button variant="outline" onClick={exportCsv}>
-          <Download className="h-4 w-4 mr-2" /> Export CSV
+          <Download className="h-4 w-4 mr-2" /> {translate("Export CSV")}
         </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total findings" value={stats.total} icon={ShieldAlert} />
-        <StatCard label="Fixed" value={stats.fixed} icon={CheckCircle2} tone="ok" />
-        <StatCard label="Open" value={stats.open} icon={ShieldAlert} tone={stats.open > 0 ? 'risk' : undefined} />
-        <StatCard label="Ignored" value={stats.ignored} icon={ShieldAlert} />
+        <StatCard label={translate("Total findings")} value={stats.total} icon={ShieldAlert} />
+        <StatCard label={translate("Fixed")} value={stats.fixed} icon={CheckCircle2} tone="ok" />
+        <StatCard label={translate("Open")} value={stats.open} icon={ShieldAlert} tone={stats.open > 0 ? 'risk' : undefined} />
+        <StatCard label={translate("Ignored")} value={stats.ignored} icon={ShieldAlert} />
       </div>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-3 flex-wrap">
-          <CardTitle className="text-base">{filtered.length} findings</CardTitle>
+          <CardTitle className="text-base">{filtered.length} {translate("findings")}</CardTitle>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="h-4 w-4 absolute left-2 top-2.5 text-muted-foreground" />
               <Input
-                placeholder="Search…"
+                placeholder={translate("Search…")}
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 className="pl-8 w-64"
@@ -278,7 +280,7 @@ export default function SecurityAuditPage() {
         <CardContent className="p-0">
           <ul className="divide-y">
             {filtered.length === 0 && (
-              <li className="p-6 text-sm text-muted-foreground">No findings match.</li>
+              <li className="p-6 text-sm text-muted-foreground">{translate("No findings match.")}</li>
             )}
             {filtered.map((f) => (
               <li key={f.id} className="p-4 space-y-2">
@@ -286,20 +288,20 @@ export default function SecurityAuditPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium">{f.title}</p>
-                      <Badge variant="outline" className={SEV_STYLES[f.severity]}>{f.severity}</Badge>
-                      <Badge variant="outline" className={STATUS_STYLES[f.status]}>{f.status}</Badge>
+                      <Badge variant="outline" className={SEV_STYLES[f.severity]}>{translate(f.severity)}</Badge>
+                      <Badge variant="outline" className={STATUS_STYLES[f.status]}>{translate(f.status)}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 font-mono">{f.area} · {f.id}</p>
                   </div>
                   <div className="text-xs text-muted-foreground text-right flex-shrink-0">
-                    <div>Found: {f.discoveredAt}</div>
-                    {f.resolvedAt && <div>Resolved: {f.resolvedAt}</div>}
+                    <div>{translate("Found:")} {f.discoveredAt}</div>
+                    {f.resolvedAt && <div>{translate("Resolved:")} {f.resolvedAt}</div>}
                   </div>
                 </div>
                 <p className="text-sm">{f.summary}</p>
                 {f.resolution && (
                   <p className="text-sm text-emerald-700 border-l-2 border-emerald-500/40 pl-3">
-                    <span className="font-medium">Resolution:</span> {f.resolution}
+                    <span className="font-medium">{translate("Resolution:")}</span> {f.resolution}
                   </p>
                 )}
               </li>
@@ -312,12 +314,13 @@ export default function SecurityAuditPage() {
 }
 
 function StatCard({ icon: Icon, label, value, tone }: { icon: any; label: string; value: number; tone?: 'ok' | 'risk' }) {
+  useLanguage();
   return (
     <Card>
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="text-sm text-muted-foreground">{translate(label)}</p>
             <p className="text-3xl font-bold mt-1">{value}</p>
           </div>
           <Icon className={`h-8 w-8 ${tone === 'ok' ? 'text-emerald-500' : tone === 'risk' ? 'text-red-500' : 'text-muted-foreground'}`} />

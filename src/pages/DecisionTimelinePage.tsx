@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -55,6 +56,7 @@ const OUTCOME_META: Record<string, { icon: any; className: string; label: string
 };
 
 export default function DecisionTimelinePage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +79,7 @@ export default function DecisionTimelinePage() {
         `)
         .eq('workspace_id', workspace.id)
         .order('created_at', { ascending: false });
-      if (error) toast({ title: 'Yüklenemedi', description: error.message, variant: 'destructive' });
+      if (error) toast({ title: translate("Yüklenemedi"), description: error.message, variant: 'destructive' });
       else setRows((data as any) ?? []);
       setLoading(false);
     })();
@@ -103,7 +105,7 @@ export default function DecisionTimelinePage() {
     for (const d of filtered) {
       const dt = new Date(d.created_at);
       const y = dt.getFullYear();
-      const m = dt.toLocaleDateString('tr-TR', { month: 'long' });
+      const m = dt.toLocaleDateString(getLocale(), { month: 'long' });
       if (!byYear.has(y)) byYear.set(y, new Map());
       const months = byYear.get(y)!;
       if (!months.has(m)) months.set(m, []);
@@ -121,7 +123,7 @@ export default function DecisionTimelinePage() {
       if (!map.has(key)) {
         map.set(key, {
           key,
-          label: dt.toLocaleDateString('tr-TR', { month: 'short', year: '2-digit' }),
+          label: dt.toLocaleDateString(getLocale(), { month: 'short', year: '2-digit' }),
           count: 0,
           financial: {},
         });
@@ -142,12 +144,11 @@ export default function DecisionTimelinePage() {
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         <header className="space-y-2">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-primary">
-            <CalendarRange className="h-3.5 w-3.5" /> Karar Zaman Çizelgesi
+            <CalendarRange className="h-3.5 w-3.5" /> {translate("Karar Zaman Çizelgesi")}
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Şirket dönemine göre kararlar</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{translate("Şirket dönemine göre kararlar")}</h1>
           <p className="text-muted-foreground max-w-3xl">
-            Kararları alındıkları döneme ve şirketin o anki finansal durumuna göre görselleştirir.
-            Renkler finansal sağlığı, işaretler sonucu gösterir.
+            {translate("Kararları alındıkları döneme ve şirketin o anki finansal durumuna göre görselleştirir. Renkler finansal sağlığı, işaretler sonucu gösterir.")}
           </p>
         </header>
 
@@ -155,24 +156,24 @@ export default function DecisionTimelinePage() {
         <Card>
           <CardContent className="p-4 grid grid-cols-2 md:grid-cols-5 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Başlangıç</Label>
+              <Label className="text-xs">{translate("Başlangıç")}</Label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Bitiş</Label>
+              <Label className="text-xs">{translate("Bitiş")}</Label>
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Finansal durum</Label>
+              <Label className="text-xs">{translate("Finansal durum")}</Label>
               <Select value={financial} onValueChange={setFinancial}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tümü</SelectItem>
-                  <SelectItem value="strong">Güçlü</SelectItem>
-                  <SelectItem value="stable">İstikrarlı</SelectItem>
-                  <SelectItem value="stressed">Zorlanan</SelectItem>
-                  <SelectItem value="critical">Kritik</SelectItem>
-                  <SelectItem value="unknown">Bilinmiyor</SelectItem>
+                  <SelectItem value="all">{translate("Tümü")}</SelectItem>
+                  <SelectItem value="strong">{translate("Güçlü")}</SelectItem>
+                  <SelectItem value="stable">{translate("İstikrarlı")}</SelectItem>
+                  <SelectItem value="stressed">{translate("Zorlanan")}</SelectItem>
+                  <SelectItem value="critical">{translate("Kritik")}</SelectItem>
+                  <SelectItem value="unknown">{translate("Bilinmiyor")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -181,17 +182,17 @@ export default function DecisionTimelinePage() {
               <Select value={risk} onValueChange={setRisk}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tümü</SelectItem>
-                  <SelectItem value="low">Düşük</SelectItem>
-                  <SelectItem value="medium">Orta</SelectItem>
-                  <SelectItem value="high">Yüksek</SelectItem>
-                  <SelectItem value="critical">Kritik</SelectItem>
+                  <SelectItem value="all">{translate("Tümü")}</SelectItem>
+                  <SelectItem value="low">{translate("Düşük")}</SelectItem>
+                  <SelectItem value="medium">{translate("Orta")}</SelectItem>
+                  <SelectItem value="high">{translate("Yüksek")}</SelectItem>
+                  <SelectItem value="critical">{translate("Kritik")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex items-end">
               <Button variant="outline" onClick={reset} className="w-full gap-2">
-                <Filter className="h-4 w-4" /> Sıfırla
+                <Filter className="h-4 w-4" /> {translate("Sıfırla")}
               </Button>
             </div>
           </CardContent>
@@ -199,10 +200,10 @@ export default function DecisionTimelinePage() {
 
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">Finansal durum:</span>
+          <span className="font-medium text-foreground">{translate("Finansal durum:")}</span>
           {Object.entries(FIN_META).map(([k, m]) => (
             <span key={k} className="inline-flex items-center gap-1.5">
-              <span className={`h-2.5 w-2.5 rounded-full ${m.dot}`} /> {m.label}
+              <span className={`h-2.5 w-2.5 rounded-full ${m.dot}`} /> {translate(m.label)}
             </span>
           ))}
         </div>
@@ -215,9 +216,9 @@ export default function DecisionTimelinePage() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm font-semibold flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-primary" /> Aylık karar yoğunluğu
+                  <Activity className="h-4 w-4 text-primary" /> {translate("Aylık karar yoğunluğu")}
                 </div>
-                <div className="text-xs text-muted-foreground">{filtered.length} karar</div>
+                <div className="text-xs text-muted-foreground">{filtered.length} {translate("karar")}</div>
               </div>
               <div className="flex items-end gap-1.5 h-32 overflow-x-auto pb-2">
                 {monthlyStrip.map((m) => (
@@ -237,13 +238,13 @@ export default function DecisionTimelinePage() {
                             );
                           })}
                         </div>
-                        <div className="text-[9px] text-muted-foreground rotate-0 whitespace-nowrap">{m.label}</div>
+                        <div className="text-[9px] text-muted-foreground rotate-0 whitespace-nowrap">{translate(m.label)}</div>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="text-xs">
-                      <div className="font-medium mb-1">{m.label} — {m.count} karar</div>
+                      <div className="font-medium mb-1">{translate(m.label)} — {m.count} {translate("karar")}</div>
                       {Object.entries(m.financial).map(([fh, n]) => (
-                        <div key={fh}>{(FIN_META[fh] ?? FIN_META.unknown).label}: {n}</div>
+                        <div key={fh}>{translate((FIN_META[fh] ?? FIN_META.unknown).label)}: {n}</div>
                       ))}
                     </TooltipContent>
                   </Tooltip>
@@ -262,7 +263,7 @@ export default function DecisionTimelinePage() {
         ) : grouped.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center text-muted-foreground">
-              Bu filtrelerle eşleşen karar bulunamadı.
+              {translate("Bu filtrelerle eşleşen karar bulunamadı.")}
             </CardContent>
           </Card>
         ) : (
@@ -273,7 +274,7 @@ export default function DecisionTimelinePage() {
                   <div className="text-2xl font-bold tracking-tight">{year}</div>
                   <div className="h-px flex-1 bg-border" />
                   <div className="text-xs text-muted-foreground">
-                    {Array.from(months.values()).reduce((s, arr) => s + arr.length, 0)} karar
+                    {Array.from(months.values()).reduce((s, arr) => s + arr.length, 0)} {translate("karar")}
                   </div>
                 </div>
                 <div className="relative pl-6">
@@ -301,6 +302,7 @@ export default function DecisionTimelinePage() {
 }
 
 function TimelineItem({ d }: { d: Row }) {
+  useLanguage();
   const snap = d.decision_context_snapshots[0];
   const out = d.decision_outcomes[0];
   const fh = snap?.financial_health ?? 'unknown';
@@ -309,7 +311,7 @@ function TimelineItem({ d }: { d: Row }) {
   const OutIcon = outMeta?.icon;
 
   const fmt = (n: number | null | undefined) =>
-    n == null ? '—' : new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+    n == null ? '—' : new Intl.NumberFormat(getLocale(), { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
   return (
     <div className="relative">
@@ -323,9 +325,9 @@ function TimelineItem({ d }: { d: Row }) {
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-1">
-              <span>{new Date(d.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}</span>
+              <span>{new Date(d.created_at).toLocaleDateString(getLocale(), { day: '2-digit', month: 'short' })}</span>
               <span>•</span>
-              <span className={finMeta.color}>{finMeta.label}</span>
+              <span className={finMeta.color}>{translate(finMeta.label)}</span>
               {snap?.company_state && (
                 <>
                   <span>•</span>
@@ -335,8 +337,8 @@ function TimelineItem({ d }: { d: Row }) {
             </div>
             <div className="font-semibold group-hover:text-primary transition-colors truncate">{d.title}</div>
             <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
-              {d.status && <Badge variant="secondary" className="text-[10px]">{d.status}</Badge>}
-              {d.risk_level && <Badge variant="outline" className="text-[10px]">Risk: {d.risk_level}</Badge>}
+              {d.status && <Badge variant="secondary" className="text-[10px]">{translate(d.status)}</Badge>}
+              {d.risk_level && <Badge variant="outline" className="text-[10px]">Risk: {translate(d.risk_level)}</Badge>}
               {d.budget != null && (
                 <span className="inline-flex items-center gap-1 text-muted-foreground">
                   <DollarSign className="h-3 w-3" /> {fmt(d.budget)}
@@ -344,7 +346,7 @@ function TimelineItem({ d }: { d: Row }) {
               )}
               {snap?.runway_months != null && (
                 <span className="inline-flex items-center gap-1 text-muted-foreground">
-                  <Building2 className="h-3 w-3" /> {snap.runway_months} ay runway
+                  <Building2 className="h-3 w-3" /> {snap.runway_months} {translate("ay runway")}
                 </span>
               )}
             </div>
@@ -365,7 +367,7 @@ function TimelineItem({ d }: { d: Row }) {
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="left" className="max-w-xs text-xs">
-                  <div className="font-medium mb-1">{outMeta.label}</div>
+                  <div className="font-medium mb-1">{translate(outMeta.label)}</div>
                   {out?.summary && <div className="text-muted-foreground">{out.summary}</div>}
                 </TooltipContent>
               </Tooltip>

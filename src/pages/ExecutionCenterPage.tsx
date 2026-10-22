@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTable, logAudit } from '@/hooks/useGovernance';
@@ -11,6 +12,7 @@ import { Play, Undo2 } from 'lucide-react';
 const db = supabase as any;
 
 export default function ExecutionCenterPage() {
+  useLanguage();
   const { rows: actions, refetch } = useTable<any>('action_proposals');
   const { rows: records, refetch: refetchR } = useTable<any>('execution_records');
   const { rows: approvals } = useTable<any>('action_approvals');
@@ -53,15 +55,15 @@ export default function ExecutionCenterPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Execution Center</h1>
-        <p className="text-muted-foreground mt-1">Approved actions run here through a deterministic Execution Engine — never by the AI directly.</p>
+        <h1 className="text-3xl font-bold tracking-tight">{translate("Execution Center")}</h1>
+        <p className="text-muted-foreground mt-1">{translate("Approved actions run here through a deterministic Execution Engine — never by the AI directly.")}</p>
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Action Proposals</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{translate("Action Proposals")}</CardTitle></CardHeader>
         <CardContent className="p-0">
           <ul className="divide-y">
-            {actions.length === 0 && <li className="p-6 text-sm text-muted-foreground">No actions yet.</li>}
+            {actions.length === 0 && <li className="p-6 text-sm text-muted-foreground">{translate("No actions yet.")}</li>}
             {actions.map((a) => (
               <li key={a.id} className="p-4 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
@@ -71,13 +73,13 @@ export default function ExecutionCenterPage() {
                   </div>
                   <p className="text-xs text-muted-foreground">{a.action_type} → {a.target_system || 'internal'}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <ApprovalStatusBadge status={a.approval_status} />
-                    <AuthorityLevelBadge level={a.authority_level} />
-                    <RiskBadge level={a.risk_level} />
+                    <ApprovalStatusBadge status={translate(a.approval_status)} />
+                    <AuthorityLevelBadge level={translate(a.authority_level)} />
+                    <RiskBadge level={translate(a.risk_level)} />
                   </div>
                 </div>
                 <Button size="sm" disabled={a.approval_status !== 'approved'} onClick={() => execute(a)}>
-                  <Play className="h-3 w-3 mr-1" /> Execute
+                  <Play className="h-3 w-3 mr-1" /> {translate("Execute")}
                 </Button>
               </li>
             ))}
@@ -86,18 +88,18 @@ export default function ExecutionCenterPage() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Execution Records</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{translate("Execution Records")}</CardTitle></CardHeader>
         <CardContent className="p-0">
           <ul className="divide-y">
-            {records.length === 0 && <li className="p-6 text-sm text-muted-foreground">Nothing executed yet.</li>}
+            {records.length === 0 && <li className="p-6 text-sm text-muted-foreground">{translate("Nothing executed yet.")}</li>}
             {records.map((r) => (
               <li key={r.id} className="p-4 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm">{r.target_system || 'internal'} · v{r.action_version}</p>
-                  <p className="text-xs text-muted-foreground">{new Date(r.executed_at).toLocaleString()} · {r.result}{r.error_details ? ` · ${r.error_details}` : ''}</p>
+                  <p className="text-xs text-muted-foreground">{new Date(r.executed_at).toLocaleString(getLocale())} · {r.result}{r.error_details ? ` · ${r.error_details}` : ''}</p>
                 </div>
                 {r.result === 'success' && (
-                  <Button size="sm" variant="outline" onClick={() => rollback(r)}><Undo2 className="h-3 w-3 mr-1" /> Rollback</Button>
+                  <Button size="sm" variant="outline" onClick={() => rollback(r)}><Undo2 className="h-3 w-3 mr-1" /> {translate("Rollback")}</Button>
                 )}
               </li>
             ))}

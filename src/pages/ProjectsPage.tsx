@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 const ACCEPTS = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.md,.json,.png,.jpg,.jpeg,.webp';
 
 export default function ProjectsPage() {
+  useLanguage();
   const { user } = useAuth();
   const { workspace } = useWorkspace();
   const { toast } = useToast();
@@ -48,7 +50,7 @@ export default function ProjectsPage() {
       name: form.name, status: form.status,
       client_id: form.client_id || null, objective: form.objective,
     });
-    if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    if (error) return toast({ title: translate("Error"), description: error.message, variant: 'destructive' });
     setOpen(false); setForm({ name: '', status: 'active', client_id: '', objective: '' }); load();
   };
 
@@ -73,54 +75,54 @@ export default function ProjectsPage() {
       if (!contentText && doc) {
         supabase.functions.invoke('ingest-document', { body: { document_id: doc.id } }).then(() => load()).catch(() => void 0);
       }
-      toast({ title: 'Yüklendi', description: contentText ? 'Dosya projeye eklendi.' : 'Dosya yüklendi; AI ile içerik çıkarılıyor…' });
+      toast({ title: translate("Yüklendi"), description: contentText ? 'Dosya projeye eklendi.' : 'Dosya yüklendi; AI ile içerik çıkarılıyor…' });
       setUploadFor(null); setFile(null); load();
     } catch (e: any) {
-      toast({ title: 'Hata', description: e.message, variant: 'destructive' });
+      toast({ title: translate("Hata"), description: e.message, variant: 'destructive' });
     } finally { setUploading(false); }
   };
 
   const reingest = async (id: string) => {
-    toast({ title: 'AI çıkarımı başladı' });
+    toast({ title: translate("AI çıkarımı başladı") });
     const { error } = await supabase.functions.invoke('ingest-document', { body: { document_id: id } });
-    if (error) toast({ title: 'Hata', description: error.message, variant: 'destructive' });
-    else { toast({ title: 'Bitti' }); load(); }
+    if (error) toast({ title: translate("Hata"), description: error.message, variant: 'destructive' });
+    else { toast({ title: translate("Bitti") }); load(); }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><h1 className="text-2xl font-bold">Projects</h1><p className="text-sm text-muted-foreground">Project intelligence, next actions and attached documents.</p></div>
+        <div><h1 className="text-2xl font-bold">{translate("Projects")}</h1><p className="text-sm text-muted-foreground">{translate("Project intelligence, next actions and attached documents.")}</p></div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />New Project</Button></DialogTrigger>
+          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />{translate("New Project")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>New Project</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{translate("New Project")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>Status</Label>
-                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+              <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+              <div><Label>{translate("Status")}</Label>
+                <Select value={translate(form.status)} onValueChange={(v) => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Active</SelectItem><SelectItem value="on_hold">On hold</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem><SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="active">{translate("Active")}</SelectItem><SelectItem value="on_hold">{translate("On hold")}</SelectItem>
+                    <SelectItem value="completed">{translate("Completed")}</SelectItem><SelectItem value="cancelled">{translate("Cancelled")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div><Label>Client (optional)</Label>
+              <div><Label>{translate("Client (optional)")}</Label>
                 <Select value={form.client_id} onValueChange={(v) => setForm({ ...form, client_id: v })}>
-                  <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={translate("None")} /></SelectTrigger>
                   <SelectContent>{clients.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Objective</Label><Textarea value={form.objective} onChange={(e) => setForm({ ...form, objective: e.target.value })} /></div>
-              <Button onClick={create} className="w-full">Create</Button>
+              <div><Label>{translate("Objective")}</Label><Textarea value={form.objective} onChange={(e) => setForm({ ...form, objective: e.target.value })} /></div>
+              <Button onClick={create} className="w-full">{translate("Create")}</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
       {rows.length === 0 ? (
-        <Card className="p-12 text-center"><FolderKanban className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">No projects yet.</p></Card>
+        <Card className="p-12 text-center"><FolderKanban className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">{translate("No projects yet.")}</p></Card>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
           {rows.map((p) => {
@@ -129,16 +131,16 @@ export default function ProjectsPage() {
               <Card key={p.id} className="p-4 space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="font-semibold">{p.name}</div>
-                  <Badge variant="outline" className="text-[10px]">{p.status}</Badge>
+                  <Badge variant="outline" className="text-[10px]">{translate(p.status)}</Badge>
                 </div>
-                {p.clients?.name && <div className="text-xs text-muted-foreground">Client: {p.clients.name}</div>}
+                {p.clients?.name && <div className="text-xs text-muted-foreground">{translate("Client:")} {p.clients.name}</div>}
                 {p.objective && <p className="text-xs text-muted-foreground line-clamp-3">{p.objective}</p>}
 
                 <div className="pt-2 border-t border-border/50 space-y-2">
                   <div className="flex items-center justify-between">
-                    <div className="text-[11px] font-medium text-muted-foreground">Dosyalar ({docs.length})</div>
+                    <div className="text-[11px] font-medium text-muted-foreground">{translate("Dosyalar (")}{docs.length})</div>
                     <Button size="sm" variant="ghost" className="h-7 gap-1 text-xs" onClick={() => { setUploadFor(p.id); setFile(null); }}>
-                      <Upload className="h-3 w-3" /> Ekle
+                      <Upload className="h-3 w-3" /> {translate("Ekle")}
                     </Button>
                   </div>
                   {docs.length > 0 && (
@@ -148,7 +150,7 @@ export default function ProjectsPage() {
                           <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
                           <span className="flex-1 truncate" title={d.title}>{d.title}</span>
                           <Badge variant="secondary" className="text-[9px] h-4">{d.process_status}</Badge>
-                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => reingest(d.id)} title="AI ile içerik çıkar">
+                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => reingest(d.id)} title={translate("AI ile içerik çıkar")}>
                             <Sparkles className="h-3 w-3" />
                           </Button>
                         </div>
@@ -164,15 +166,15 @@ export default function ProjectsPage() {
 
       <Dialog open={!!uploadFor} onOpenChange={(o) => { if (!o) { setUploadFor(null); setFile(null); } }}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Projeye dosya ekle</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{translate("Projeye dosya ekle")}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label>PDF, Word, Excel, CSV, resim vb.</Label>
+              <Label>{translate("PDF, Word, Excel, CSV, resim vb.")}</Label>
               <Input type="file" accept={ACCEPTS} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-              <p className="text-[10px] text-muted-foreground mt-1">Binary dosyalarda içerik AI ile otomatik çıkarılır ve Company Brain'e indekslenir.</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{translate("Binary dosyalarda içerik AI ile otomatik çıkarılır ve Company Brain'e indekslenir.")}</p>
             </div>
             <Button onClick={uploadFile} disabled={!file || uploading} className="w-full">
-              {uploading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Yükleniyor</> : 'Yükle & İndeksle'}
+              {uploading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{translate("Yükleniyor")}</> : translate("Yükle & İndeksle")}
             </Button>
           </div>
         </DialogContent>

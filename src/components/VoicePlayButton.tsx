@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useRef, useState } from 'react';
 import { Volume2, Loader2, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function VoicePlayButton({ text, voice = 'alloy', label = 'Listen', size = 'sm' }: Props) {
+  useLanguage();
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -38,7 +40,7 @@ export function VoicePlayButton({ text, voice = 'alloy', label = 'Listen', size 
       await audio.play();
       setPlaying(true);
     } catch (e: any) {
-      toast({ title: 'Could not play audio', description: e.message, variant: 'destructive' });
+      toast({ title: translate("Could not play audio"), description: e.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ export function VoicePlayButton({ text, voice = 'alloy', label = 'Listen', size 
   return (
     <Button type="button" variant="ghost" size={size} onClick={handle} disabled={loading}>
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : playing ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-      {playing ? 'Stop' : label}
+      {playing ? translate("Stop") : label}
     </Button>
   );
 }

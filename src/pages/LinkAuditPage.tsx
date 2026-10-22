@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ const SOURCE_META: Record<LinkAuditEntry['source'], { label: string; icon: any }
 };
 
 export default function LinkAuditPage() {
+  useLanguage();
   const { entries, clear } = useLinkAudit();
   const { isAdmin, isApprover, role } = usePermissions();
   const canView = isAdmin || isApprover;
@@ -45,10 +47,10 @@ export default function LinkAuditPage() {
       <UICard className="max-w-lg mx-auto mt-16">
         <UICardContent className="p-8 text-center space-y-3">
           <ShieldAlert className="h-10 w-10 text-muted-foreground mx-auto" />
-          <h2 className="text-lg font-semibold">Erişim yetkiniz yok</h2>
+          <h2 className="text-lg font-semibold">{translate("Erişim yetkiniz yok")}</h2>
           <p className="text-sm text-muted-foreground">
-            Link Audit Trail yalnızca Admin ve Approver rollerine açıktır.
-            {role ? ` Mevcut rolünüz: ${role}.` : ''}
+            {translate("Link Audit Trail yalnızca Admin ve Approver rollerine açıktır.")}
+            {role ? translate("Mevcut rolünüz: {v0}.", {v0: role}) : ''}
           </p>
         </UICardContent>
       </UICard>
@@ -75,7 +77,7 @@ export default function LinkAuditPage() {
   const grouped = useMemo(() => {
     const g: Record<string, LinkAuditEntry[]> = {};
     filtered.forEach((e) => {
-      const day = new Date(e.at).toLocaleDateString();
+      const day = new Date(e.at).toLocaleDateString(getLocale());
       (g[day] ||= []).push(e);
     });
     return Object.entries(g);
@@ -107,33 +109,33 @@ export default function LinkAuditPage() {
       <div className="page-header flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="page-title flex items-center gap-2">
-            <History className="h-6 w-6 text-primary" /> Link Audit Trail
+            <History className="h-6 w-6 text-primary" /> {translate("Link Audit Trail")}
           </h1>
           <p className="page-description">
-            Kim, ne zaman, hangi ders–karar bağlantısını ekledi veya kaldırdı — tümü değiştirilemez bir kayıt olarak.
+            {translate("Kim, ne zaman, hangi ders–karar bağlantısını ekledi veya kaldırdı — tümü değiştirilemez bir kayıt olarak.")}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0}>
-            <Download className="h-4 w-4 mr-2" /> Export CSV
+            <Download className="h-4 w-4 mr-2" /> {translate("Export CSV")}
           </Button>
           {canClear && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" disabled={entries.length === 0}>
-                  <Trash2 className="h-4 w-4 mr-2" /> Clear log
+                  <Trash2 className="h-4 w-4 mr-2" /> {translate("Clear log")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Audit kaydını temizle?</AlertDialogTitle>
+                  <AlertDialogTitle>{translate("Audit kaydını temizle?")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Bu işlem geri alınamaz. Tüm bağlantı geçmişi silinir ancak mevcut ders–karar bağları korunur.
+                    {translate("Bu işlem geri alınamaz. Tüm bağlantı geçmişi silinir ancak mevcut ders–karar bağları korunur.")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => { clear(); toast.success('Audit kaydı temizlendi'); }}>Temizle</AlertDialogAction>
+                  <AlertDialogCancel>{translate("Vazgeç")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => { clear(); toast.success('Audit kaydı temizlendi'); }}>{translate("Temizle")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -142,38 +144,38 @@ export default function LinkAuditPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="Total events" value={stats.total} />
-        <Stat label="Links added" value={stats.links} />
-        <Stat label="Links removed" value={stats.unlinks} />
-        <Stat label="Distinct actors" value={stats.actors} />
+        <Stat label={translate("Total events")} value={stats.total} />
+        <Stat label={translate("Links added")} value={stats.links} />
+        <Stat label={translate("Links removed")} value={stats.unlinks} />
+        <Stat label={translate("Distinct actors")} value={stats.actors} />
       </div>
 
       <Card><CardContent className="p-4 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[220px]">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search lesson, decision or actor…" className="pl-9" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={translate("Search lesson, decision or actor…")} className="pl-9" />
         </div>
         <Select value={actionF} onValueChange={setActionF}>
           <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All actions</SelectItem>
-            <SelectItem value="link">Link</SelectItem>
-            <SelectItem value="unlink">Unlink</SelectItem>
+            <SelectItem value="all">{translate("All actions")}</SelectItem>
+            <SelectItem value="link">{translate("Link")}</SelectItem>
+            <SelectItem value="unlink">{translate("Unlink")}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={sourceF} onValueChange={setSourceF}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All sources</SelectItem>
-            <SelectItem value="manual">Manual</SelectItem>
-            <SelectItem value="suggestion">Suggestion</SelectItem>
-            <SelectItem value="auto_link_all">Auto-link all</SelectItem>
+            <SelectItem value="all">{translate("All sources")}</SelectItem>
+            <SelectItem value="manual">{translate("Manual")}</SelectItem>
+            <SelectItem value="suggestion">{translate("Suggestion")}</SelectItem>
+            <SelectItem value="auto_link_all">{translate("Auto-link all")}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={actorF} onValueChange={setActorF}>
-          <SelectTrigger className="w-48"><SelectValue placeholder="Actor" /></SelectTrigger>
+          <SelectTrigger className="w-48"><SelectValue placeholder={translate("Actor")} /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All actors</SelectItem>
+            <SelectItem value="all">{translate("All actors")}</SelectItem>
             {actors.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -181,7 +183,7 @@ export default function LinkAuditPage() {
 
       {grouped.length === 0 ? (
         <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">
-          <History className="h-6 w-6 mx-auto mb-2 opacity-50" /> No audit events match.
+          <History className="h-6 w-6 mx-auto mb-2 opacity-50" /> {translate("No audit events match.")}
         </CardContent></Card>
       ) : (
         <div className="space-y-6">
@@ -205,9 +207,9 @@ export default function LinkAuditPage() {
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Badge variant="outline" className={`text-[10px] ${A.cls}`}>{A.label}</Badge>
+                            <Badge variant="outline" className={`text-[10px] ${A.cls}`}>{translate(A.label)}</Badge>
                             <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                              <SIcon className="h-3 w-3" /> {S.label}
+                              <SIcon className="h-3 w-3" /> {translate(S.label)}
                             </span>
                           </div>
                           <div className="mt-1.5 text-sm flex items-center gap-2 flex-wrap">
@@ -219,7 +221,7 @@ export default function LinkAuditPage() {
                           </div>
                           <div className="mt-1 text-[11px] text-muted-foreground flex items-center gap-3 flex-wrap">
                             <span className="inline-flex items-center gap-1"><User className="h-3 w-3" /> {e.actorEmail ?? 'unknown'}</span>
-                            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(e.at).toLocaleTimeString()}</span>
+                            <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(e.at).toLocaleTimeString(getLocale())}</span>
                           </div>
                         </div>
                       </div>
@@ -236,9 +238,10 @@ export default function LinkAuditPage() {
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
+  useLanguage();
   return (
     <Card><CardContent className="p-4">
-      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-xs text-muted-foreground">{translate(label)}</div>
       <div className="text-2xl font-bold mt-1">{value}</div>
     </CardContent></Card>
   );

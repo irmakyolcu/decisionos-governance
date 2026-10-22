@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import { useWorkspace } from '@/contexts/WorkspaceContext';
 type Stat = { label: string; value: number; hint: string };
 
 export default function CorporateMemoryHubPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const [q, setQ] = useState('');
   const [stats, setStats] = useState<Stat[]>([
@@ -93,15 +95,15 @@ export default function CorporateMemoryHubPage() {
           <div>
             <h1 className="page-title flex items-center gap-2">
               <Brain className="h-6 w-6 text-primary" />
-              Corporate Memory
+              {translate("Corporate Memory")}
             </h1>
             <p className="page-description">
-              A single, governed substrate the whole organization — and the AI — reasons from.
+              {translate("A single, governed substrate the whole organization — and the AI — reasons from.")}
             </p>
           </div>
           <Button asChild size="sm">
             <Link to="/ask">
-              <Sparkles className="h-4 w-4 mr-2" /> Ask the memory
+              <Sparkles className="h-4 w-4 mr-2" /> {translate("Ask the memory")}
             </Link>
           </Button>
         </div>
@@ -114,13 +116,13 @@ export default function CorporateMemoryHubPage() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search across decisions, lessons, milestones, glossary…"
+              placeholder={translate("Search across decisions, lessons, milestones, glossary…")}
               className="pl-9"
             />
           </div>
           {q && (
             <p className="text-xs text-muted-foreground mt-3">
-              Press <Link to={`/ask?q=${encodeURIComponent(q)}`} className="text-primary underline">Enter in Ask DecisionOS</Link> to run a semantic query.
+              {translate("Press")} <Link to={`/ask?q=${encodeURIComponent(q)}`} className="text-primary underline">{translate("Enter in Ask DecisionOS")}</Link> {translate("to run a semantic query.")}
             </p>
           )}
         </CardContent>
@@ -128,9 +130,9 @@ export default function CorporateMemoryHubPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((s) => (
-          <Card key={s.label}>
+          <Card key={translate(s.label)}>
             <CardContent className="p-4">
-              <div className="text-xs text-muted-foreground">{s.label}</div>
+              <div className="text-xs text-muted-foreground">{translate(s.label)}</div>
               <div className="text-2xl font-bold mt-1">{s.value}</div>
               <div className="text-[11px] text-muted-foreground mt-1">{s.hint}</div>
             </CardContent>
@@ -141,15 +143,15 @@ export default function CorporateMemoryHubPage() {
       <Card>
         <CardContent className="p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Memory Health</h2>
-            <Badge variant="secondary">Composite 66</Badge>
+            <h2 className="font-semibold">{translate("Memory Health")}</h2>
+            <Badge variant="secondary">{translate("Composite 66")}</Badge>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {health.map((h) => (
-              <div key={h.label} className="rounded-lg border p-3">
+              <div key={translate(h.label)} className="rounded-lg border p-3">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <h.icon className="h-3.5 w-3.5" />
-                  {h.label}
+                  {translate(h.label)}
                 </div>
                 <div className="text-lg font-semibold mt-1">{h.v}%</div>
                 <div className="h-1.5 bg-muted rounded-full mt-2 overflow-hidden">
@@ -162,7 +164,7 @@ export default function CorporateMemoryHubPage() {
       </Card>
 
       <div>
-        <h2 className="font-semibold mb-3">Memory Layers</h2>
+        <h2 className="font-semibold mb-3">{translate("Memory Layers")}</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
           {sections.map((s) => (
             <Link key={s.href} to={s.href}>

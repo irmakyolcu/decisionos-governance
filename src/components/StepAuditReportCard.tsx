@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { AlertTriangle, CheckCircle2, CircleSlash, FileWarning } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { StepAuditReport } from '@/lib/stepAudit';
@@ -9,6 +10,7 @@ const STATUS_META: Record<StepAuditReport['status'], { label: string; className:
 };
 
 export function StepAuditReportCard({ report }: { report: StepAuditReport }) {
+  useLanguage();
   const meta = STATUS_META[report.status];
   const sections = [
     { title: 'Eksik bilgi', items: report.missing, icon: FileWarning },
@@ -20,20 +22,20 @@ export function StepAuditReportCard({ report }: { report: StepAuditReport }) {
     <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Otomatik denetim raporu</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">{translate("Otomatik denetim raporu")}</p>
           <p className="text-sm font-medium">
-            Adım {report.step}: {report.stepTitle}
+            {translate("Adım")} {report.step}: {report.stepTitle}
           </p>
         </div>
         <Badge variant="outline" className={meta.className}>
-          {meta.label}
+          {translate(meta.label)}
         </Badge>
       </div>
 
       {sections.length === 0 ? (
         <p className="text-sm text-muted-foreground flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 text-success" />
-          Eksik bilgi, hata veya kesinti bulunmadı.
+          {translate("Eksik bilgi, hata veya kesinti bulunmadı.")}
         </p>
       ) : (
         <div className="space-y-2">
@@ -45,7 +47,7 @@ export function StepAuditReportCard({ report }: { report: StepAuditReport }) {
               <ul className="space-y-1">
                 {s.items.map((it, i) => (
                   <li key={i} className="text-sm">
-                    <span className="font-medium">{it.label}</span>
+                    <span className="font-medium">{translate(it.label)}</span>
                     {it.detail && <span className="text-muted-foreground"> — {it.detail}</span>}
                   </li>
                 ))}
@@ -56,7 +58,7 @@ export function StepAuditReportCard({ report }: { report: StepAuditReport }) {
       )}
 
       <p className="text-[11px] text-muted-foreground">
-        {new Date(report.completedAt).toLocaleString()} · İç Denetim defterine kaydedildi
+        {new Date(report.completedAt).toLocaleString(getLocale())} {translate("· İç Denetim defterine kaydedildi")}
       </p>
     </div>
   );

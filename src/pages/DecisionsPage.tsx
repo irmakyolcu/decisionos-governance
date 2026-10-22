@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useDecisions } from '@/hooks/useDecisions';
@@ -12,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 export default function DecisionsPage() {
+  useLanguage();
   const [viewRole, setViewRole] = useState<UserRole>('CEO');
   const { decisions, loading, evaluatingStates } = useDecisions();
   const visible = useMemo(() => filterDecisionsByRole(decisions, viewRole), [decisions, viewRole]);
@@ -20,8 +22,8 @@ export default function DecisionsPage() {
     <div>
       <div className="page-header flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title">Decisions</h1>
-          <p className="page-description">Decisions visible based on your role in the hierarchy. Upper levels see all decisions below them.</p>
+          <h1 className="page-title">{translate("Decisions")}</h1>
+          <p className="page-description">{translate("Decisions visible based on your role in the hierarchy. Upper levels see all decisions below them.")}</p>
         </div>
         <PermissionGate permission="createDecision">
           <CreateDecisionDialog />
@@ -32,7 +34,7 @@ export default function DecisionsPage() {
 
       <div className="flex items-center gap-2 mb-4 text-xs text-muted-foreground">
         <Eye className="h-3.5 w-3.5" />
-        <span>Showing <strong className="text-foreground">{visible.length}</strong> of {decisions.length} decisions visible to <strong className="text-foreground">{viewRole}</strong> level</span>
+        <span>{translate("Showing")} <strong className="text-foreground">{visible.length}</strong> {translate("of")} {decisions.length} {translate("decisions visible to")} <strong className="text-foreground">{viewRole}</strong> {translate("level")}</span>
       </div>
 
       <div className="enterprise-card overflow-hidden">
@@ -44,19 +46,19 @@ export default function DecisionsPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Decision</th>
-                <th>Budget</th>
+                <th>{translate("Decision")}</th>
+                <th>{translate("Budget")}</th>
                 <th>Risk</th>
-                <th>Status</th>
-                <th>Created By</th>
-                <th>Authority Level</th>
-                <th>Date</th>
+                <th>{translate("Status")}</th>
+                <th>{translate("Created By")}</th>
+                <th>{translate("Authority Level")}</th>
+                <th>{translate("Date")}</th>
               </tr>
             </thead>
             <tbody>
               {visible.length === 0 ? (
                 <tr><td colSpan={7} className="text-center text-muted-foreground py-8">
-                  {decisions.length === 0 ? 'Henüz karar yok. İlk kararınızı oluşturun.' : 'No decisions visible at this authority level.'}
+                  {decisions.length === 0 ? translate("Henüz karar yok. İlk kararınızı oluşturun.") : translate("No decisions visible at this authority level.")}
                 </td></tr>
               ) : (
                 visible.map((d) => {
@@ -75,10 +77,10 @@ export default function DecisionsPage() {
                         </div>
                       </Link>
                     </td>
-                    <td className="font-mono text-sm">€{d.budget.toLocaleString()}</td>
+                    <td className="font-mono text-sm">€{d.budget.toLocaleString(getLocale())}</td>
                     <td>
                       <div className="flex items-center gap-2">
-                        <RiskBadge level={d.riskLevel} />
+                        <RiskBadge level={translate(d.riskLevel)} />
                         {evaluatingStates.has(d.id) && (() => {
                           const s = evaluatingStates.get(d.id)!;
                           const done = !!s.finishedAt;
@@ -89,14 +91,14 @@ export default function DecisionsPage() {
                             )}>
                               {done ? <Sparkles className="h-3 w-3" /> : <Loader2 className="h-3 w-3 animate-spin" />}
                               {done
-                                ? `AI tamamlandı · ${s.startedAt.toLocaleTimeString()} → ${s.finishedAt!.toLocaleTimeString()}`
-                                : `AI analiz ediyor… · başladı ${s.startedAt.toLocaleTimeString()}`}
+                                ? translate("AI tamamlandı · {v0} → {v1}", {v0: s.startedAt.toLocaleTimeString(), v1: s.finishedAt!.toLocaleTimeString()})
+                                : translate("AI analiz ediyor… · başladı {v0}", {v0: s.startedAt.toLocaleTimeString()})}
                             </span>
                           );
                         })()}
                       </div>
                     </td>
-                    <td><StatusBadge status={d.status} /></td>
+                    <td><StatusBadge status={translate(d.status)} /></td>
                     <td className="text-muted-foreground">{d.createdBy.name}</td>
                     <td>
                       <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
@@ -105,14 +107,14 @@ export default function DecisionsPage() {
                         d.createdBy.role === 'Executive' ? 'bg-warning/10 text-warning' :
                         'bg-muted text-muted-foreground'
                       }`}>
-                        {d.createdBy.role}
+                        {translate(d.createdBy.role)}
                       </span>
                     </td>
                     <td className="text-muted-foreground">
                       <div className="flex items-center justify-between gap-2">
-                        <span>{d.createdAt.toLocaleDateString()}</span>
+                        <span>{d.createdAt.toLocaleDateString(getLocale())}</span>
                         <Link to={`/decisions/list/${d.id}`} className="text-primary hover:underline inline-flex items-center gap-1 text-xs">
-                          <Pencil className="h-3 w-3" />{isLocked ? 'İncele' : 'Düzenle'}
+                          <Pencil className="h-3 w-3" />{isLocked ? translate("İncele") : translate("Düzenle")}
                         </Link>
                       </div>
                     </td>

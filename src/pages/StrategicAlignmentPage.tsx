@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useMemo } from 'react';
 import { useDecisions } from '@/hooks/useDecisions';
 import { AlignmentScore } from '@/components/AlignmentScore';
@@ -22,6 +23,7 @@ function scoreDecision(d: { riskLevel: string; budget: number; status: string })
 }
 
 export default function StrategicAlignmentPage() {
+  useLanguage();
   const { decisions } = useDecisions();
 
   const scored = useMemo(
@@ -42,33 +44,33 @@ export default function StrategicAlignmentPage() {
     <div className="space-y-6">
       <div className="page-header flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">Strategic Alignment</p>
-          <h1 className="page-title">Is the company moving in the CEO's direction?</h1>
+          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Strategic Alignment")}</p>
+          <h1 className="page-title">{translate("Is the company moving in the CEO's direction?")}</h1>
           <p className="page-description max-w-2xl">
-            Every decision scored against {ceoProfile.name}'s priorities, red lines and risk appetite. Spot drift before it compounds.
+            {translate("Every decision scored against")} {ceoProfile.name}{translate("'s priorities, red lines and risk appetite. Spot drift before it compounds.")}
           </p>
         </div>
-        <Button variant="outline" asChild><Link to="/ceo-profile"><Crown className="h-4 w-4" />Update CEO logic</Link></Button>
+        <Button variant="outline" asChild><Link to="/ceo-profile"><Crown className="h-4 w-4" />{translate("Update CEO logic")}</Link></Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2"><Target className="h-4 w-4 text-primary" />Portfolio alignment</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2"><Target className="h-4 w-4 text-primary" />{translate("Portfolio alignment")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
             <AlignmentScore score={portfolio.avg} size="lg" />
             <div className="grid grid-cols-3 gap-3 w-full text-center">
-              <Stat label="Aligned" value={portfolio.aligned} cls="text-success" />
-              <Stat label="Mixed" value={portfolio.mixed} cls="text-warning" />
-              <Stat label="Drift" value={portfolio.misaligned} cls="text-destructive" />
+              <Stat label={translate("Aligned")} value={portfolio.aligned} cls="text-success" />
+              <Stat label={translate("Mixed")} value={portfolio.mixed} cls="text-warning" />
+              <Stat label={translate("Drift")} value={portfolio.misaligned} cls="text-destructive" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2"><Compass className="h-4 w-4 text-primary" />CEO priorities driving the score</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2"><Compass className="h-4 w-4 text-primary" />{translate("CEO priorities driving the score")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -80,7 +82,7 @@ export default function StrategicAlignmentPage() {
               ))}
             </ul>
             <div className="mt-4 rounded-md border border-l-4 border-l-destructive/60 border-border bg-destructive/5 p-3">
-              <p className="text-xs uppercase tracking-wider text-destructive font-medium flex items-center gap-1.5"><ShieldAlert className="h-3.5 w-3.5" />Red lines</p>
+              <p className="text-xs uppercase tracking-wider text-destructive font-medium flex items-center gap-1.5"><ShieldAlert className="h-3.5 w-3.5" />{translate("Red lines")}</p>
               <p className="text-xs text-foreground mt-1">{ceoProfile.redLines.join(' · ')}</p>
             </div>
           </CardContent>
@@ -89,11 +91,11 @@ export default function StrategicAlignmentPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Decision-by-decision alignment</CardTitle>
+          <CardTitle className="text-base">{translate("Decision-by-decision alignment")}</CardTitle>
         </CardHeader>
         <CardContent>
           {scored.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No decisions yet. Submit one from <Link to="/decision-intake" className="text-primary hover:underline">Decision Intake</Link>.</p>
+            <p className="text-sm text-muted-foreground">{translate("No decisions yet. Submit one from")} <Link to="/decision-intake" className="text-primary hover:underline">{translate("Decision Intake")}</Link>.</p>
           ) : (
             <div className="divide-y divide-border/60">
               {scored.map(({ d, score }) => (
@@ -104,8 +106,8 @@ export default function StrategicAlignmentPage() {
                     <p className="text-xs text-muted-foreground truncate">{d.description}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <RiskBadge level={d.riskLevel} />
-                    <StatusBadge status={d.status} />
+                    <RiskBadge level={translate(d.riskLevel)} />
+                    <StatusBadge status={translate(d.status)} />
                   </div>
                 </div>
               ))}
@@ -118,10 +120,11 @@ export default function StrategicAlignmentPage() {
 }
 
 function Stat({ label, value, cls }: { label: string; value: number; cls: string }) {
+  useLanguage();
   return (
     <div className="rounded-md border border-border bg-card p-2">
       <p className={`text-xl font-bold ${cls}`}>{value}</p>
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{translate(label)}</p>
     </div>
   );
 }

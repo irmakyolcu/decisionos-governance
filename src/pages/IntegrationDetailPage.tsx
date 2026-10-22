@@ -1,3 +1,4 @@
+import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Check, X, Loader2, RefreshCw, Plug, ArrowRight, Shield, Database, Zap } from 'lucide-react';
@@ -21,6 +22,7 @@ type Integration = {
 };
 
 export default function IntegrationDetailPage() {
+  useLanguage();
   const { provider = '' } = useParams();
   const navigate = useNavigate();
   const { workspace, role } = useWorkspace();
@@ -55,9 +57,9 @@ export default function IntegrationDetailPage() {
     return (
       <div className="p-6 space-y-4">
         <Button variant="ghost" size="sm" onClick={() => navigate('/integrations')} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to integrations
+          <ArrowLeft className="h-4 w-4" /> {translate("Back to integrations")}
         </Button>
-        <Card><CardContent className="p-8 text-sm text-muted-foreground">Unknown integration.</CardContent></Card>
+        <Card><CardContent className="p-8 text-sm text-muted-foreground">{translate("Unknown integration.")}</CardContent></Card>
       </div>
     );
   }
@@ -105,7 +107,7 @@ export default function IntegrationDetailPage() {
     <div className="p-6 space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={() => navigate('/integrations')} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> {translate("Back")}
         </Button>
         <Badge variant="outline" className="text-xs">{CATEGORY_LABELS[entry.category]}</Badge>
       </div>
@@ -119,42 +121,42 @@ export default function IntegrationDetailPage() {
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
-            {connected ? <><Check className="h-3 w-3 mr-1" />Connected</> : <><X className="h-3 w-3 mr-1" />Not connected</>}
+            {connected ? <><Check className="h-3 w-3 mr-1" />{translate("Connected")}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}
           </Badge>
           {connected ? (
             <>
               <Button size="sm" variant="outline" disabled={!isAdmin || busy} onClick={connect} className="gap-1">
-                {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />} Sync
+                {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />} {translate("Sync")}
               </Button>
-              <Button size="sm" variant="ghost" disabled={!isAdmin || busy} onClick={disconnect}>Disconnect</Button>
+              <Button size="sm" variant="ghost" disabled={!isAdmin || busy} onClick={disconnect}>{translate("Disconnect")}</Button>
             </>
           ) : (
             <Button size="sm" disabled={!isAdmin || busy} onClick={connect} className="gap-1">
-              {busy && <Loader2 className="h-3 w-3 animate-spin" />} Connect
+              {busy && <Loader2 className="h-3 w-3 animate-spin" />} {translate("Connect")}
             </Button>
           )}
         </div>
       </div>
 
       {!isAdmin && (
-        <p className="text-xs text-warning">Workspace admins manage integrations.</p>
+        <p className="text-xs text-warning">{translate("Workspace admins manage integrations.")}</p>
       )}
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Overview</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{translate("Overview")}</CardTitle></CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground leading-relaxed">{profile.overview}</p>
           {loading ? null : integration?.last_synced_at ? (
-            <p className="text-xs text-muted-foreground mt-3">Last synced {new Date(integration.last_synced_at).toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground mt-3">{translate("Last synced")} {new Date(integration.last_synced_at).toLocaleString(getLocale())}</p>
           ) : (
-            <p className="text-xs text-muted-foreground mt-3">Never synced</p>
+            <p className="text-xs text-muted-foreground mt-3">{translate("Never synced")}</p>
           )}
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2"><Zap className="h-4 w-4 text-primary" /> Use cases</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2"><Zap className="h-4 w-4 text-primary" /> {translate("Use cases")}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -170,7 +172,7 @@ export default function IntegrationDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2"><Database className="h-4 w-4 text-primary" /> Data flow</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2"><Database className="h-4 w-4 text-primary" /> {translate("Data flow")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {profile.dataFlow.map((step, i) => (
@@ -187,7 +189,7 @@ export default function IntegrationDetailPage() {
           ))}
           <div className="grid md:grid-cols-2 gap-3 pt-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Data types</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">{translate("Data types")}</p>
               <div className="flex flex-wrap gap-1.5">
                 {profile.dataTypes.map((d, i) => (
                   <Badge key={i} variant="outline" className="text-[11px]">{d}</Badge>
@@ -195,7 +197,7 @@ export default function IntegrationDetailPage() {
               </div>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Write-back</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">{translate("Write-back")}</p>
               <p className="text-sm text-foreground/90">{profile.writeBack}</p>
             </div>
           </div>
@@ -204,7 +206,7 @@ export default function IntegrationDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> Governance & security</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> {translate("Governance & security")}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-foreground/90 leading-relaxed">{profile.governance}</p>

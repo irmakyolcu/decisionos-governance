@@ -1,3 +1,4 @@
+import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { FileCheck, Plus, Download, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +28,7 @@ type Report = {
 const FRAMEWORKS = ['SOC 2', 'ISO 27001', 'GDPR', 'EU AI Act', 'NIS2', 'Internal Governance'];
 
 export default function ComplianceReportsPage() {
+  useLanguage();
   const { workspace } = useWorkspace();
   const { user } = useAuth();
   const [items, setItems] = useState<Report[]>([]);
@@ -153,25 +155,25 @@ export default function ComplianceReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <FileCheck className="h-6 w-6 text-primary" /> Compliance Reports
+            <FileCheck className="h-6 w-6 text-primary" /> {translate("Compliance Reports")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Generate point-in-time compliance reports from audit ledger, decisions, actions and policies.
+            {translate("Generate point-in-time compliance reports from audit ledger, decisions, actions and policies.")}
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2"><Plus className="h-4 w-4" /> Generate report</Button>
+            <Button className="gap-2"><Plus className="h-4 w-4" /> {translate("Generate report")}</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Generate compliance report</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{translate("Generate compliance report")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div>
-                <Label>Title</Label>
-                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Q2 SOC 2 Review" />
+                <Label>{translate("Title")}</Label>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={translate("Q2 SOC 2 Review")} />
               </div>
               <div>
-                <Label>Framework</Label>
+                <Label>{translate("Framework")}</Label>
                 <Select value={framework} onValueChange={setFramework}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -181,18 +183,18 @@ export default function ComplianceReportsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Period start</Label>
+                  <Label>{translate("Period start")}</Label>
                   <Input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} />
                 </div>
                 <div>
-                  <Label>Period end</Label>
+                  <Label>{translate("Period end")}</Label>
                   <Input type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} />
                 </div>
               </div>
             </div>
             <DialogFooter>
               <Button onClick={generate} disabled={generating} className="gap-2">
-                {generating && <Loader2 className="h-4 w-4 animate-spin" />} Generate
+                {generating && <Loader2 className="h-4 w-4 animate-spin" />} {translate("Generate")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -200,7 +202,7 @@ export default function ComplianceReportsPage() {
       </div>
 
       {items.length === 0 ? (
-        <Card><CardContent className="p-12 text-center text-sm text-muted-foreground">No reports yet — generate your first.</CardContent></Card>
+        <Card><CardContent className="p-12 text-center text-sm text-muted-foreground">{translate("No reports yet — generate your first.")}</CardContent></Card>
       ) : (
         <div className="grid gap-4">
           {items.map((r) => {
@@ -220,7 +222,7 @@ export default function ComplianceReportsPage() {
                     <div className="flex items-center gap-2">
                       {fails > 0 && <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">{fails} fail</Badge>}
                       {obs > 0 && <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">{obs} obs</Badge>}
-                      {fails === 0 && obs === 0 && <Badge variant="outline" className="bg-success/10 text-success border-success/20">all pass</Badge>}
+                      {fails === 0 && obs === 0 && <Badge variant="outline" className="bg-success/10 text-success border-success/20">{translate("all pass")}</Badge>}
                       <Button size="sm" variant="outline" onClick={() => downloadCsv(r)} className="gap-1">
                         <Download className="h-3 w-3" /> CSV
                       </Button>
@@ -244,7 +246,7 @@ export default function ComplianceReportsPage() {
                             'bg-warning/10 text-warning border-warning/20'
                           }
                         >
-                          {f.status}
+                          {translate(f.status)}
                         </Badge>
                       </div>
                     ))}
