@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -9,8 +10,9 @@ const riskColors: Record<string, string> = {
 };
 
 export function RiskBadge({ level }: { level?: string | null }) {
+  const { t } = useLanguage();
   const k = (level || 'medium').toLowerCase();
-  return <Badge variant="outline" className={cn('capitalize', riskColors[k] || riskColors.medium)}>{k} risk</Badge>;
+  return <Badge variant="outline" className={cn('capitalize', riskColors[k] || riskColors.medium)}>{t(k.charAt(0).toUpperCase() + k.slice(1))} {t('risk')}</Badge>;
 }
 
 const authorityLabels: Record<string, { label: string; cls: string }> = {
@@ -20,8 +22,9 @@ const authorityLabels: Record<string, { label: string; cls: string }> = {
   commit: { label: 'L3 · Commit · 2 approvers', cls: 'bg-red-500/10 text-red-600 border-red-500/30' },
 };
 export function AuthorityLevelBadge({ level }: { level: string }) {
+  const { t } = useLanguage();
   const a = authorityLabels[level] || authorityLabels.act;
-  return <Badge variant="outline" className={a.cls}>{a.label}</Badge>;
+  return <Badge variant="outline" className={a.cls}>{t(a.label)}</Badge>;
 }
 
 const statusColors: Record<string, string> = {
@@ -39,7 +42,10 @@ const statusColors: Record<string, string> = {
   expired: 'bg-muted text-muted-foreground',
 };
 export function ApprovalStatusBadge({ status }: { status: string }) {
-  return <Badge variant="outline" className={cn('capitalize', statusColors[status] || statusColors.draft)}>{status.replace(/_/g, ' ')}</Badge>;
+  const { t } = useLanguage();
+  const label = status.replace(/_/g, ' ');
+  const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
+  return <Badge variant="outline" className={cn('capitalize', statusColors[status] || statusColors.draft)}>{t(displayLabel)}</Badge>;
 }
 
 export function ContentHashChip({ hash, version }: { hash?: string | null; version: number }) {

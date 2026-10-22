@@ -9,6 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { supabase } from '@/integrations/supabase/client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+
 type SearchHit = { id: string; title: string; kind: string; href: string };
 
 
@@ -19,6 +22,7 @@ const ROLE_BADGE = {
 } as const;
 
 export function TopBar() {
+  const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -89,7 +93,7 @@ export function TopBar() {
     navigate(`/ask?q=${encodeURIComponent(term)}`);
   };
 
-  const nameToShow = displayName || user?.user_metadata?.full_name || user?.email || 'Kullanıcı';
+  const nameToShow = displayName || user?.user_metadata?.full_name || user?.email || t('User');
   const initials = nameToShow.split(' ').map((s: string) => s[0]).slice(0, 2).join('').toUpperCase();
 
   return (
@@ -102,7 +106,7 @@ export function TopBar() {
         )}
         <input
           type="text"
-          placeholder="Search decisions, knowledge, clients…"
+          placeholder={t('Search decisions, knowledge, clients…')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onFocus={() => search.trim().length >= 2 && setOpen(true)}
@@ -115,24 +119,24 @@ export function TopBar() {
         {open && search.trim().length >= 2 && (
           <div className="absolute top-11 left-0 right-0 z-50 rounded-md border border-border bg-popover shadow-lg overflow-hidden">
             {hits.length === 0 && !loading && (
-              <div className="px-3 py-3 text-xs text-muted-foreground">No matches found.</div>
+              <div className="px-3 py-3 text-xs text-muted-foreground">{t('No matches found.')}</div>
             )}
             {hits.map((h) => (
-              <button
+              <Button variant="ghost"
                 key={`${h.kind}-${h.id}`}
                 onClick={() => { setOpen(false); navigate(h.href); }}
                 className="w-full text-left px-3 py-2 hover:bg-muted transition-colors flex items-center justify-between gap-3"
               >
                 <span className="text-sm text-foreground truncate">{h.title}</span>
-                <Badge variant="outline" className="text-[10px] shrink-0">{h.kind}</Badge>
-              </button>
+                <Badge variant="outline" className="text-[10px] shrink-0">{t(h.kind)}</Badge>
+              </Button>
             ))}
-            <button
+            <Button variant="ghost"
               onClick={goAsk}
               className="w-full text-left px-3 py-2 border-t border-border text-xs text-primary hover:bg-muted transition-colors"
             >
-              Ask DecisionOS: “{search.trim()}”
-            </button>
+              {t('Ask DecisionOS')}: “{search.trim()}”
+            </Button>
           </div>
         )}
       </div>
@@ -144,7 +148,7 @@ export function TopBar() {
 
 
 
-        <Link to="/profile" className="flex items-center gap-2 hover:bg-muted rounded-md px-2 py-1 transition-colors" title="Profili Düzenle">
+        <Link to="/profile" className="flex items-center gap-2 hover:bg-muted rounded-md px-2 py-1 transition-colors" title={t('Edit profile')}>
           <Avatar className="h-8 w-8">
             {avatarUrl && <AvatarImage src={avatarUrl} alt={nameToShow} />}
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
@@ -160,18 +164,18 @@ export function TopBar() {
           {roleBadge && (
             <Badge variant="outline" className={`gap-1 ${roleBadge.className}`}>
               <roleBadge.icon className="h-3 w-3" />
-              <span className="text-xs">{roleBadge.label}</span>
+              <span className="text-xs">{t(roleBadge.label)}</span>
             </Badge>
           )}
         </Link>
 
-        <button
+        <Button variant="ghost"
           onClick={signOut}
           className="p-2 rounded-md hover:bg-muted transition-colors"
-          title="Çıkış Yap"
+          title={t('Sign out')}
         >
           <LogOut className="h-4 w-4 text-muted-foreground" />
-        </button>
+        </Button>
       </div>
     </header>
   );
