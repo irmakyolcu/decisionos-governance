@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sparkles, Loader2, AlertTriangle, Target, Compass, Tag, Briefcase, CalendarCheck, Download } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 import type { Lesson } from '@/hooks/useLessons';
 import { toast } from 'sonner';
 
