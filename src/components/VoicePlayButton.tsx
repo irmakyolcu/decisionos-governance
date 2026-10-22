@@ -49,7 +49,7 @@ export function VoicePlayButton({ text, voice = 'alloy', label = 'Listen', size 
   return (
     <Button type="button" variant="ghost" size={size} onClick={handle} disabled={loading}>
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : playing ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-      {playing ? translate("Stop") : label}
+      {playing ? translate("Stop") : translate(label)}
     </Button>
   );
 }

@@ -113,7 +113,7 @@ export default function IntegrationsPage() {
             if (!entries.length) return null;
             return (
               <div key={cat}>
-                <h2 className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-3">{CATEGORY_LABELS[cat]}</h2>
+                <h2 className="text-sm font-semibold text-foreground/80 uppercase tracking-wide mb-3">{translate(CATEGORY_LABELS[cat])}</h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {entries.map((entry) => {
                     const existing = byProvider(entry.provider);
@@ -124,7 +124,7 @@ export default function IntegrationsPage() {
                           <div className="flex items-start justify-between">
                             <div>
                               <CardTitle className="text-base">{entry.display_name}</CardTitle>
-                              <p className="text-xs text-muted-foreground mt-1">{entry.description}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{translate(entry.description)}</p>
                             </div>
                             <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
                               {connected ? <><Check className="h-3 w-3 mr-1" />{translate("Connected")}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}

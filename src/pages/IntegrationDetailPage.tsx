@@ -109,7 +109,7 @@ export default function IntegrationDetailPage() {
         <Button variant="ghost" size="sm" onClick={() => navigate('/integrations')} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> {translate("Back")}
         </Button>
-        <Badge variant="outline" className="text-xs">{CATEGORY_LABELS[entry.category]}</Badge>
+        <Badge variant="outline" className="text-xs">{translate(CATEGORY_LABELS[entry.category])}</Badge>
       </div>
 
       <div className="flex items-start justify-between gap-4">
@@ -117,7 +117,7 @@ export default function IntegrationDetailPage() {
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Plug className="h-6 w-6 text-primary" /> {entry.display_name}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{entry.description}</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{translate(entry.description)}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
