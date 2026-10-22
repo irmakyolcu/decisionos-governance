@@ -117,7 +117,7 @@ export default function DecisionRoomPage() {
 
         <TabsContent value="summary">
           <Card><CardContent className="pt-6 text-sm space-y-2">
-            <p><strong>Problem:</strong> {decision.problem_statement || '—'}</p>
+            <p><strong>{translate("Problem:")}</strong> {decision.problem_statement || '—'}</p>
             <p><strong>{translate("Type:")}</strong> {decision.decision_type || '—'}</p>
             <p><strong>{translate("Strategic importance:")}</strong> {decision.strategic_importance || '—'}</p>
           </CardContent></Card>
@@ -153,7 +153,7 @@ export default function DecisionRoomPage() {
             </CardContent></Card>
             <Card className="border-red-500/30"><CardHeader><CardTitle className="text-sm text-red-600 flex items-center gap-1"><AlertOctagon className="h-4 w-4" />{translate("Unknowns")}</CardTitle></CardHeader><CardContent>
               {unknowns.length === 0 ? <p className="text-sm text-muted-foreground">{translate("None.")}</p> :
-                <ul className="space-y-1 text-sm">{unknowns.map(u => <li key={u.id}>· {u.text} {u.is_blocking && <Badge variant="destructive" className="text-[10px]">blocking</Badge>}</li>)}</ul>}
+                <ul className="space-y-1 text-sm">{unknowns.map(u => <li key={u.id}>· {u.text} {u.is_blocking && <Badge variant="destructive" className="text-[10px]">{translate("blocking")}</Badge>}</li>)}</ul>}
             </CardContent></Card>
           </div>
         </TabsContent>

@@ -465,7 +465,7 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
               <div className="flex items-center gap-2">
                 <p className="font-medium">{e.source}</p>
                 <Badge variant="outline">{e.reliability ?? 'medium'}</Badge>
-                {e.is_verified && <Badge variant="secondary">verified</Badge>}
+                {e.is_verified && <Badge variant="secondary">{translate("verified")}</Badge>}
               </div>
               {e.summary && <p className="text-sm text-muted-foreground mt-1">{e.summary}</p>}
               <p className="text-xs text-muted-foreground mt-1">{e.owner ?? '—'} · {new Date(e.created_at).toLocaleDateString(getLocale())}</p>

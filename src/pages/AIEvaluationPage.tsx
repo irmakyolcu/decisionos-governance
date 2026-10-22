@@ -108,7 +108,7 @@ export default function AIEvaluationPage() {
             </div>
             <div className="flex justify-between items-center py-2 border-b border-border/50">
               <span className="text-sm text-muted-foreground">{translate("Break-Even Timeline")}</span>
-              <span className="font-semibold text-foreground">{ai.breakEvenMonths} months</span>
+              <span className="font-semibold text-foreground">{ai.breakEvenMonths} {translate("months")}</span>
             </div>
             <div className="flex justify-between items-center py-2">
               <span className="text-sm text-muted-foreground">{translate("Expected Value")}</span>

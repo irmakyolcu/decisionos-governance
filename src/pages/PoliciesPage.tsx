@@ -103,7 +103,7 @@ export default function PoliciesPage() {
                     <p className="font-medium">{p.name}</p>
                     <Badge variant="outline">{translate(p.category)}</Badge>
                     <Badge>{p.effect?.replace(/_/g, ' ')}</Badge>
-                    <span className="text-xs text-muted-foreground">priority {p.priority}</span>
+                    <span className="text-xs text-muted-foreground">{translate("priority")}{p.priority}</span>
                   </div>
                   {p.description && <p className="text-sm text-muted-foreground mt-1">{p.description}</p>}
                   <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-x-auto">{JSON.stringify(p.rule_tree, null, 2)}</pre>

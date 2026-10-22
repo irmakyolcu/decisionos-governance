@@ -1,4 +1,5 @@
 import { tr as trLocale, enUS } from "date-fns/locale";
+import { tr as trLocale, enUS } from "date-fns/locale";
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';

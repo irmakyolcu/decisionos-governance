@@ -139,8 +139,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    {m.duration}min
-                  </div>
+                    {m.duration}{translate("min")}</div>
                 </div>
               </div>
             ))}

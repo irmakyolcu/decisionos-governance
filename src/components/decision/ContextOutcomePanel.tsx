@@ -101,7 +101,7 @@ function SnapshotCard({ s, isLatest }: { s: any; isLatest: boolean }) {
           {s.financial_health && <div><span className="text-muted-foreground">{translate("Finansal:")}</span> {s.financial_health}</div>}
           {s.team_size != null && <div><span className="text-muted-foreground">{translate("Ekip:")}</span> {s.team_size}</div>}
           {s.revenue != null && <div><span className="text-muted-foreground">{translate("Gelir:")}</span> €{Number(s.revenue).toLocaleString(getLocale())}</div>}
-          {s.runway_months != null && <div><span className="text-muted-foreground">{translate("Runway:")}</span> {s.runway_months} ay</div>}
+          {s.runway_months != null && <div><span className="text-muted-foreground">{translate("Runway:")}</span> {s.runway_months} {translate("ay")}</div>}
         </div>
         {s.market_conditions && <p className="text-xs"><span className="text-muted-foreground">{translate("Pazar:")}</span> {s.market_conditions}</p>}
         {s.key_challenges && <p className="text-xs"><span className="text-muted-foreground">{translate("Zorluklar:")}</span> {s.key_challenges}</p>}

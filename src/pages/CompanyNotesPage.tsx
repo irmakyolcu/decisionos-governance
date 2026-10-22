@@ -1,4 +1,5 @@
 import { tr as trLocale, enUS } from "date-fns/locale";
+import { tr as trLocale, enUS } from "date-fns/locale";
 import { useLanguage, translate , getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';

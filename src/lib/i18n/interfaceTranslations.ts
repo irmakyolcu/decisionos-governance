@@ -2813,7 +2813,7 @@ export const interfaceTranslations: Record<string, { en: string; tr: string }> =
   },
   "Problem:": {
     "en": "Problem:",
-    "tr": "Problem:"
+    "tr": "Sorun:"
   },
   "Type:": {
     "en": "Type:",
@@ -6362,5 +6362,209 @@ export const interfaceTranslations: Record<string, { en: string; tr: string }> =
   "strategicRelevance": {
     "en": "Strategic relevance",
     "tr": "Stratejik önem"
+  },
+  "Structured knowledge": {
+    "en": "Structured knowledge",
+    "tr": "Yapılandırılmış bilgi"
+  },
+  "With rationale + outcome": {
+    "en": "With rationale + outcome",
+    "tr": "Gerekçe + sonuç ile"
+  },
+  "Distilled insights": {
+    "en": "Distilled insights",
+    "tr": "Özümsenmiş içgörüler"
+  },
+  "Company history": {
+    "en": "Company history",
+    "tr": "Şirket geçmişi"
+  },
+  "Sensitivity-tagged knowledge entries with tags & search.": {
+    "en": "Sensitivity-tagged knowledge entries with tags & search.",
+    "tr": "Etiketler & arama ile hassasiyet düzeyi işaretlenmiş bilgi kayıtları."
+  },
+  "Past decisions, reasoning, accepted risks, outcomes.": {
+    "en": "Past decisions, reasoning, accepted risks, outcomes.",
+    "tr": "Geçmiş kararlar, gerekçeler, kabul edilen riskler, sonuçlar."
+  },
+  "What worked, what did not — captured for reuse.": {
+    "en": "What worked, what did not — captured for reuse.",
+    "tr": "Neyin işe yaradığı, neyin yaramadığı — yeniden yararlanmak üzere kaydedilir."
+  },
+  "Founding, pivots, launches, acquisitions and inflection points.": {
+    "en": "Founding, pivots, launches, acquisitions and inflection points.",
+    "tr": "Kuruluş, stratejik yön değişiklikleri, lansmanlar, satın almalar ve dönüm noktaları."
+  },
+  "Internal terminology, acronyms and canonical definitions.": {
+    "en": "Internal terminology, acronyms and canonical definitions.",
+    "tr": "Şirket içi terminoloji, kısaltmalar ve esas alınan tanımlar."
+  },
+  "Reversible, low-impact decisions the team owns end-to-end.": {
+    "en": "Reversible, low-impact decisions the team owns end-to-end.",
+    "tr": "Ekibin uçtan uca sorumluluğunu üstlendiği geri alınabilir, düşük etkili kararlar."
+  },
+  "Department-scope decisions that need a manager sign-off.": {
+    "en": "Department-scope decisions that need a manager sign-off.",
+    "tr": "Yönetici onayı gerektiren departman kapsamındaki kararlar."
+  },
+  "Strategic, financial, legal, or brand-sensitive decisions.": {
+    "en": "Strategic, financial, legal, or brand-sensitive decisions.",
+    "tr": "Stratejik, finansal, hukuki, veya marka açısından hassas kararlar."
+  },
+  "PR, security, or legal incidents that need real-time attention.": {
+    "en": "PR, security, or legal incidents that need real-time attention.",
+    "tr": "Anlık müdahale gerektiren halkla ilişkiler, güvenlik, veya hukuk alanındaki olaylar."
+  },
+  "Add a past CEO decision with reasoning and outcome.": {
+    "en": "Add a past CEO decision with reasoning and outcome.",
+    "tr": "CEO tarafından geçmişte alınmış bir kararı gerekçesi ve sonucuyla ekleyin."
+  },
+  "Voice memos or written notes from the CEO.": {
+    "en": "Voice memos or written notes from the CEO.",
+    "tr": "CEO tarafından kaydedilen sesli veya yazılı notlar."
+  },
+  "Strategic plans, OKRs, vision docs.": {
+    "en": "Strategic plans, OKRs, vision docs.",
+    "tr": "Stratejik planlar, OKR hedefleri, vizyon belgeleri."
+  },
+  "Quarterly investor letters and KPI updates.": {
+    "en": "Quarterly investor letters and KPI updates.",
+    "tr": "Üç aylık yatırımcı mektupları ve KPI güncellemeleri."
+  },
+  "Sample emails showing the CEO's communication style.": {
+    "en": "Sample emails showing the CEO's communication style.",
+    "tr": "CEO'nun iletişim tarzını gösteren örnek e-postalar."
+  },
+  "Board, exec, or 1:1 meeting notes.": {
+    "en": "Board, exec, or 1:1 meeting notes.",
+    "tr": "Yönetim kurulu, üst yönetim, veya 1:1 toplantı notları."
+  },
+  "Company principles and operating tenets.": {
+    "en": "Company principles and operating tenets.",
+    "tr": "Şirket ilkeleri ve çalışma esasları."
+  },
+  "DecisionOS requires email or Google sign-in. Sessions are managed by our backend provider, with JWT-based access tokens and automatic refresh. Workspaces are isolated at the database level: members can only see data inside workspaces they belong to.": {
+    "en": "DecisionOS requires email or Google sign-in. Sessions are managed by our backend provider, with JWT-based access tokens and automatic refresh. Workspaces are isolated at the database level: members can only see data inside workspaces they belong to.",
+    "tr": "DecisionOS için e-posta veya Google ile giriş yapılması gerekir. Oturumlar arka uç sağlayıcımız tarafından JWT tabanlı erişim belirteçleri ve otomatik yenileme ile yönetilir. Çalışma alanları veritabanı düzeyinde birbirinden yalıtılmıştır: üyeler yalnızca üyesi oldukları çalışma alanlarındaki verileri görebilir."
+  },
+  "Every customer-facing table enforces row-level security policies tied to workspace membership and roles (admin, approver, viewer). Cross-workspace reads, writes, and deletes are blocked at the database layer — not only in application code.": {
+    "en": "Every customer-facing table enforces row-level security policies tied to workspace membership and roles (admin, approver, viewer). Cross-workspace reads, writes, and deletes are blocked at the database layer — not only in application code.",
+    "tr": "Müşterilerin erişimine açık her tabloda çalışma alanı üyeliğine ve rollere (yönetici, onaylayan, görüntüleyen) bağlı satır düzeyinde güvenlik politikaları uygulanır. Çalışma alanları arası okuma, yazma, ve silme işlemleri veritabanı katmanında engellenir — yalnızca uygulama kodunda değil."
+  },
+  "The application runs on Lovable Cloud, which provisions a managed Postgres database, authentication, file storage, and serverless functions. Lovable Cloud capabilities are platform features and are not, on their own, an independent security certification of this application.": {
+    "en": "The application runs on Lovable Cloud, which provisions a managed Postgres database, authentication, file storage, and serverless functions. Lovable Cloud capabilities are platform features and are not, on their own, an independent security certification of this application.",
+    "tr": "Uygulama yönetilen bir Postgres veritabanı, kimlik doğrulama, dosya depolama, ve sunucusuz işlevler sağlayan Lovable Cloud üzerinde çalışır. Lovable Cloud yetenekleri platform özellikleridir ve tek başlarına, bu uygulama için, bağımsız bir güvenlik sertifikası niteliği taşımaz."
+  },
+  "We store the information you enter into DecisionOS: workspace name, member profiles (display name, optional avatar), decisions, meetings, agenda items, proposals, AI evaluations, and uploaded meeting recordings. We do not sell personal data.": {
+    "en": "We store the information you enter into DecisionOS: workspace name, member profiles (display name, optional avatar), decisions, meetings, agenda items, proposals, AI evaluations, and uploaded meeting recordings. We do not sell personal data.",
+    "tr": "DecisionOS içine girdiğiniz bilgileri saklarız: çalışma alanı adı, üye profilleri (görünen ad, isteğe bağlı avatar), kararlar, toplantılar, gündem maddeleri, öneriler, yapay zekâ değerlendirmeleri, ve yüklenen toplantı kayıtları. Kişisel verileri satmayız."
+  },
+  "AI recommendations are generated through the Lovable AI Gateway. Meeting recordings are stored in a private bucket and served via short-lived signed URLs. Additional integrations are only enabled when an admin configures them.": {
+    "en": "AI recommendations are generated through the Lovable AI Gateway. Meeting recordings are stored in a private bucket and served via short-lived signed URLs. Additional integrations are only enabled when an admin configures them.",
+    "tr": "Yapay zekâ önerileri Lovable AI Gateway aracılığıyla oluşturulur. Toplantı kayıtları özel bir depolama alanında saklanır ve kısa ömürlü imzalı URL adresleri aracılığıyla sunulur. Ek entegrasyonlar yalnızca bir yönetici tarafından yapılandırıldığında etkinleştirilir."
+  },
+  "If you believe you have found a security issue, please contact the workspace owner who provisioned your account. They can coordinate with the DecisionOS maintainers and the underlying platform team.": {
+    "en": "If you believe you have found a security issue, please contact the workspace owner who provisioned your account. They can coordinate with the DecisionOS maintainers and the underlying platform team.",
+    "tr": "Bir güvenlik sorunu bulduğunuzu düşünüyorsanız lütfen hesabınızı oluşturan çalışma alanı sahibiyle iletişime geçin. Çalışma alanı sahibi DecisionOS bakım ekibi ve altyapıyı sağlayan platform ekibiyle koordinasyon kurabilir."
+  },
+  "low": {
+    "en": "Low",
+    "tr": "Düşük"
+  },
+  "medium": {
+    "en": "Medium",
+    "tr": "Orta"
+  },
+  "high": {
+    "en": "High",
+    "tr": "Yüksek"
+  },
+  "critical": {
+    "en": "Critical",
+    "tr": "Kritik"
+  },
+  "admin": {
+    "en": "Admin",
+    "tr": "Yönetici"
+  },
+  "approver": {
+    "en": "Approver",
+    "tr": "Onaylayıcı"
+  },
+  "viewer": {
+    "en": "Viewer",
+    "tr": "Görüntüleyici"
+  },
+  "draft": {
+    "en": "Draft",
+    "tr": "Taslak"
+  },
+  "approved": {
+    "en": "Approved",
+    "tr": "Onaylandı"
+  },
+  "rejected": {
+    "en": "Rejected",
+    "tr": "Reddedildi"
+  },
+  "pending": {
+    "en": "Pending",
+    "tr": "Bekliyor"
+  },
+  "completed": {
+    "en": "Completed",
+    "tr": "Tamamlandı"
+  },
+  "failed": {
+    "en": "Failed",
+    "tr": "Başarısız"
+  },
+  "success": {
+    "en": "Success",
+    "tr": "Başarılı"
+  },
+  "active": {
+    "en": "Active",
+    "tr": "Etkin"
+  },
+  "all": {
+    "en": "All",
+    "tr": "Tümü"
+  },
+  "Writer": {
+    "en": "Writer",
+    "tr": "Düzenleyici"
+  },
+  "writer": {
+    "en": "Writer",
+    "tr": "Düzenleyici"
+  },
+  "months": {
+    "en": "months",
+    "tr": "ay"
+  },
+  "min": {
+    "en": "min",
+    "tr": "dk"
+  },
+  "min)": {
+    "en": "min)",
+    "tr": "dk)"
+  },
+  "ay": {
+    "en": "months",
+    "tr": "ay"
+  },
+  "verified": {
+    "en": "verified",
+    "tr": "doğrulandı"
+  },
+  "blocking": {
+    "en": "blocking",
+    "tr": "engelleyici"
+  },
+  "priority": {
+    "en": "priority",
+    "tr": "öncelik"
   }
 };

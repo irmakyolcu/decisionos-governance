@@ -285,8 +285,7 @@ export function GmailSyncPanel({ decisionId, defaultQuery }: { decisionId: strin
         {schedule && (
           <div className="text-[10px] text-muted-foreground space-y-0.5 pt-1 border-t border-border/50">
             <p>
-              <span className="font-medium text-foreground">{translate("Cadence:")}</span> {translate("every")} {schedule.cadence_minutes} min
-              {' · '}<span className="font-medium text-foreground">{translate("Query:")}</span>{' '}
+              <span className="font-medium text-foreground">{translate("Cadence:")}</span> {translate("every")} {schedule.cadence_minutes} {translate("min")}{' · '}<span className="font-medium text-foreground">{translate("Query:")}</span>{' '}
               <span className="font-mono">{schedule.query || '(decision title)'}</span>
             </p>
             <p>

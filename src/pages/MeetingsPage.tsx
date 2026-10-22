@@ -92,7 +92,7 @@ export default function MeetingsPage() {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground"><Calendar className="h-4 w-4" />{selectedMeeting.date.toLocaleDateString(getLocale())}</div>
-                  <div className="flex items-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" />{selectedMeeting.startTime} – {selectedMeeting.endTime} ({selectedMeeting.duration}min)</div>
+                  <div className="flex items-center gap-2 text-muted-foreground"><Clock className="h-4 w-4" />{selectedMeeting.startTime} – {selectedMeeting.endTime} ({selectedMeeting.duration}{translate("min)")}</div>
                   <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="h-4 w-4" />{selectedMeeting.location || '—'}</div>
                   <div className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" />{selectedMeeting.attendees.length} {translate("attendees")}</div>
                 </div>
@@ -158,7 +158,7 @@ export default function MeetingsPage() {
                           <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center justify-center flex-shrink-0">{i + 1}</span>
                           <div className="flex-1">
                             <p className="font-medium text-sm text-foreground">{item.title}</p>
-                            <p className="text-xs text-muted-foreground">{item.duration}min{item.presenter && ` · ${item.presenter.name}`}</p>
+                            <p className="text-xs text-muted-foreground">{item.duration}{translate("min")}{item.presenter && ` · ${item.presenter.name}`}</p>
                           </div>
                         </div>
 

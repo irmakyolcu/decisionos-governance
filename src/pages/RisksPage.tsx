@@ -125,8 +125,7 @@ export default function RisksPage() {
                     <Badge variant="outline" className="text-[10px]">{d.total} {translate("open")}</Badge>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    {d.critical} {translate("critical ·")} {d.high} {translate("high ·")} {d.medium} {translate("medium ·")} {d.low} low
-                  </div>
+                    {d.critical} {translate("critical ·")} {d.high} {translate("high ·")} {d.medium} {translate("medium ·")} {d.low} {translate("low")}</div>
                   <div className="h-1.5 bg-muted rounded-full mt-2 overflow-hidden">
                     <div className={`h-full ${d.exposure >= 3 ? 'bg-destructive' : 'bg-primary'}`} style={{ width: `${Math.min(100, (d.exposure / 4) * 100)}%` }} />
                   </div>
