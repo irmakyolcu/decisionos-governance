@@ -59,6 +59,10 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
     if (!data) return;
     const i = data.insights;
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    doc.addFileToVFS('DejaVuSans.ttf', DejaVuSans);
+    doc.addFont('DejaVuSans.ttf', 'dejavu', 'normal');
+    doc.addFileToVFS('DejaVuSans-Bold.ttf', DejaVuSansBold);
+    doc.addFont('DejaVuSans-Bold.ttf', 'dejavu', 'bold');
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
     const margin = 16;
@@ -70,7 +74,7 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
     };
     const para = (text: string | undefined, size = 10, style: 'normal' | 'bold' | 'italic' = 'normal', indent = 0, gap = 3) => {
       if (!text) return;
-      doc.setFont('times', style);
+      doc.setFont('dejavu', style === 'bold' ? 'bold' : 'normal');
       doc.setFontSize(size);
       const lines = doc.splitTextToSize(text, maxW - indent);
       lines.forEach((line: string) => {
@@ -80,11 +84,11 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
       });
       y += gap;
     };
-    const h1 = (text: string) => { ensure(14); doc.setFont('times', 'bold'); doc.setFontSize(18); doc.text(text, margin, y); y += 10; };
+    const h1 = (text: string) => { ensure(14); doc.setFont('dejavu', 'bold'); doc.setFontSize(18); doc.text(text, margin, y); y += 10; };
     const h2 = (text: string) => {
       ensure(12);
       y += 4;
-      doc.setFont('times', 'bold');
+      doc.setFont('dejavu', 'bold');
       doc.setFontSize(13);
       doc.setTextColor(49, 46, 129);
       doc.text(text, margin, y);
