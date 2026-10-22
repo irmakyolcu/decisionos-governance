@@ -54,27 +54,84 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
 
   function downloadReport() {
     if (!data) return;
-    const w = window.open('', '_blank');
-    if (!w) return toast.error(t('Açılır pencere engellendi', 'Popup blocked'));
-    const esc = (v: unknown) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
     const i = data.insights;
-    const recHtml = groups.map((g) => `<h3>${esc(g.label)}</h3>` + (i.recommendations || []).filter((r) => r.type === g.key).map((r) =>
-      `<div class="card"><b>${esc(r.title)}</b>${r.priority ? ` <span class="tag">${esc(translate(r.priority))}</span>` : ''}<p>${esc(r.detail)}</p>${r.counterfactual ? `<p class="cf">“${esc(r.counterfactual)}”</p>` : ''}${r.expected_impact ? `<p class="muted">${esc(t('Beklenen etki', 'Expected impact'))}: ${esc(r.expected_impact)}</p>` : ''}</div>`).join('')).join('');
-    const html = `<!doctype html><html lang="${tr ? 'tr' : 'en'}"><head><meta charset="utf-8"><title>${esc(t('Yönetici Raporu – Çıkarılan Dersler', 'Executive Report – Lessons Learned'))}</title>
-<style>@page{size:A4;margin:14mm}body{font-family:Georgia,'Times New Roman',serif;color:#111827;line-height:1.5;max-width:800px;margin:auto;padding:24px}
-h1{font-size:24px;margin:0}h2{font-size:17px;border-bottom:2px solid #312e81;padding-bottom:4px;margin-top:28px;color:#312e81}h3{font-size:14px;margin:16px 0 6px}
-.muted{color:#6b7280;font-size:12px}.box{background:#eef2ff;border:1px solid #c7d2fe;padding:14px;border-radius:6px}.card{border:1px solid #e5e7eb;border-radius:6px;padding:10px;margin-bottom:8px;break-inside:avoid}
-.card p{margin:4px 0;font-size:13px}.cf{font-style:italic;background:#f3f4f6;padding:6px;border-radius:4px}.tag{font-size:11px;border:1px solid #9ca3af;border-radius:10px;padding:1px 7px}
-*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
-<p class="muted">DecisionOS · ${esc(new Date(data.generated_at).toLocaleString(locale))} · ${lessons.length} ${esc(t('ders', 'lessons'))}</p>
-<h1>${esc(t('Yönetici Raporu: Çıkarılan Dersler', 'Executive Report: Lessons Learned'))}</h1>
-<h2>${esc(t('Yönetici Özeti', 'Executive Summary'))}</h2><div class="box">${typeof i.health_score === 'number' ? `<p><b>${esc(t('Sağlık skoru', 'Health score'))}: ${i.health_score}/100</b></p>` : ''}<p>${esc(i.executive_summary)}</p></div>
-<h2>${esc(t('Şirketin eksik olduğu alanlar', 'Where the company falls short'))}</h2>${(i.gaps || []).map((g) => `<div class="card"><b>${esc(g.area)}</b> <span class="tag">${esc(translate(g.severity))}</span><p>${esc(g.description)}</p>${g.evidence ? `<p class="muted">${esc(g.evidence)}</p>` : ''}</div>`).join('')}
-<h2>${esc(t('Öneriler', 'Recommendations'))}</h2>${recHtml}
-${i.next_30_days?.length ? `<h2>${esc(t('Önümüzdeki 30 gün', 'Next 30 days'))}</h2><ul>${i.next_30_days.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}
-<p class="muted" style="margin-top:28px">${esc(t('AI önerileri tavsiye niteliğindedir; son karar yöneticiye aittir.', 'AI recommendations are advisory; executives make the final call.'))}</p>
-<script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
-    w.document.open(); w.document.write(html); w.document.close();
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 16;
+    const maxW = pageW - margin * 2;
+    let y = margin;
+
+    const ensure = (need: number) => {
+      if (y + need > pageH - margin) { doc.addPage(); y = margin; }
+    };
+    const para = (text: string | undefined, size = 10, style: 'normal' | 'bold' | 'italic' = 'normal', indent = 0, gap = 3) => {
+      if (!text) return;
+      doc.setFont('times', style);
+      doc.setFontSize(size);
+      const lines = doc.splitTextToSize(text, maxW - indent);
+      lines.forEach((line: string) => {
+        ensure(size * 0.42);
+        doc.text(line, margin + indent, y);
+        y += size * 0.42;
+      });
+      y += gap;
+    };
+    const h1 = (text: string) => { ensure(14); doc.setFont('times', 'bold'); doc.setFontSize(18); doc.text(text, margin, y); y += 10; };
+    const h2 = (text: string) => {
+      ensure(12);
+      y += 4;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(49, 46, 129);
+      doc.text(text, margin, y);
+      doc.setTextColor(17, 24, 39);
+      doc.setDrawColor(49, 46, 129);
+      doc.setLineWidth(0.6);
+      doc.line(margin, y + 1.5, pageW - margin, y + 1.5);
+      y += 7;
+    };
+    const muted = (text: string) => { doc.setTextColor(107, 114, 128); para(text, 8, 'normal', 0, 2); doc.setTextColor(17, 24, 39); };
+
+    muted(`DecisionOS · ${new Date(data.generated_at).toLocaleString(locale)} · ${lessons.length} ${t('ders', 'lessons')}`);
+    h1(t('Yönetici Raporu: Çıkarılan Dersler', 'Executive Report: Lessons Learned'));
+
+    h2(t('Yönetici Özeti', 'Executive Summary'));
+    if (typeof i.health_score === 'number') para(`${t('Sağlık skoru', 'Health score')}: ${i.health_score}/100`, 11, 'bold');
+    para(i.executive_summary, 10);
+
+    if (i.gaps?.length) {
+      h2(t('Şirketin eksik olduğu alanlar', 'Where the company falls short'));
+      i.gaps.forEach((g) => {
+        para(`${g.area} [${translate(g.severity)}]`, 10, 'bold', 0, 1);
+        para(g.description, 10, 'normal', 4, g.evidence ? 1 : 3);
+        if (g.evidence) para(g.evidence, 8, 'italic', 4, 3);
+      });
+    }
+
+    h2(t('Öneriler', 'Recommendations'));
+    groups.forEach((g) => {
+      const items = (i.recommendations || []).filter((r) => r.type === g.key);
+      if (!items.length) return;
+      para(g.label, 11, 'bold', 0, 2);
+      items.forEach((r) => {
+        para(`• ${r.title}${r.priority ? ` [${translate(r.priority)}]` : ''}`, 10, 'bold', 0, 1);
+        para(r.detail, 10, 'normal', 4, 1);
+        if (r.counterfactual) para(`“${r.counterfactual}”`, 9, 'italic', 4, 1);
+        if (r.expected_impact) para(`${t('Beklenen etki', 'Expected impact')}: ${r.expected_impact}`, 8, 'normal', 4, 3);
+      });
+    });
+
+    if (i.next_30_days?.length) {
+      h2(t('Önümüzdeki 30 gün', 'Next 30 days'));
+      i.next_30_days.forEach((s, idx) => para(`${idx + 1}. ${s}`, 10, 'normal', 0, 1));
+    }
+
+    y += 4;
+    muted(t('AI önerileri tavsiye niteliğindedir; son karar yöneticiye aittir.', 'AI recommendations are advisory; executives make the final call.'));
+
+    doc.save(`decisionos-yonetici-raporu-${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success(t('PDF indirildi', 'PDF downloaded'));
   }
 
   const sevCls = (s: string) => s === 'critical' || s === 'high' ? 'border-destructive/40 text-destructive' : s === 'medium' ? 'border-amber-500/40 text-amber-600' : 'text-muted-foreground';
