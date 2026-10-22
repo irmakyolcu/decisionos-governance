@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Sparkles, Loader2, AlertTriangle, Target, Compass, Tag, Briefcase, CalendarCheck } from 'lucide-react';
+import { Sparkles, Loader2, AlertTriangle, Target, Compass, Tag, Briefcase, CalendarCheck, Download } from 'lucide-react';
 import type { Lesson } from '@/hooks/useLessons';
 import { toast } from 'sonner';
 
@@ -51,6 +51,32 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
     { key: 'strategy', label: t('Strateji', 'Strategy'), icon: Compass },
     { key: 'pricing', label: t('Fiyat', 'Pricing'), icon: Tag },
   ];
+
+  function downloadReport() {
+    if (!data) return;
+    const w = window.open('', '_blank');
+    if (!w) return toast.error(t('Açılır pencere engellendi', 'Popup blocked'));
+    const esc = (v: unknown) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
+    const i = data.insights;
+    const recHtml = groups.map((g) => `<h3>${esc(g.label)}</h3>` + (i.recommendations || []).filter((r) => r.type === g.key).map((r) =>
+      `<div class="card"><b>${esc(r.title)}</b>${r.priority ? ` <span class="tag">${esc(translate(r.priority))}</span>` : ''}<p>${esc(r.detail)}</p>${r.counterfactual ? `<p class="cf">“${esc(r.counterfactual)}”</p>` : ''}${r.expected_impact ? `<p class="muted">${esc(t('Beklenen etki', 'Expected impact'))}: ${esc(r.expected_impact)}</p>` : ''}</div>`).join('')).join('');
+    const html = `<!doctype html><html lang="${tr ? 'tr' : 'en'}"><head><meta charset="utf-8"><title>${esc(t('Yönetici Raporu – Çıkarılan Dersler', 'Executive Report – Lessons Learned'))}</title>
+<style>@page{size:A4;margin:14mm}body{font-family:Georgia,'Times New Roman',serif;color:#111827;line-height:1.5;max-width:800px;margin:auto;padding:24px}
+h1{font-size:24px;margin:0}h2{font-size:17px;border-bottom:2px solid #312e81;padding-bottom:4px;margin-top:28px;color:#312e81}h3{font-size:14px;margin:16px 0 6px}
+.muted{color:#6b7280;font-size:12px}.box{background:#eef2ff;border:1px solid #c7d2fe;padding:14px;border-radius:6px}.card{border:1px solid #e5e7eb;border-radius:6px;padding:10px;margin-bottom:8px;break-inside:avoid}
+.card p{margin:4px 0;font-size:13px}.cf{font-style:italic;background:#f3f4f6;padding:6px;border-radius:4px}.tag{font-size:11px;border:1px solid #9ca3af;border-radius:10px;padding:1px 7px}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
+<p class="muted">DecisionOS · ${esc(new Date(data.generated_at).toLocaleString(locale))} · ${lessons.length} ${esc(t('ders', 'lessons'))}</p>
+<h1>${esc(t('Yönetici Raporu: Çıkarılan Dersler', 'Executive Report: Lessons Learned'))}</h1>
+<h2>${esc(t('Yönetici Özeti', 'Executive Summary'))}</h2><div class="box">${typeof i.health_score === 'number' ? `<p><b>${esc(t('Sağlık skoru', 'Health score'))}: ${i.health_score}/100</b></p>` : ''}<p>${esc(i.executive_summary)}</p></div>
+<h2>${esc(t('Şirketin eksik olduğu alanlar', 'Where the company falls short'))}</h2>${(i.gaps || []).map((g) => `<div class="card"><b>${esc(g.area)}</b> <span class="tag">${esc(translate(g.severity))}</span><p>${esc(g.description)}</p>${g.evidence ? `<p class="muted">${esc(g.evidence)}</p>` : ''}</div>`).join('')}
+<h2>${esc(t('Öneriler', 'Recommendations'))}</h2>${recHtml}
+${i.next_30_days?.length ? `<h2>${esc(t('Önümüzdeki 30 gün', 'Next 30 days'))}</h2><ul>${i.next_30_days.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}
+<p class="muted" style="margin-top:28px">${esc(t('AI önerileri tavsiye niteliğindedir; son karar yöneticiye aittir.', 'AI recommendations are advisory; executives make the final call.'))}</p>
+<script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`;
+    w.document.open(); w.document.write(html); w.document.close();
+  }
+
   const sevCls = (s: string) => s === 'critical' || s === 'high' ? 'border-destructive/40 text-destructive' : s === 'medium' ? 'border-amber-500/40 text-amber-600' : 'text-muted-foreground';
 
   return (
@@ -59,6 +85,7 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
         <CardTitle className="flex items-center gap-2 text-base"><Sparkles className="h-5 w-5 text-primary" /> {t('AI Önerileri', 'AI Recommendations')}</CardTitle>
         <div className="flex items-center gap-3">
           {data && <span className="text-xs text-muted-foreground">{new Date(data.generated_at).toLocaleString(locale)}</span>}
+          {data && !loading && <Button size="sm" variant="outline" onClick={downloadReport}><Download className="h-4 w-4 mr-2" />{t('Yönetici raporu indir', 'Download executive report')}</Button>}
           <Button size="sm" onClick={run} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
             {data ? t('Yeniden analiz et', 'Re-analyze') : t('AI analizi oluştur', 'Generate AI analysis')}
