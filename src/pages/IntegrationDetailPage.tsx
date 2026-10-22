@@ -145,7 +145,7 @@ export default function IntegrationDetailPage() {
       <Card>
         <CardHeader><CardTitle className="text-base">{translate("Overview")}</CardTitle></CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground leading-relaxed">{profile.overview}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{translate(profile.overview)}</p>
           {loading ? null : integration?.last_synced_at ? (
             <p className="text-xs text-muted-foreground mt-3">{translate("Last synced")} {new Date(integration.last_synced_at).toLocaleString(getLocale())}</p>
           ) : (
@@ -163,7 +163,7 @@ export default function IntegrationDetailPage() {
             {profile.useCases.map((uc, i) => (
               <li key={i} className="flex gap-3 text-sm text-foreground/90">
                 <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                <span>{uc}</span>
+                <span>{translate(uc)}</span>
               </li>
             ))}
           </ul>
@@ -178,13 +178,13 @@ export default function IntegrationDetailPage() {
           {profile.dataFlow.map((step, i) => (
             <div key={i} className="rounded-md border border-border bg-muted/30 p-3">
               <div className="flex items-center gap-2 flex-wrap text-sm font-medium text-foreground">
-                <span className="px-2 py-0.5 rounded bg-background border border-border">{step.source}</span>
+                <span className="px-2 py-0.5 rounded bg-background border border-border">{translate(step.source)}</span>
                 <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground italic">{step.via}</span>
+                <span className="text-xs text-muted-foreground italic">{translate(step.via)}</span>
                 <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">{step.target}</span>
+                <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">{translate(step.target)}</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">{step.note}</p>
+              <p className="text-xs text-muted-foreground mt-2">{translate(step.note)}</p>
             </div>
           ))}
           <div className="grid md:grid-cols-2 gap-3 pt-2">
@@ -192,13 +192,13 @@ export default function IntegrationDetailPage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">{translate("Data types")}</p>
               <div className="flex flex-wrap gap-1.5">
                 {profile.dataTypes.map((d, i) => (
-                  <Badge key={i} variant="outline" className="text-[11px]">{d}</Badge>
+                  <Badge key={i} variant="outline" className="text-[11px]">{translate(d)}</Badge>
                 ))}
               </div>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">{translate("Write-back")}</p>
-              <p className="text-sm text-foreground/90">{profile.writeBack}</p>
+              <p className="text-sm text-foreground/90">{translate(profile.writeBack)}</p>
             </div>
           </div>
         </CardContent>
@@ -209,7 +209,7 @@ export default function IntegrationDetailPage() {
           <CardTitle className="text-base flex items-center gap-2"><Shield className="h-4 w-4 text-primary" /> {translate("Governance & security")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-foreground/90 leading-relaxed">{profile.governance}</p>
+          <p className="text-sm text-foreground/90 leading-relaxed">{translate(profile.governance)}</p>
         </CardContent>
       </Card>
     </div>

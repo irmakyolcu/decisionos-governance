@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { appTranslations } from '@/lib/i18n/appTranslations';
 import { interfaceTranslations } from '@/lib/i18n/interfaceTranslations';
+import { catalogTranslations } from '@/lib/i18n/catalogTranslations';
 
 export type Lang = 'en' | 'tr';
 
 type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
+  ...catalogTranslations,
   ...interfaceTranslations,
   'nav.signin': { en: 'Sign in', tr: 'Giriş Yap' },
   'nav.getStarted': { en: 'Book a Demo', tr: 'Demo Al' },
