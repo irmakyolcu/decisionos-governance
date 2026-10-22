@@ -231,10 +231,10 @@ function RecommendationCard({ intake, r, onCopy }: { intake: DecisionIntake; r: 
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <Stat label={translate("Risk level")} value={r.riskLevel} cls={riskClass(r.riskLevel)} />
+          <Stat label={translate("Risk level")} value={translate(r.riskLevel)} cls={riskClass(r.riskLevel)} />
           <Stat label={translate("CEO approval")} value={r.ceoApprovalRequired ? translate("Required") : translate("Not required")}
             cls={r.ceoApprovalRequired ? 'bg-destructive/10 text-destructive border-destructive/30' : 'bg-success/10 text-success border-success/30'} />
-          <Stat label={translate("Category")} value={intake.category} cls="bg-muted text-foreground border-border" />
+          <Stat label={translate("Category")} value={translate(intake.category)} cls="bg-muted text-foreground border-border" />
         </div>
 
         <Collapsible open={whyOpen} onOpenChange={setWhyOpen}>
