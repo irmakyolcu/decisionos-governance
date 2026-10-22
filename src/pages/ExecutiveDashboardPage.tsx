@@ -45,7 +45,7 @@ export default function ExecutiveDashboardPage() {
       <Card className="border-amber-500/40 bg-amber-500/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-700">
-            <AlertTriangle className="h-5 w-5" /> Needs Your Attention
+            <AlertTriangle className="h-5 w-5" /> {t('Needs Your Attention')}
           </CardTitle>
         </CardHeader>
         <CardContent>
