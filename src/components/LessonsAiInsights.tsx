@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sparkles, Loader2, AlertTriangle, Target, Compass, Tag, Briefcase, CalendarCheck, Download } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { DejaVuSans } from '@/lib/pdf/DejaVuSans';
+import { DejaVuSansBold } from '@/lib/pdf/DejaVuSansBold';
 import type { Lesson } from '@/hooks/useLessons';
 import { toast } from 'sonner';
 
