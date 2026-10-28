@@ -109,18 +109,13 @@ Aşağıdaki JSON şemasında yanıt ver:
         risk_level: String(parsed.risk_level || 'medium').toLowerCase(),
         verdict: parsed.verdict ?? null,
         commentary: parsed.commentary ?? '',
-        comparison_note: parsed.comparison_note ?? null,
+        comparison_note: previousScore == null ? 'İlk AI değerlendirmesi; geçmiş karar sonucu değildir.' : `Önceki AI risk skoru ${previousScore}/100; yeni AI risk skoru ${newScore}/100. Bu skorlar ölçülmüş olasılık değil, AI tahminidir.`,
         previous_score: previousScore,
         score_delta: delta,
         triggered_by: user.id,
         trigger_reason: trigger_reason ?? 'manual',
         model,
-        snapshot: {
-          title: decision.title,
-          budget: decision.budget,
-          risk_level: decision.risk_level,
-          status: decision.status,
-        },
+        snapshot: { decision, assessment_kind: 'subjective_ai_estimate_not_probability' },
       })
       .select()
       .maybeSingle();
