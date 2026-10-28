@@ -43,6 +43,13 @@
       "when": 1793224935514,
       "tag": "0005_analysis_provenance_and_approval_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793225148044,
+      "tag": "0006_action_authority_approval_floor",
+      "breakpoints": true
     }
   ]
 }
