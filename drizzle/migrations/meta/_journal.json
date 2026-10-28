@@ -29,6 +29,13 @@
       "when": 1793222373228,
       "tag": "0003_allow_auditors_to_read_workspace_audit_logs",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793222730956,
+      "tag": "0004_system_event_notifications",
+      "breakpoints": true
     }
   ]
 }

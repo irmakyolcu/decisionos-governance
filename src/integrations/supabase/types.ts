@@ -2481,6 +2481,7 @@ export type Database = {
           id: string
           kind: string
           link: string | null
+          metadata: Json
           read_at: string | null
           severity: string
           title: string
@@ -2493,6 +2494,7 @@ export type Database = {
           id?: string
           kind: string
           link?: string | null
+          metadata?: Json
           read_at?: string | null
           severity?: string
           title: string
@@ -2505,6 +2507,7 @@ export type Database = {
           id?: string
           kind?: string
           link?: string | null
+          metadata?: Json
           read_at?: string | null
           severity?: string
           title?: string
@@ -3527,6 +3530,10 @@ export type Database = {
       is_workspace_writer: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
+      }
+      mark_notifications_read: {
+        Args: { _notification_id?: string; _workspace_id: string }
+        Returns: number
       }
       seed_workspace_demo_data: {
         Args: { _creator: string; _workspace_id: string }
