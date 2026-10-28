@@ -3614,7 +3614,7 @@ export type Database = {
         | "pasted_text"
         | "url"
         | "internal_note"
-      workspace_role: "admin" | "approver" | "viewer"
+      workspace_role: "admin" | "approver" | "viewer" | "auditor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3830,7 +3830,7 @@ export const Constants = {
         "url",
         "internal_note",
       ],
-      workspace_role: ["admin", "approver", "viewer"],
+      workspace_role: ["admin", "approver", "viewer", "auditor"],
     },
   },
 } as const

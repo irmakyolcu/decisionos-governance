@@ -8,6 +8,13 @@
       "when": 1793222214901,
       "tag": "0000_require_admin_approved_workspace_membership",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793222274098,
+      "tag": "0001_add_workspace_auditor_role",
+      "breakpoints": true
     }
   ]
 }
