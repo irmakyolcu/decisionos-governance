@@ -3,12 +3,14 @@ import { appTranslations } from '@/lib/i18n/appTranslations';
 import { interfaceTranslations } from '@/lib/i18n/interfaceTranslations';
 import { catalogTranslations } from '@/lib/i18n/catalogTranslations';
 import { signupTranslations } from '@/lib/i18n/signupTranslations';
+import { notificationTranslations } from '@/lib/i18n/notificationTranslations';
 
 export type Lang = 'en' | 'tr';
 
 type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
+  ...notificationTranslations,
   ...signupTranslations,
   ...catalogTranslations,
   ...interfaceTranslations,

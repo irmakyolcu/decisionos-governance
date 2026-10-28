@@ -1,4 +1,3 @@
-# Signup permissions
 # System notifications
 - [ ] Generate workspace-scoped notifications for important system events.
 - [ ] Fix live delivery, unread counts, read actions and Turkish/English display.
