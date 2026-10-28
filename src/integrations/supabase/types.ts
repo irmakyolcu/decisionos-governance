@@ -1052,6 +1052,7 @@ export type Database = {
       }
       decision_alternatives: {
         Row: {
+          analysis_snapshot_id: string | null
           complexity: string | null
           confidence: number | null
           created_at: string
@@ -1069,6 +1070,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          analysis_snapshot_id?: string | null
           complexity?: string | null
           confidence?: number | null
           created_at?: string
@@ -1086,6 +1088,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          analysis_snapshot_id?: string | null
           complexity?: string | null
           confidence?: number | null
           created_at?: string
@@ -1103,6 +1106,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "decision_alternatives_analysis_snapshot_id_fkey"
+            columns: ["analysis_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "decision_context_snapshots"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "decision_alternatives_decision_id_fkey"
             columns: ["decision_id"]
@@ -1150,6 +1160,7 @@ export type Database = {
       }
       decision_assumptions: {
         Row: {
+          analysis_snapshot_id: string | null
           confidence: number | null
           created_at: string
           decision_id: string
@@ -1159,6 +1170,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          analysis_snapshot_id?: string | null
           confidence?: number | null
           created_at?: string
           decision_id: string
@@ -1168,6 +1180,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          analysis_snapshot_id?: string | null
           confidence?: number | null
           created_at?: string
           decision_id?: string
@@ -1177,6 +1190,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "decision_assumptions_analysis_snapshot_id_fkey"
+            columns: ["analysis_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "decision_context_snapshots"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "decision_assumptions_decision_id_fkey"
             columns: ["decision_id"]
@@ -1227,6 +1247,9 @@ export type Database = {
       }
       decision_context_snapshots: {
         Row: {
+          analysis_input: Json | null
+          analysis_model: string | null
+          analysis_output: Json | null
           company_state: string
           decision_id: string
           financial_health: string | null
@@ -1242,6 +1265,9 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          analysis_input?: Json | null
+          analysis_model?: string | null
+          analysis_output?: Json | null
           company_state: string
           decision_id: string
           financial_health?: string | null
@@ -1257,6 +1283,9 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          analysis_input?: Json | null
+          analysis_model?: string | null
+          analysis_output?: Json | null
           company_state?: string
           decision_id?: string
           financial_health?: string | null
@@ -1555,6 +1584,7 @@ export type Database = {
       }
       decision_recommendations: {
         Row: {
+          analysis_snapshot_id: string | null
           confidence: number | null
           created_at: string
           decision_id: string
@@ -1567,6 +1597,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          analysis_snapshot_id?: string | null
           confidence?: number | null
           created_at?: string
           decision_id: string
@@ -1579,6 +1610,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          analysis_snapshot_id?: string | null
           confidence?: number | null
           created_at?: string
           decision_id?: string
@@ -1591,6 +1623,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "decision_recommendations_analysis_snapshot_id_fkey"
+            columns: ["analysis_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "decision_context_snapshots"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "decision_recommendations_decision_id_fkey"
             columns: ["decision_id"]
@@ -1796,6 +1835,7 @@ export type Database = {
       }
       decision_scenarios: {
         Row: {
+          analysis_snapshot_id: string | null
           assumptions: Json | null
           created_at: string
           decision_id: string
@@ -1807,6 +1847,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          analysis_snapshot_id?: string | null
           assumptions?: Json | null
           created_at?: string
           decision_id: string
@@ -1818,6 +1859,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          analysis_snapshot_id?: string | null
           assumptions?: Json | null
           created_at?: string
           decision_id?: string
@@ -1829,6 +1871,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "decision_scenarios_analysis_snapshot_id_fkey"
+            columns: ["analysis_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "decision_context_snapshots"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "decision_scenarios_decision_id_fkey"
             columns: ["decision_id"]
@@ -1847,6 +1896,7 @@ export type Database = {
       }
       decision_unknowns: {
         Row: {
+          analysis_snapshot_id: string | null
           created_at: string
           decision_id: string
           id: string
@@ -1856,6 +1906,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          analysis_snapshot_id?: string | null
           created_at?: string
           decision_id: string
           id?: string
@@ -1865,6 +1916,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          analysis_snapshot_id?: string | null
           created_at?: string
           decision_id?: string
           id?: string
@@ -1874,6 +1926,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "decision_unknowns_analysis_snapshot_id_fkey"
+            columns: ["analysis_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "decision_context_snapshots"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "decision_unknowns_decision_id_fkey"
             columns: ["decision_id"]

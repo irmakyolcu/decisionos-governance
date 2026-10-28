@@ -36,6 +36,13 @@
       "when": 1793222730956,
       "tag": "0004_system_event_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793224935514,
+      "tag": "0005_analysis_provenance_and_approval_integrity",
+      "breakpoints": true
     }
   ]
 }

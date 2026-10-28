@@ -1,0 +1,9 @@
+ALTER TABLE public.decision_context_snapshots ADD COLUMN IF NOT EXISTS analysis_input jsonb, ADD COLUMN IF NOT EXISTS analysis_output jsonb, ADD COLUMN IF NOT EXISTS analysis_model text;
+ALTER TABLE public.decision_alternatives ADD COLUMN IF NOT EXISTS analysis_snapshot_id uuid REFERENCES public.decision_context_snapshots(id);
+ALTER TABLE public.decision_assumptions ADD COLUMN IF NOT EXISTS analysis_snapshot_id uuid REFERENCES public.decision_context_snapshots(id);
+ALTER TABLE public.decision_unknowns ADD COLUMN IF NOT EXISTS analysis_snapshot_id uuid REFERENCES public.decision_context_snapshots(id);
+ALTER TABLE public.decision_scenarios ADD COLUMN IF NOT EXISTS analysis_snapshot_id uuid REFERENCES public.decision_context_snapshots(id);
+ALTER TABLE public.decision_recommendations ADD COLUMN IF NOT EXISTS analysis_snapshot_id uuid REFERENCES public.decision_context_snapshots(id);
+CREATE POLICY approval_writer_only ON public.action_approvals AS RESTRICTIVE FOR INSERT TO authenticated WITH CHECK (public.is_workspace_writer(auth.uid(), workspace_id) AND EXISTS (SELECT 1 FROM public.action_proposals a WHERE a.id=action_id AND a.workspace_id=action_approvals.workspace_id AND a.version=action_version));
+CREATE OR REPLACE FUNCTION public.guard_process_link_workspace() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF NOT EXISTS (SELECT 1 FROM public.processes WHERE id=NEW.from_process_id AND workspace_id=NEW.workspace_id) OR NOT EXISTS (SELECT 1 FROM public.processes WHERE id=NEW.to_process_id AND workspace_id=NEW.workspace_id) THEN RAISE EXCEPTION 'Process endpoints must belong to the same workspace' USING ERRCODE='42501'; END IF; RETURN NEW; END; $$;
+CREATE TRIGGER process_link_workspace_integrity BEFORE INSERT OR UPDATE ON public.process_links FOR EACH ROW EXECUTE FUNCTION public.guard_process_link_workspace();
