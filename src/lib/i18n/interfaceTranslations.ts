@@ -3835,6 +3835,18 @@ export const interfaceTranslations: Record<string, { en: string; tr: string }> =
     "en": "Lesson added",
     "tr": "Ders eklendi"
   },
+  "positive": {
+    "en": "Positive",
+    "tr": "Olumlu"
+  },
+  "negative": {
+    "en": "Negative",
+    "tr": "Olumsuz"
+  },
+  "mixed": {
+    "en": "Mixed",
+    "tr": "Karma"
+  },
   "Linked": {
     "en": "Linked",
     "tr": "Bağlandı"
