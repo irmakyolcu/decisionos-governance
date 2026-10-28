@@ -1,7 +1,8 @@
 # Website optimization
-- [ ] Rework the public homepage into the requested seven-section enterprise narrative while keeping the demo video, sign-in, language switching and existing routes.
-- [ ] Make demo and pilot buttons reach valid demo-request destinations, with accurate available/planned capability and trust wording.
-- [ ] Update homepage metadata and verify links, form route, Turkish/English copy and mobile layout.
+- [x] Rework the public homepage into the requested seven-section enterprise narrative while keeping the demo video, sign-in, language switching and existing routes.
+- [x] Make demo and pilot buttons reach valid demo-request destinations, with accurate available/planned capability and trust wording.
+- [x] Update homepage metadata and verify links, form route, Turkish/English copy and mobile layout. Existing video file is valid H.264/30s; playback could not be verified in sandbox Chromium.
+- [ ] Enable reliable demo/pilot delivery: blocked by the missing approved booking calendar and lead-receiving destination; existing calendar returns 404 and demo_requests table is absent. The form now reports failure honestly instead of false success.
 
 # Back navigation
 - [x] Add localized back navigation to application pages without duplicating existing detail-page controls.
