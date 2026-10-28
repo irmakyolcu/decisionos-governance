@@ -54,12 +54,16 @@ export default function ProcessesPage() {
       supabase.from('processes').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false }),
       supabase
         .from('workspace_members')
-        .select('user_id, profiles:profiles!workspace_members_user_id_fkey(display_name)')
+        .select('user_id')
         .eq('workspace_id', workspace.id),
       supabase.from('process_links').select('*').eq('workspace_id', workspace.id),
     ]);
+    const ids = (memR.data ?? []).map(m => m.user_id);
+    const profiles = ids.length ? await supabase.from('profiles').select('user_id,display_name').in('user_id', ids) : { data: [], error: null };
+    const failure = procR.error ?? memR.error ?? linkR.error ?? profiles.error;
+    if (failure) toast({ title: translate('Error'), description: failure.message, variant: 'destructive' });
     setRows(procR.data ?? []);
-    setMembers(((memR.data as any[]) ?? []).map((m) => ({ user_id: m.user_id, display_name: m.profiles?.display_name ?? null })));
+    setMembers((memR.data ?? []).map(m => ({ user_id: m.user_id, display_name: profiles.data?.find(p => p.user_id === m.user_id)?.display_name ?? null })));
     setLinks((linkR.data as ProcessLink[]) ?? []);
   };
 
