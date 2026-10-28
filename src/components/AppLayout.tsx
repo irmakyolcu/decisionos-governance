@@ -13,7 +13,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar />
           <LicenseBanner />
-          <main className="flex-1 overflow-auto p-6 bg-background">
+          <main className="flex-1 overflow-auto p-4 sm:p-6 bg-background">
             {children}
           </main>
         </div>

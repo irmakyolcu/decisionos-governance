@@ -20,7 +20,7 @@ export default function DecisionsPage() {
 
   return (
     <div>
-      <div className="page-header flex items-start justify-between gap-4">
+      <div className="page-header flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="page-title">{translate("Decisions")}</h1>
           <p className="page-description">{translate("Decisions visible based on your role in the hierarchy. Upper levels see all decisions below them.")}</p>
@@ -37,7 +37,7 @@ export default function DecisionsPage() {
         <span>{translate("Showing")} <strong className="text-foreground">{visible.length}</strong> {translate("of")} {decisions.length} {translate("decisions visible to")} <strong className="text-foreground">{viewRole}</strong> {translate("level")}</span>
       </div>
 
-      <div className="enterprise-card overflow-hidden">
+      <div className="enterprise-card overflow-x-auto">
         {loading ? (
           <div className="p-6 space-y-3">
             {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}

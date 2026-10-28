@@ -76,17 +76,17 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <Brain className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="font-bold text-lg tracking-tight">DecisionOS</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
             <Link to="/auth"><Button variant="ghost" size="sm">{t('nav.signin')}</Button></Link>
-            <Link to="/auth"><Button size="sm">{t('nav.getStarted')}</Button></Link>
+            <Link to="/auth" className="hidden sm:block"><Button size="sm">{t('nav.getStarted')}</Button></Link>
           </div>
         </div>
       </header>
