@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
-import { Brain, ArrowLeft, Calendar, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
+import { Brain, ArrowLeft, Calendar, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,9 +14,6 @@ import { supabase } from '@/integrations/supabase/client';
 
 import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
-
-// Replace with your real calendar link (Calendly, Cal.com, HubSpot, etc.)
-const BOOKING_URL = 'https://calendly.com/decisionos/30min';
 
 const createSchema = (t: (key: string) => string) => z.object({
   fullName: z.string().trim().min(2, t('Please enter your full name')).max(100),
@@ -48,12 +45,15 @@ const initial: FormValues = {
 
 export default function BookDemoPage() {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const isPilot = searchParams.get('intent') === 'pilot';
   const schema = createSchema((key) => key);
   const navigate = useNavigate();
-  const [values, setValues] = useState<FormValues>(initial);
+  const [values, setValues] = useState<FormValues>(() => ({ ...initial, useCase: isPilot ? t('web.pilot') : '' }));
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [deliveryError, setDeliveryError] = useState(false);
 
   const set = <K extends keyof FormValues>(k: K, v: FormValues[K]) => {
     setValues((s) => ({ ...s, [k]: v }));
@@ -74,9 +74,9 @@ export default function BookDemoPage() {
     }
 
     setSubmitting(true);
+    setDeliveryError(false);
     try {
-      // Best-effort persistence; ignore failure so the user can still book.
-      await supabase.from('demo_requests' as any).insert({
+      const { error } = await supabase.from('demo_requests' as any).insert({
         full_name: parsed.data.fullName,
         work_email: parsed.data.workEmail,
         company: parsed.data.company,
@@ -84,22 +84,14 @@ export default function BookDemoPage() {
         company_size: parsed.data.companySize,
         use_case: parsed.data.useCase || null,
       });
+      if (error) throw error;
+      setSuccess(true);
+      toast({ title: t('Thanks!') });
     } catch {
-      // silent — lead capture table is optional
+      setDeliveryError(true);
+    } finally {
+      setSubmitting(false);
     }
-
-    setSuccess(true);
-    setSubmitting(false);
-    toast({ title: t('Thanks!'), description: t('Redirecting you to the calendar…') });
-
-    // Redirect to the booking calendar with prefilled details.
-    const url = new URL(BOOKING_URL);
-    url.searchParams.set('name', parsed.data.fullName);
-    url.searchParams.set('email', parsed.data.workEmail);
-    url.searchParams.set('a1', parsed.data.company);
-    setTimeout(() => {
-      window.location.href = url.toString();
-    }, 1200);
   };
 
   return (
@@ -112,7 +104,11 @@ export default function BookDemoPage() {
             </div>
             <span className="font-bold text-lg tracking-tight">DecisionOS</span>
           </Link>
-          <div className="flex items-center gap-2"><LanguageToggle /><Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2">
+          <div className="flex items-center gap-2"><LanguageToggle /><Button variant="ghost" size="sm" onClick={() => {
+            const index = window.history.state?.idx;
+            if (typeof index === 'number' && index > 0) navigate(-1);
+            else navigate('/landing', { replace: true });
+          }} className="gap-2">
             <ArrowLeft className="h-4 w-4" /> {t('Back')}
           </Button></div>
         </div>
@@ -124,7 +120,7 @@ export default function BookDemoPage() {
             <Calendar className="h-3 w-3 text-primary" /> {t('30-minute personalized demo')}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-            {t('See DecisionOS in action.')}
+            {isPilot ? t('web.pilot') : t('See DecisionOS in action.')}
           </h1>
           <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
             {t('Book a live walkthrough with our team. We’ll show how DecisionOS turns your company’s knowledge into governed, auditable AI decisions — tailored to your stack.')}
@@ -152,22 +148,13 @@ export default function BookDemoPage() {
                   <CheckCircle2 className="h-7 w-7 text-primary" />
                 </div>
                 <h2 className="text-xl font-semibold">{t('You’re all set')}</h2>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {t('Opening the calendar to pick your time…')}
-                </p>
-                <a
-                  href={BOOKING_URL}
-                  className="inline-flex items-center gap-2 mt-6 text-sm text-primary hover:underline"
-                >
-                  {t('Open manually')} <ExternalLink className="h-3.5 w-3.5" />
-                </a>
               </div>
             ) : (
               <form onSubmit={onSubmit} noValidate className="space-y-5">
                 <div>
                   <h2 className="text-xl font-semibold">{t('Book a demo')}</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {t('Fill in a few details and we’ll route you to the calendar.')}
+                    {t('web.bookingPending')}
                   </p>
                 </div>
 
@@ -243,11 +230,12 @@ export default function BookDemoPage() {
                   />
                 </Field>
 
+                {deliveryError && <p role="alert" className="text-sm text-destructive">{t('web.bookingFailed')}</p>}
                 <Button type="submit" size="lg" className="w-full gap-2" disabled={submitting}>
                   {submitting ? (
                     <><Loader2 className="h-4 w-4 animate-spin" /> {t('Submitting…')}</>
                   ) : (
-                    <>{t('Continue to calendar')} <Calendar className="h-4 w-4" /></>
+                    <>{t('web.submitRequest')} <Calendar className="h-4 w-4" /></>
                   )}
                 </Button>
 
