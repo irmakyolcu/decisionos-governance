@@ -73,10 +73,12 @@ export default function ReportsPage() {
     doc.setFontSize(10); doc.text(`Kapsam: ${scope} · ${new Date().toLocaleString(getLocale())}`, 14, 25);
     let y = 34;
     if (brief) {
+      doc.setFont('times', 'normal');
       doc.setFontSize(11);
       const lines = doc.splitTextToSize(brief, 180);
       doc.text(lines, 14, y);
       y += lines.length * 5 + 6;
+      doc.setFont('helvetica', 'normal');
     }
     for (const [name, arr] of Object.entries(bundle)) {
       const list = arr as any[];
@@ -147,7 +149,7 @@ export default function ReportsPage() {
         </div>
 
         {brief && (
-          <div className="mt-4 p-4 rounded-lg border border-border bg-muted/30 whitespace-pre-wrap text-sm font-mono max-h-[500px] overflow-auto">
+          <div className="mt-4 p-4 rounded-lg border border-border bg-muted/30 whitespace-pre-wrap text-sm font-serif max-h-[500px] overflow-auto" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
             {brief}
           </div>
         )}
