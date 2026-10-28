@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -39,8 +39,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [membership, setMembership] = useState<WorkspaceMember | null>(null);
   const [loading, setLoading] = useState(true);
+  const request = useRef(0);
 
   const fetchWorkspace = async () => {
+    const version = ++request.current;
+    setWorkspace(null); setMembership(null);
     if (!user) {
       setWorkspace(null);
       setMembership(null);
@@ -55,17 +58,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       .from('workspace_members')
       .select('*')
       .eq('user_id', user.id)
+      .order('joined_at', { ascending: true })
       .limit(1)
       .maybeSingle();
 
+    if (request.current !== version) return;
     if (memberError || !memberData) {
       setWorkspace(null);
       setMembership(null);
       setLoading(false);
       return;
     }
-
-    setMembership(memberData as WorkspaceMember);
 
     // Get workspace details
     const { data: wsData } = await supabase
@@ -74,8 +77,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       .eq('id', memberData.workspace_id)
       .single();
 
+    if (request.current !== version) return;
     if (wsData) {
       setWorkspace(wsData as Workspace);
+      setMembership(memberData as WorkspaceMember);
     }
 
     setLoading(false);
@@ -83,6 +88,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchWorkspace();
+    return () => { request.current++; };
   }, [user]);
 
   return (

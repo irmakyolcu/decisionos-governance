@@ -1,7 +1,12 @@
 # Product architecture audit
 - [x] Audit current modules, workflows, live schema and permissions without changing application data.
 - [x] Deliver feature status, gaps, additive relationship design, priorities, risks and integration prerequisites for approval.
-- [ ] Implement audit findings in approved phases: awaiting approval of the proposed scope.
+- [x] Phase 1: fix index, process member lookup and execution ordering; label examples and disable simulated external execution.
+- [x] Phase 1: caller-scoped reporting/ingestion, writer analysis checks, machine confidentiality, approval-role and process-link integrity guards.
+- [x] Phase 1: append snapshot-linked analysis without deleting human evidence; reject generated evidence/probabilities and unknown financial estimates.
+- [x] Phase 1: clear stale workspace/table reads; include both migration sets and stop before unreviewed destructive cleanup.
+- [ ] Verify full role/AI/installer flows in an isolated environment: requires disposable backend and authorized external-AI fixture; production user data must not be mutated for this test.
+- [ ] Initial on-premise administrator provisioning: requires isolated installer environment; current helper intentionally creates login only, never self-grants admin.
 
 # Website optimization
 - [x] Rework the public homepage into the requested seven-section enterprise narrative while keeping the demo video, sign-in, language switching and existing routes.
