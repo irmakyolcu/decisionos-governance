@@ -10,6 +10,7 @@ vi.mock('@/components/LanguageToggle', () => ({ LanguageToggle: () => null }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 it('does not report success when demo request delivery fails', async () => {
+  Element.prototype.scrollIntoView = vi.fn();
   insert.mockResolvedValue({ error: { message: 'missing request storage' } });
   const { container } = render(<MemoryRouter><BookDemoPage /></MemoryRouter>);
   for (const [id, value] of Object.entries({ fullName: 'Demo Tester', workEmail: 'demo@example.org', company: 'Example', role: 'Director' })) {
