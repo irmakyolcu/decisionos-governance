@@ -5,12 +5,14 @@ import { catalogTranslations } from '@/lib/i18n/catalogTranslations';
 import { signupTranslations } from '@/lib/i18n/signupTranslations';
 import { notificationTranslations } from '@/lib/i18n/notificationTranslations';
 import { askTranslations } from '@/lib/i18n/askTranslations';
+import { websiteTranslations } from '@/lib/i18n/websiteTranslations';
 
 export type Lang = 'en' | 'tr';
 
 type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
+  ...websiteTranslations,
   ...askTranslations,
   ...notificationTranslations,
   ...signupTranslations,
