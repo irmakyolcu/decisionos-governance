@@ -1,7 +1,7 @@
 # System notifications
-- [ ] Generate workspace-scoped notifications for important system events.
-- [ ] Fix live delivery, unread counts, read actions and Turkish/English display.
-- [ ] Verify a real event appears and can be marked read in the notification panel.
+- [x] Generate workspace-scoped notifications for decisions, risks, meetings, document processing and action approvals/results.
+- [x] Fix live delivery, unread counts, read actions and Turkish/English display.
+- [x] Verify a real risk event appears, can be marked read, and stays read after reload.
 
 # Signup permissions
 - [x] Add admin, viewer and read-only auditor permissions to invitations, team management and audit access.
