@@ -15,6 +15,13 @@
       "when": 1793222274098,
       "tag": "0001_add_workspace_auditor_role",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793222308277,
+      "tag": "0002_enforce_auditor_read_only",
+      "breakpoints": true
     }
   ]
 }
