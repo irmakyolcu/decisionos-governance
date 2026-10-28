@@ -27,18 +27,18 @@ Deno.serve(async (req) => {
     const bundle: Record<string, unknown> = {};
 
     if (scope === 'docs' || scope === 'all') {
-      const { data } = await admin.from('uploaded_documents').select('title,confidentiality,process_status,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
+      const { data } = await supa.from('uploaded_documents').select('title,confidentiality,process_status,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
       bundle.documents = data ?? [];
-      const { data: ki } = await admin.from('knowledge_items').select('title,summary,tags,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
+      const { data: ki } = await supa.from('knowledge_items').select('id,title,summary,tags,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
       bundle.knowledge = ki ?? [];
     }
     if (scope === 'decisions' || scope === 'all') {
-      const { data } = await admin.from('decisions').select('id,title,description,status,risk_level,budget,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
-      bundle.decisions = (data ?? []).map(({ id: _id, ...rest }: any) => rest);
+      const { data } = await supa.from('decisions').select('id,title,description,status,risk_level,budget,created_at').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(50);
+      bundle.decisions = data ?? [];
       const decIds = (data ?? []).map((d: any) => d.id);
       if (decIds.length) {
         // Scope AI evaluations strictly to this workspace's decisions
-        const { data: aiE } = await admin
+        const { data: aiE } = await supa
           .from('ai_evaluations')
           .select('summary,expected_roi,break_even_months,decision_id')
           .in('decision_id', decIds)
@@ -47,15 +47,16 @@ Deno.serve(async (req) => {
       }
     }
     if (scope === 'lessons' || scope === 'all') {
-      const { data } = await admin.from('knowledge_items').select('title,summary,tags,created_at').eq('workspace_id', workspace_id).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(50);
+      const { data } = await supa.from('knowledge_items').select('id,title,summary,tags,created_at').eq('workspace_id', workspace_id).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(50);
       bundle.lessons = data ?? [];
-      const { data: audit } = await admin.from('audit_events').select('event_type,created_at,reason').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(30);
+      const { data: audit } = await supa.from('audit_events').select('event_type,created_at,reason').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(30);
       bundle.audit = audit ?? [];
     }
 
-    const systemPrompt = lang === 'en'
+    const evidenceRules = ' Use only supplied records; cite their IDs. Never invent sources, historical outcomes, probabilities or economic facts. Distinguish predictions and missing information from verified results. ';
+    const systemPrompt = evidenceRules + (lang === 'en'
       ? 'You are an executive analyst. Produce a concise, professional markdown briefing (max ~800 words) with sections: Executive Summary, Key Metrics, Highlights, Risks & Watch Items, Recommendations. Use tables where helpful. No preamble.'
-      : 'Sen bir üst düzey yönetici analistisin. Kısa, profesyonel bir markdown brifingi üret (en fazla ~800 kelime). Bölümler: Yönetici Özeti, Kilit Metrikler, Öne Çıkanlar, Riskler ve İzlenecekler, Öneriler. Uygun yerlerde tablo kullan. Girişe gerek yok.';
+      : 'Sen bir üst düzey yönetici analistisin. Kısa, profesyonel bir markdown brifingi üret (en fazla ~800 kelime). Bölümler: Yönetici Özeti, Kilit Metrikler, Öne Çıkanlar, Riskler ve İzlenecekler, Öneriler. Uygun yerlerde tablo kullan. Girişe gerek yok.');
 
     let brief = '';
     try {

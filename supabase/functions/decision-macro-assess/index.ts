@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     const { data: membership } = await admin
       .from('workspace_members').select('role')
       .eq('workspace_id', decision.workspace_id).eq('user_id', user.id).maybeSingle();
-    if (!membership) return json({ error: 'forbidden' }, 403);
+    if (!membership || !['admin', 'approver'].includes(membership.role)) return json({ error: 'forbidden' }, 403);
 
     const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-2.5-pro';
     const sys = `Sen DecisionOS Makro Analistisin. Bir kurumsal kararı; sektör, ulusal ve küresel ekonomik durum,

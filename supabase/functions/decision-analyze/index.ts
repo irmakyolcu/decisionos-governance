@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       .eq('workspace_id', decision.workspace_id)
       .eq('user_id', user.id)
       .maybeSingle();
-    if (!membership) {
+    if (!membership || !['admin', 'approver'].includes(membership.role)) {
       return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
     // Always derive workspace_id from the decision, never trust client input
