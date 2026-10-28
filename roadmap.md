@@ -1,6 +1,6 @@
 # Back navigation
-- [ ] Add localized back navigation to application pages without duplicating existing detail-page controls.
-- [ ] Verify previous-page navigation, direct-entry fallback, and mobile layout.
+- [x] Add localized back navigation to application pages without duplicating existing detail-page controls.
+- [x] Verify previous-page navigation, direct-entry fallback, and mobile layout.
 
 # System notifications
 - [x] Generate workspace-scoped notifications for decisions, risks, meetings, document processing and action approvals/results.
