@@ -77,7 +77,7 @@ export default function AskDecisionOSPage() {
       }
       setMessages((m) => [...m, { ...asstMsg, id: savedId }]);
     } catch (e: any) {
-      toast({ title: translate("Error"), description: e.message ?? 'Failed to get answer', variant: 'destructive' });
+      toast({ title: translate("Error"), description: e.message ?? translate('ask.answerError'), variant: 'destructive' });
       setMessages((m) => m.slice(0, -1));
     } finally { setLoading(false); }
   };
@@ -104,9 +104,9 @@ export default function AskDecisionOSPage() {
         {messages.length === 0 && (
           <div className="grid sm:grid-cols-2 gap-2">
             {SUGGESTIONS.map((s) => (
-              <button key={s} onClick={() => ask(s)} className="text-left p-3 rounded-lg border border-border bg-card hover:bg-muted/40 text-sm transition">
-                {s}
-              </button>
+              <Button key={s} variant="outline" disabled={loading} onClick={() => ask(translate(s))} className="h-auto justify-start text-left p-3 rounded-lg bg-card hover:bg-muted/40 text-sm whitespace-normal">
+                {translate(s)}
+              </Button>
             ))}
           </div>
         )}
@@ -149,9 +149,9 @@ export default function AskDecisionOSPage() {
                   </div>
                 )}
                 <div className="flex items-center gap-1 pt-1">
-                  <Button size="sm" variant="ghost" onClick={() => feedback(m, 'correct')}><ThumbsUp className="h-3 w-3" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => feedback(m, 'partial')}><Meh className="h-3 w-3" /></Button>
-                  <Button size="sm" variant="ghost" onClick={() => feedback(m, 'incorrect')}><ThumbsDown className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="ghost" aria-label={translate('ask.correct')} title={translate('ask.correct')} onClick={() => feedback(m, 'correct')}><ThumbsUp className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="ghost" aria-label={translate('ask.partial')} title={translate('ask.partial')} onClick={() => feedback(m, 'partial')}><Meh className="h-3 w-3" /></Button>
+                  <Button size="sm" variant="ghost" aria-label={translate('ask.incorrect')} title={translate('ask.incorrect')} onClick={() => feedback(m, 'incorrect')}><ThumbsDown className="h-3 w-3" /></Button>
                 </div>
               </Card>
             )}
@@ -170,7 +170,7 @@ export default function AskDecisionOSPage() {
           className="min-h-[60px] resize-none"
           disabled={loading}
         />
-        <Button type="submit" disabled={!input.trim() || loading} size="icon" className="h-[60px] w-12">
+        <Button type="submit" aria-label={translate('ask.send')} title={translate('ask.send')} disabled={!input.trim() || loading} size="icon" className="h-[60px] w-12">
           <Send className="h-4 w-4" />
         </Button>
       </form>
