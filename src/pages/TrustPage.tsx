@@ -1,5 +1,6 @@
 import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { Shield, Lock, Database, Users, FileText, Mail } from "lucide-react";
+import { PageBackButton } from '@/components/PageBackButton';
 
 export default function TrustPage() {
   useLanguage();
@@ -38,6 +39,7 @@ export default function TrustPage() {
 
   return (
     <div>
+      <PageBackButton />
       <div className="page-header">
         <h1 className="page-title">{translate("Trust & Security")}</h1>
         <p className="page-description">

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export function getBackFallback(pathname: string): string {
+  if (pathname === '/trust') return '/landing';
   if (pathname.startsWith('/memory/')) return '/memory';
   if (pathname.startsWith('/audit/')) return '/';
   if (pathname === '/meeting-sources') return '/meetings';
