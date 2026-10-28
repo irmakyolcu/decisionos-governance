@@ -1,4 +1,10 @@
 # Signup permissions
+# System notifications
+- [ ] Generate workspace-scoped notifications for important system events.
+- [ ] Fix live delivery, unread counts, read actions and Turkish/English display.
+- [ ] Verify a real event appears and can be marked read in the notification panel.
+
+# Signup permissions
 - [x] Add admin, viewer and read-only auditor permissions to invitations, team management and audit access.
 - [x] Fix automatic administrator assignment during registration; membership requires administrator approval.
 - [x] Verify registration permissions and preserve existing workspace access with permission tests and the authenticated administrator screen.
