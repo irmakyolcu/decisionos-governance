@@ -17,7 +17,7 @@ export default function CEOProfilePage() {
       <div className="page-header">
         <h1 className="page-title">{translate("CEO Decision Profile")}</h1>
         <p className="page-description">
-          {translate("The Judgment Layer —")} {p.name}, {p.title} {translate("at")} {p.company}{translate(". This is the source of truth that powers every recommendation, delegation call, and alignment score.")}
+          {translate("The Judgment Layer —")} {p.name}, {p.title} {translate("at")} {p.company} · {translate('integrity.demo')}
         </p>
       </div>
 

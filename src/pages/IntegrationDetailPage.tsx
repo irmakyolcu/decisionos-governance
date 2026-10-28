@@ -76,14 +76,16 @@ export default function IntegrationDetailPage() {
         display_name: entry.display_name,
         kind: entry.kind,
         status: 'connected' as const,
-        last_synced_at: new Date().toISOString(),
+        last_synced_at: null,
         config: { simulated: true, connected_by: user.id },
         created_by: user.id,
       };
       if (integration) {
-        await supabase.from('integrations').update(payload).eq('id', integration.id);
+        const { error } = await supabase.from('integrations').update(payload).eq('id', integration.id);
+        if (error) throw error;
       } else {
-        await supabase.from('integrations').insert(payload);
+        const { error } = await supabase.from('integrations').insert(payload);
+        if (error) throw error;
       }
       toast.success(`${entry.display_name} connected (simulated)`);
       load();
@@ -121,7 +123,7 @@ export default function IntegrationDetailPage() {
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
-            {connected ? <><Check className="h-3 w-3 mr-1" />{translate("Connected")}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}
+            {connected ? <><Check className="h-3 w-3 mr-1" />{translate('integrity.simulated')}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}
           </Badge>
           {connected ? (
             <>
@@ -146,7 +148,7 @@ export default function IntegrationDetailPage() {
         <CardHeader><CardTitle className="text-base">{translate("Overview")}</CardTitle></CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground leading-relaxed">{translate(profile.overview)}</p>
-          {loading ? null : integration?.last_synced_at ? (
+          {loading ? null : integration?.last_synced_at && !integration.config?.simulated ? (
             <p className="text-xs text-muted-foreground mt-3">{translate("Last synced")} {new Date(integration.last_synced_at).toLocaleString(getLocale())}</p>
           ) : (
             <p className="text-xs text-muted-foreground mt-3">{translate("Never synced")}</p>

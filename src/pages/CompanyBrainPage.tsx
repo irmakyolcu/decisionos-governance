@@ -13,6 +13,8 @@ export default function CompanyBrainPage() {
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
+    let active = true;
+    setCounts({});
     if (!workspace) return;
     (async () => {
       const t = ['clients','projects','processes','company_skills','risks','decisions','uploaded_documents','knowledge_items','data_sources'];
@@ -20,9 +22,10 @@ export default function CompanyBrainPage() {
         supabase.from(tbl as any).select('*', { count: 'exact', head: true }).eq('workspace_id', workspace.id)
       ));
       const c: Record<string, number> = {};
-      t.forEach((tbl, i) => { c[tbl] = res[i].count ?? 0; });
-      setCounts(c);
+      t.forEach((tbl, i) => { if (!res[i].error) c[tbl] = res[i].count ?? 0; });
+      if (active) setCounts(c);
     })();
+    return () => { active = false; };
   }, [workspace]);
 
   const entities = [
@@ -55,16 +58,14 @@ export default function CompanyBrainPage() {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">{translate("Brain Health")}</h2>
-          <Badge variant="secondary">{translate("Overall 71")}</Badge>
+          <Badge variant="secondary">{translate('integrity.unmeasured')}</Badge>
         </div>
         <div className="grid sm:grid-cols-5 gap-4">
           {health.map((h) => (
             <div key={h.label}>
               <div className="text-xs text-muted-foreground mb-1">{translate(h.label)}</div>
-              <div className="text-lg font-semibold">{h.v}%</div>
-              <div className="h-1.5 bg-muted rounded-full mt-1 overflow-hidden">
-                <div className="h-full bg-primary" style={{ width: `${h.v}%` }} />
-              </div>
+              <div className="text-lg font-semibold">{translate('integrity.unmeasured')}</div>
+
             </div>
           ))}
         </div>
@@ -82,7 +83,7 @@ export default function CompanyBrainPage() {
                   </div>
                   <div className="flex-1">
                     <div className="font-medium">{translate(e.label)}</div>
-                    <div className="text-xs text-muted-foreground">{counts[e.key] ?? 0} {translate("items")}</div>
+                    <div className="text-xs text-muted-foreground">{counts[e.key] ?? '—'} {translate("items")}</div>
                   </div>
                 </div>
               </Card>
