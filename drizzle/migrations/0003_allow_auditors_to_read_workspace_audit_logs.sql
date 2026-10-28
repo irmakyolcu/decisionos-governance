@@ -1,0 +1,1 @@
+CREATE POLICY "Auditors can read workspace audit logs" ON public.audit_logs FOR SELECT TO authenticated USING (public.get_workspace_role(auth.uid(), workspace_id) = 'auditor'::public.workspace_role);
