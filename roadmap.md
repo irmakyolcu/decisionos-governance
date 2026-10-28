@@ -1,4 +1,3 @@
-# Translation corrections
 # Signup permissions
 - [ ] Fix automatic administrator assignment during registration after confirming who may become a workspace administrator.
 - [ ] Verify registration permissions and preserve existing workspace access.

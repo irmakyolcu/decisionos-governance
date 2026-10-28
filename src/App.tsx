@@ -96,7 +96,7 @@ function ProtectedRoutes() {
     return <Navigate to="/landing" replace />;
   }
 
-  // User is authenticated but has no workspace → onboarding
+  // Accounts without approved membership wait for an administrator invitation.
   if (!workspace) {
     return <OnboardingPage />;
   }
