@@ -48,6 +48,8 @@ echo "==> Copying deployment files"
 cp -r ./docker-compose.yml ./kong.yml ./nginx.conf ./Dockerfile ./init ./scripts \
       ./.env.example ./INSTALL.md ./LICENSING.md "$OUT/"
 cp -r ../supabase "$OUT/supabase"
+mkdir -p "$OUT/drizzle"
+cp -r ../drizzle/migrations "$OUT/drizzle/migrations"
 # The customer host never runs the vendor signing scripts.
 rm -f "$OUT/scripts/license-keygen.sh" "$OUT/scripts/license-issue.sh"
 rm -f "$OUT/supabase/functions/_shared/aiClient_test.ts"

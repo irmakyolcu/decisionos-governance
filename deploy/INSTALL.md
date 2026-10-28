@@ -85,7 +85,7 @@ ekrana yazar ve onay ister. Otomatik (etkileşimsiz) kurulum için:
 2. `scripts/generate-keys.sh` ile tüm gizli anahtarları üretir ve `.env` yazar
 3. Yerel LLM ağırlıklarını `volumes/ollama` içine kopyalar
 4. Stack'i ayağa kaldırır (`docker compose up -d`)
-5. Tüm veritabanı migration'larını (bu sürümde 38 adet) sırayla ve idempotent uygular
+5. Tüm veritabanı migration'larını (paketlenen Supabase ve ardından Drizzle SQL dosyaları) sırayla ve idempotent uygular
 6. Lisans durumunu kontrol eder
 
 Kurulum bittiğinde uygulama `http://<sunucu-ip>:8080` adresinde çalışır.
@@ -93,10 +93,10 @@ Kurulum bittiğinde uygulama `http://<sunucu-ip>:8080` adresinde çalışır.
 ### İlk yönetici kullanıcı
 
 ```bash
-./scripts/create-admin.sh ceo@acme.local 'CokGucluParola!'
+./scripts/create-admin.sh ceo@acme.local
 ```
 
-Giriş yaptıktan sonra ilk workspace onboarding ekranından oluşturulur.
+Betik yalnız giriş hesabı oluşturur; şirket/admin üyeliği mevcut yönetici tarafından onaylanmalıdır. İlk kurulumda yetkili yerel operatör şirket ve ilk admin üyeliğini denetimli provisioning ile hazırlamalıdır; kayıt ekranı admin vermez.
 
 ---
 
@@ -110,7 +110,7 @@ Giriş yaptıktan sonra ilk workspace onboarding ekranından oluşturulur.
 | `SMTP_HOST` | Kurum içi mail relay (boş bırakılırsa e-posta kapalı) |
 | `DISABLE_SIGNUP` | `true` — kullanıcılar sadece davetle eklenir |
 | `AI_CHAT_MODEL` | Yerel modelin adı |
-| `ALLOW_OUTBOUND_INTERNET` | `false` — Gmail/Slack/Teams konnektörleri ve dış veri kaynakları kapanır |
+| `ALLOW_OUTBOUND_INTERNET` | `false` — istenen ağ politikası; genel ağ engeli değildir, kurum güvenlik duvarıyla uygulanmalıdır |
 | `AI_ALLOW_EXTERNAL` | `false` — AI çağrısı yerel ağ dışına giderse hata verir |
 | `AI_ENABLED` | `false` yapılırsa tüm AI modülleri kapatılır |
 
@@ -151,7 +151,7 @@ docker compose --env-file ./.env up -d
 ./scripts/migrate.sh   # yalnızca yeni migration'lar uygulanır
 ```
 
-Veri kaybı olmaz; `schema_migrations` tablosu uygulanmışları atlar.
+Önce veritabanı ve dosya yedeği alın. `schema_migrations` yalnız kendi kaydettiği geçişleri atlar; farklı kurulum geçmişi olan veritabanında otomatik tekrar çalıştırmayın. Betik potansiyel veri temizliğinde durur; etki incelemesi sonrası yalnız onaylanan işlem için `DECISIONOS_ALLOW_REVIEWED_DATA_CLEANUP=true` kullanılabilir.
 
 ---
 
