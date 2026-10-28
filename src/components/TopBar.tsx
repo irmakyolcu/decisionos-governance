@@ -20,6 +20,7 @@ const ROLE_BADGE = {
   admin: { label: 'Admin', icon: Shield, className: 'bg-destructive/10 text-destructive border-destructive/20' },
   approver: { label: 'Approver', icon: CheckCircle, className: 'bg-warning/10 text-warning border-warning/20' },
   viewer: { label: 'Viewer', icon: Eye, className: 'bg-info/10 text-info border-info/20' },
+  auditor: { label: 'Auditor', icon: Shield, className: 'bg-muted text-muted-foreground border-border' },
 } as const;
 
 export function TopBar() {

@@ -12,14 +12,14 @@ interface WorkspaceMember {
   id: string;
   workspace_id: string;
   user_id: string;
-  role: 'admin' | 'approver' | 'viewer';
+  role: 'admin' | 'approver' | 'viewer' | 'auditor';
   joined_at: string;
 }
 
 interface WorkspaceContextType {
   workspace: Workspace | null;
   membership: WorkspaceMember | null;
-  role: 'admin' | 'approver' | 'viewer' | null;
+  role: 'admin' | 'approver' | 'viewer' | 'auditor' | null;
   loading: boolean;
   refetch: () => Promise<void>;
 }

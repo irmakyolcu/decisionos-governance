@@ -10,11 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Mail, Shield, Eye, CheckCircle, Trash2, Copy, Users, Lock } from 'lucide-react';
 import { ReadOnlyNotice } from '@/components/PermissionGate';
+import type { WorkspaceRole } from '@/lib/permissions';
 
 interface Member {
   id: string;
   user_id: string;
-  role: 'admin' | 'approver' | 'viewer';
+  role: WorkspaceRole;
   joined_at: string;
   profiles?: { display_name: string | null; department: string | null } | null;
 }
@@ -22,7 +23,7 @@ interface Member {
 interface Invite {
   id: string;
   email: string;
-  role: 'admin' | 'approver' | 'viewer';
+  role: WorkspaceRole;
   token: string;
   accepted_at: string | null;
   expires_at: string;
@@ -33,6 +34,7 @@ const roleLabels: Record<string, { label: string; icon: any; color: string }> = 
   admin: { label: 'Admin', icon: Shield, color: 'text-red-500' },
   approver: { label: 'Approver', icon: CheckCircle, color: 'text-amber-500' },
   viewer: { label: 'Viewer', icon: Eye, color: 'text-blue-500' },
+  auditor: { label: 'Auditor', icon: Shield, color: 'text-muted-foreground' },
 };
 
 export default function TeamPage() {
@@ -43,7 +45,7 @@ export default function TeamPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'admin' | 'approver' | 'viewer'>('viewer');
+  const [inviteRole, setInviteRole] = useState<WorkspaceRole>('viewer');
   const [sending, setSending] = useState(false);
 
   const isAdmin = role === 'admin';
@@ -56,10 +58,11 @@ export default function TeamPage() {
   }, [workspace, role]);
 
   const fetchMembers = async () => {
+    if (!workspace) return;
     const { data } = await supabase
       .from('workspace_members')
       .select('id, user_id, role, joined_at')
-      .eq('workspace_id', workspace!.id)
+      .eq('workspace_id', workspace.id)
       .order('joined_at');
 
     if (data) {
@@ -79,10 +82,11 @@ export default function TeamPage() {
   };
 
   const fetchInvites = async () => {
+    if (!workspace || !isAdmin) return;
     const { data } = await supabase
       .from('workspace_invites')
       .select('*')
-      .eq('workspace_id', workspace!.id)
+      .eq('workspace_id', workspace.id)
       .is('accepted_at', null)
       .order('created_at', { ascending: false });
 
@@ -91,7 +95,7 @@ export default function TeamPage() {
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!workspace || !inviteEmail.trim()) return;
+    if (!workspace || !user || !isAdmin || !inviteEmail.trim()) return;
     setSending(true);
 
     const { data, error } = await supabase
@@ -100,7 +104,7 @@ export default function TeamPage() {
         workspace_id: workspace.id,
         email: inviteEmail.trim().toLowerCase(),
         role: inviteRole,
-        invited_by: user!.id,
+        invited_by: user.id,
       })
       .select()
       .single();
@@ -126,20 +130,27 @@ export default function TeamPage() {
   };
 
   const deleteInvite = async (id: string) => {
+    if (!isAdmin) return;
     await supabase.from('workspace_invites').delete().eq('id', id);
     fetchInvites();
   };
 
-  const updateMemberRole = async (memberId: string, newRole: 'admin' | 'approver' | 'viewer') => {
-    await supabase
+  const updateMemberRole = async (memberId: string, newRole: WorkspaceRole) => {
+    if (!isAdmin) return;
+    const { error } = await supabase
       .from('workspace_members')
-      .update({ role: newRole as any })
+      .update({ role: newRole })
       .eq('id', memberId);
+    if (error) {
+      toast({ title: translate("Hata"), description: error.message, variant: 'destructive' });
+      return;
+    }
     fetchMembers();
     toast({ title: translate("Rol güncellendi") });
   };
 
   const removeMember = async (memberId: string, memberUserId: string) => {
+    if (!isAdmin) return;
     if (memberUserId === user?.id) {
       toast({ title: translate("Kendinizi çıkaramazsınız."), variant: 'destructive' });
       return;
@@ -163,7 +174,9 @@ export default function TeamPage() {
           message={
             role === 'approver'
               ? translate("Approver rolündesiniz: takım üyelerini görüntüleyebilir ancak davet edemez veya rolleri değiştiremezsiniz.")
-              : translate("Viewer rolündesiniz: takım üyelerini sadece görüntüleyebilirsiniz.")
+              : role === 'auditor'
+                ? translate('roles.auditorReadOnly')
+                : translate("Viewer rolündesiniz: takım üyelerini sadece görüntüleyebilirsiniz.")
           }
         />
       )}
@@ -193,6 +206,7 @@ export default function TeamPage() {
                 <SelectItem value="admin">{translate("Admin")}</SelectItem>
                 <SelectItem value="approver">{translate("Approver")}</SelectItem>
                 <SelectItem value="viewer">{translate("Viewer")}</SelectItem>
+                <SelectItem value="auditor">{translate("Auditor")}</SelectItem>
               </SelectContent>
             </Select>
             <Button type="submit" disabled={sending}>
@@ -271,7 +285,7 @@ export default function TeamPage() {
                   <div className="flex items-center gap-1">
                     <Select
                       value={m.role}
-                      onValueChange={(v: 'admin' | 'approver' | 'viewer') => updateMemberRole(m.id, v)}
+                      onValueChange={(v: WorkspaceRole) => updateMemberRole(m.id, v)}
                     >
                       <SelectTrigger className="w-[120px] h-8 text-xs">
                         <SelectValue />
@@ -280,6 +294,7 @@ export default function TeamPage() {
                         <SelectItem value="admin">{translate("Admin")}</SelectItem>
                         <SelectItem value="approver">{translate("Approver")}</SelectItem>
                         <SelectItem value="viewer">{translate("Viewer")}</SelectItem>
+                        <SelectItem value="auditor">{translate("Auditor")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button
