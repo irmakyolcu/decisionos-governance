@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 type SearchHit = { id: string; title: string; kind: string; href: string };
 
@@ -97,8 +98,9 @@ export function TopBar() {
   const initials = nameToShow.split(' ').map((s: string) => s[0]).slice(0, 2).join('').toUpperCase();
 
   return (
-    <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6 flex-shrink-0">
-      <div ref={boxRef} className="relative flex items-center gap-3 flex-1 max-w-md">
+    <header className="h-14 border-b border-border bg-card flex items-center justify-between px-3 sm:px-6 gap-2 flex-shrink-0">
+      <SidebarTrigger className="md:hidden -ml-1 flex-shrink-0" />
+      <div ref={boxRef} className="relative flex items-center gap-2 sm:gap-3 flex-1 max-w-md min-w-0">
         {loading ? (
           <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
         ) : (
@@ -142,7 +144,7 @@ export function TopBar() {
       </div>
 
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-1.5 sm:gap-4 flex-shrink-0">
         <LanguageToggle />
         <NotificationsBell />
 
@@ -162,7 +164,7 @@ export function TopBar() {
             )}
           </div>
           {roleBadge && (
-            <Badge variant="outline" className={`gap-1 ${roleBadge.className}`}>
+            <Badge variant="outline" className={`gap-1 hidden sm:inline-flex ${roleBadge.className}`}>
               <roleBadge.icon className="h-3 w-3" />
               <span className="text-xs">{t(roleBadge.label)}</span>
             </Badge>

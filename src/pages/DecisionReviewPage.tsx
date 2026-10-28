@@ -83,7 +83,7 @@ export default function DecisionReviewPage() {
 
   return (
     <div>
-      <div className="page-header flex items-start justify-between gap-4">
+      <div className="page-header flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="page-title">{translate("Decision Review")}</h1>
           <p className="page-description">{translate("Analyze proposals before approval. Pros and Cons are required.")}</p>
