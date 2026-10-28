@@ -30,8 +30,9 @@ export default function InvitePage() {
   }, [token]);
 
   const fetchInvite = async () => {
+    if (!token) return;
     const { data, error } = await supabase
-      .rpc('get_invite_by_token', { _token: token! })
+      .rpc('get_invite_by_token', { _token: token })
       .maybeSingle();
 
     if (error || !data) {
@@ -58,37 +59,14 @@ export default function InvitePage() {
 
 
   const handleAccept = async () => {
-    if (!user || !invite) return;
+    if (!user || !invite || !token) return;
     setStatus('accepting');
-
-    // Add user to workspace
-    const { error: memberError } = await supabase
-      .from('workspace_members')
-      .insert({
-        workspace_id: invite.workspace_id,
-        user_id: user.id,
-        role: invite.role,
-      });
-
-    if (memberError) {
-      if (memberError.code === '23505') {
-        // Already a member
-        toast({ title: translate("Zaten bu workspace'in üyesisiniz.") });
-      } else {
-        toast({ title: translate("Hata"), description: memberError.message, variant: 'destructive' });
-        setStatus('ready');
-        return;
-      }
+    const { error } = await supabase.rpc('accept_workspace_invite', { _token: token });
+    if (error) {
+      toast({ title: translate("Hata"), description: error.message, variant: 'destructive' });
+      setStatus('ready');
+      return;
     }
-
-    // Update profile
-    await supabase
-      .from('profiles')
-      .update({ workspace_id: invite.workspace_id })
-      .eq('user_id', user.id);
-
-    // Mark invite as accepted — we need a workaround since we can't UPDATE via RLS
-    // The admin policy won't work for the invitee. We'll just proceed.
 
     await refetch();
     setStatus('success');

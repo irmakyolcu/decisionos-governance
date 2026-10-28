@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793222214901,
+      "tag": "0000_require_admin_approved_workspace_membership",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793222274098,
+      "tag": "0001_add_workspace_auditor_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793222308277,
+      "tag": "0002_enforce_auditor_read_only",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793222373228,
+      "tag": "0003_allow_auditors_to_read_workspace_audit_logs",
+      "breakpoints": true
+    }
+  ]
+}

@@ -35,6 +35,7 @@ export default function AdminPermissionsPage() {
           <div className="flex justify-between"><span>{translate("Admin")}</span><Badge>{translate("Full access")}</Badge></div>
           <div className="flex justify-between"><span>{translate("Approver")}</span><Badge variant="secondary">{translate("Read + write, no admin")}</Badge></div>
           <div className="flex justify-between"><span>{translate("Viewer")}</span><Badge variant="outline">{translate("Read-only, respects confidentiality")}</Badge></div>
+          <div className="flex justify-between"><span>{translate("Auditor")}</span><Badge variant="outline">{translate('roles.auditAccess')}</Badge></div>
         </div>
       </Card>
 

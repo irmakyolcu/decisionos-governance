@@ -1,6 +1,6 @@
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 
-export type WorkspaceRole = 'admin' | 'approver' | 'viewer';
+export type WorkspaceRole = 'admin' | 'approver' | 'viewer' | 'auditor';
 
 /** Permission rules per workspace role */
 export const PERMISSIONS = {
@@ -40,6 +40,7 @@ export function usePermissions() {
     isAdmin: role === 'admin',
     isApprover: role === 'approver',
     isViewer: role === 'viewer',
+    isAuditor: role === 'auditor',
   };
 }
 
@@ -47,4 +48,5 @@ export const ROLE_LABELS: Record<WorkspaceRole, string> = {
   admin: 'Admin',
   approver: 'Approver',
   viewer: 'Viewer',
+  auditor: 'Auditor',
 };

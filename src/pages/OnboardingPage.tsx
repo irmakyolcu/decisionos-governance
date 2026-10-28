@@ -1,133 +1,62 @@
-import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { Building2, Loader2, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ShieldCheck, RefreshCw, LogOut, ArrowRight } from 'lucide-react';
 
 export default function OnboardingPage() {
-  useLanguage();
-  const [companyName, setCompanyName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<'form' | 'creating'>('form');
-  const { user } = useAuth();
+  const { t } = useLanguage();
+  const { signOut } = useAuth();
   const { refetch } = useWorkspace();
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const [link, setLink] = useState('');
+  const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !companyName.trim()) return;
-
-    setLoading(true);
-    setStep('creating');
-
-    // Create workspace
-    const { data: ws, error: wsError } = await supabase
-      .from('workspaces')
-      .insert({ name: companyName.trim(), created_by: user.id })
-      .select()
-      .single();
-
-    if (wsError || !ws) {
-      toast({ title: translate("Hata"), description: wsError?.message || 'Workspace oluşturulamadı.', variant: 'destructive' });
-      setStep('form');
-      setLoading(false);
-      return;
+  const openInvitation = (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const url = new URL(link.trim(), window.location.origin);
+      if (url.origin !== window.location.origin || url.pathname !== '/invite' || !url.searchParams.get('token')) {
+        setError(true);
+        return;
+      }
+      setError(false);
+      navigate(`/invite${url.search}`);
+    } catch {
+      setError(true);
     }
-
-    // Add user as admin member
-    const { error: memberError } = await supabase
-      .from('workspace_members')
-      .insert({ workspace_id: ws.id, user_id: user.id, role: 'admin' });
-
-    if (memberError) {
-      toast({ title: translate("Hata"), description: memberError.message, variant: 'destructive' });
-      setStep('form');
-      setLoading(false);
-      return;
-    }
-
-    // Update profile with workspace_id
-    await supabase
-      .from('profiles')
-      .update({ workspace_id: ws.id })
-      .eq('user_id', user.id);
-
-    // Wait briefly for visual effect
-    await new Promise((r) => setTimeout(r, 1500));
-
-    await refetch();
-    navigate('/twin-onboarding', { replace: true });
   };
 
-  if (step === 'creating') {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <div className="text-center space-y-6">
-          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-            <Building2 className="h-8 w-8 text-primary animate-pulse" />
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              {translate("Workspace oluşturuluyor...")}
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              <span className="font-medium text-foreground">{companyName}</span> {translate("için her şey hazırlanıyor.")}
-            </p>
-            <p className="text-muted-foreground text-xs mt-2">
-              {translate("Sonraki adım: Digital Twin kurulumu")}
-            </p>
-          </div>
-          <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
-        </div>
-      </div>
-    );
-  }
+  const checkAccess = async () => {
+    setChecking(true);
+    try { await refetch(); } finally { setChecking(false); }
+  };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <Building2 className="h-7 w-7 text-primary" />
-          </div>
-          <p className="text-xs uppercase tracking-widest text-primary font-medium mb-1">{translate("Kurulum — Adım 1 / 2")}</p>
-          <h1 className="text-2xl font-bold text-foreground mb-2">{translate("Hoş geldiniz!")}</h1>
-          <p className="text-muted-foreground text-sm">
-            {translate("Önce şirket workspace'inizi oluşturun, ardından Digital Twin kurulumuna geçelim.")}
-          </p>
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex justify-end"><LanguageToggle /></div>
+        <ShieldCheck className="h-12 w-12 text-primary" />
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-primary">DecisionOS</p>
+          <h1 className="text-2xl font-semibold text-foreground">{t('signup.approvalTitle')}</h1>
+          <p className="text-sm text-muted-foreground">{t('signup.approvalDescription')}</p>
         </div>
-
-        <div className="enterprise-card p-6">
-          <form onSubmit={handleCreate} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="companyName">{translate("Şirket Adı")}</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="companyName"
-                  type="text"
-                  placeholder="Acme Inc."
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="pl-10"
-                  required
-                  maxLength={100}
-                />
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading || !companyName.trim()}>
-              {translate("Workspace Oluştur")}
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          </form>
+        <form onSubmit={openInvitation} className="space-y-3">
+          <Label htmlFor="invitation-link">{t('signup.inviteLink')}</Label>
+          <Input id="invitation-link" value={link} onChange={event => { setLink(event.target.value); setError(false); }} required />
+          {error && <p role="alert" className="text-sm text-destructive">{t('signup.invalidInvite')}</p>}
+          <Button type="submit" className="w-full" disabled={!link.trim()}><ArrowRight className="mr-2 h-4 w-4" />{t('signup.openInvite')}</Button>
+        </form>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={checkAccess} disabled={checking}><RefreshCw className={`mr-2 h-4 w-4 ${checking ? 'animate-spin' : ''}`} />{t('signup.refresh')}</Button>
+          <Button variant="ghost" onClick={signOut}><LogOut className="mr-2 h-4 w-4" />{t('signup.signOut')}</Button>
         </div>
       </div>
     </div>
