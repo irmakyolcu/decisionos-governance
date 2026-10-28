@@ -178,9 +178,11 @@ const LanguageContext = createContext<Ctx | undefined>(undefined);
 let activeLanguage: Lang = 'tr';
 const displayDictionary = new Map<string, { en: string; tr: string }>();
 for (const [key, value] of Object.entries(dict)) {
-  displayDictionary.set(key, value);
-  displayDictionary.set(value.en, value);
-  displayDictionary.set(value.tr, value);
+  const displayValue = { ...value, tr: value.tr.replace(/â/g, 'a').replace(/Â/g, 'A') };
+  displayDictionary.set(key, displayValue);
+  displayDictionary.set(value.en, displayValue);
+  displayDictionary.set(value.tr, displayValue);
+  displayDictionary.set(displayValue.tr, displayValue);
 }
 
 /** Display-only translation: unknown values (including user content) are preserved. */
