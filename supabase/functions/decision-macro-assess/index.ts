@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
 jeopolitik gerilimler (savaş, yaptırım, ticaret savaşları), enflasyon, faiz, döviz kuru, enerji fiyatları,
 tedarik zinciri, düzenleyici riskler ve talep görünümü açısından değerlendirirsin.
 Kurallar:
-- Bilgin bir kesme tarihine sahiptir; kesin fiyat/kur verme, aralık ve yön belirt.
+- Canlı ekonomik kaynak sağlanmadı. Güncel ekonomik veri, yön, aralık, kur, olasılık veya kaynak uydurma. Eksik veriyi bilinmiyor diye belirt; sadece koşullu senaryoları tartış.
 - Türkçe, yönetici diliyle yaz. Kısa, kanıta dayalı, spekülatif değil.
 - SADECE geçerli JSON döndür.`;
 
@@ -102,14 +102,14 @@ Aşağıdaki JSON şemasında yanıt ver:
         decision_id,
         sector: parsed.sector ?? null,
         geographies: Array.isArray(parsed.geographies) ? parsed.geographies : null,
-        macro_score: parsed.macro_score != null ? Number(parsed.macro_score) : null,
+        macro_score: null,
         macro_level: parsed.macro_level ?? null,
         outlook: parsed.outlook ?? null,
         headline: parsed.headline ?? null,
-        commentary: parsed.commentary ?? '',
+        commentary: 'Canlı ekonomik veri sağlanmadı; koşullu AI senaryosu, ölçülmüş sonuç değildir. ' + (parsed.commentary ?? ''),
         risks: parsed.risks ?? [],
         opportunities: parsed.opportunities ?? [],
-        indicators: parsed.indicators ?? {},
+        indicators: {},
         geopolitical_notes: parsed.geopolitical_notes ?? null,
         sources: [],
         model,

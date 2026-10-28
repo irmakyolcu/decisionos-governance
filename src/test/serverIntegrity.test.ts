@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isWriter, mayReadRestricted, sanitizeAnalysis } from './integrity';
+import { isWriter, mayReadRestricted, sanitizeAnalysis } from '../../supabase/functions/_shared/integrity';
 
 describe('server integrity rules', () => {
   it('denies viewer mutations', () => { expect(isWriter('viewer')).toBe(false); });
