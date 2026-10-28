@@ -1,4 +1,7 @@
 export const websiteTranslations: Record<string, { en: string; tr: string }> = {
+  'web.bookingPending': { en: 'Demo scheduling is awaiting configuration. Requests cannot be delivered from this form yet.', tr: 'Demo planlamasının kurulumu bekleniyor. Bu formdan talepler henüz iletilemiyor.' },
+  'web.bookingFailed': { en: 'Your request could not be saved. No booking has been created.', tr: 'Talebiniz kaydedilemedi. Herhangi bir randevu oluşturulmadı.' },
+  'web.submitRequest': { en: 'Submit request', tr: 'Talep gönder' },
   'web.position': { en: 'Enterprise decision intelligence', tr: 'Kurumsal karar zekâsı' },
   'web.title': { en: 'The Intelligence Layer for Enterprise Decisions', tr: 'Kurumsal Kararlar İçin Zekâ Katmanı' },
   'web.subtitle': { en: 'Connect decisions, evidence, risks, and outcomes in one trusted system. Give leaders and AI agents the context, traceability, and governance needed to act with confidence.', tr: 'Kararları, kanıtları, riskleri ve sonuçları tek bir güvenilir sistemde birleştirin. Liderlere ve AI ajanlarına güvenle hareket etmek için gereken bağlamı, izlenebilirliği ve yönetişimi sağlayın.' },
