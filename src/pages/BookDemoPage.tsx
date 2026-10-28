@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { Brain, ArrowLeft, Calendar, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,9 +48,11 @@ const initial: FormValues = {
 
 export default function BookDemoPage() {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const isPilot = searchParams.get('intent') === 'pilot';
   const schema = createSchema((key) => key);
   const navigate = useNavigate();
-  const [values, setValues] = useState<FormValues>(initial);
+  const [values, setValues] = useState<FormValues>(() => ({ ...initial, useCase: isPilot ? t('web.pilot') : '' }));
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -112,7 +114,11 @@ export default function BookDemoPage() {
             </div>
             <span className="font-bold text-lg tracking-tight">DecisionOS</span>
           </Link>
-          <div className="flex items-center gap-2"><LanguageToggle /><Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2">
+          <div className="flex items-center gap-2"><LanguageToggle /><Button variant="ghost" size="sm" onClick={() => {
+            const index = window.history.state?.idx;
+            if (typeof index === 'number' && index > 0) navigate(-1);
+            else navigate('/landing', { replace: true });
+          }} className="gap-2">
             <ArrowLeft className="h-4 w-4" /> {t('Back')}
           </Button></div>
         </div>
@@ -124,7 +130,7 @@ export default function BookDemoPage() {
             <Calendar className="h-3 w-3 text-primary" /> {t('30-minute personalized demo')}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-            {t('See DecisionOS in action.')}
+            {isPilot ? t('web.pilot') : t('See DecisionOS in action.')}
           </h1>
           <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
             {t('Book a live walkthrough with our team. We’ll show how DecisionOS turns your company’s knowledge into governed, auditable AI decisions — tailored to your stack.')}

@@ -138,6 +138,12 @@
 }
 
 @layer components {
+  .website-page h1,
+  .website-page h2,
+  .website-page h3 {
+    letter-spacing: 0;
+  }
+
   /* Enterprise card styles */
   .enterprise-card {
     @apply bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow;
