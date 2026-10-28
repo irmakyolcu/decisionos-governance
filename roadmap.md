@@ -1,3 +1,8 @@
+# Product architecture audit
+- [x] Audit current modules, workflows, live schema and permissions without changing application data.
+- [x] Deliver feature status, gaps, additive relationship design, priorities, risks and integration prerequisites for approval.
+- [ ] Implement audit findings in approved phases: awaiting approval of the proposed scope.
+
 # Website optimization
 - [x] Rework the public homepage into the requested seven-section enterprise narrative while keeping the demo video, sign-in, language switching and existing routes.
 - [x] Make demo and pilot buttons reach valid demo-request destinations, with accurate available/planned capability and trust wording.
