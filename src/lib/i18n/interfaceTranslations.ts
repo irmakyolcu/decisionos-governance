@@ -3827,6 +3827,14 @@ export const interfaceTranslations: Record<string, { en: string; tr: string }> =
     "en": "No lessons match your filters.",
     "tr": "Filtrelerinize uyan ders yok."
   },
+  "Title is required": {
+    "en": "Title is required",
+    "tr": "Başlık gerekli"
+  },
+  "Lesson added": {
+    "en": "Lesson added",
+    "tr": "Ders eklendi"
+  },
   "Linked": {
     "en": "Linked",
     "tr": "Bağlandı"
