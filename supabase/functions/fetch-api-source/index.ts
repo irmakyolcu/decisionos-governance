@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     if (hostCheck) return json({ error: hostCheck }, 400);
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-    const { data: memberOk } = await admin.rpc('is_workspace_member', { _user_id: userId, _workspace_id: workspace_id });
+    const { data: memberOk } = await admin.rpc('is_workspace_writer', { _user_id: userId, _workspace_id: workspace_id });
     if (!memberOk) return json({ error: 'forbidden' }, 403);
 
     const controller = new AbortController();
@@ -72,6 +72,8 @@ Deno.serve(async (req) => {
         const loc = resp.headers.get('location');
         if (!loc || ++hops > 3) return json({ error: 'too many redirects' }, 502);
         const next = new URL(loc, current);
+        await resp.body?.cancel();
+        if (next.origin !== target.origin) return json({ error: 'Cross-origin redirects require a separate authorized source' }, 400);
         if (!['http:', 'https:'].includes(next.protocol)) return json({ error: 'only http(s) allowed' }, 400);
         const redirCheck = await assertPublicHost(next.hostname);
         if (redirCheck) return json({ error: redirCheck }, 400);

@@ -1,4 +1,5 @@
 // Public REST API — workspace-scoped, API-key auth, role + scope rules
+import { mayReadRestricted } from '../_shared/integrity.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -52,6 +53,8 @@ async function authenticate(req: Request): Promise<KeyRow | Response> {
     .is('revoked_at', null)
     .maybeSingle();
   if (error || !data) return json({ error: 'Invalid API key' }, 401);
+  const { data: issuer, error: issuerError } = await admin.from('workspace_members').select('role').eq('workspace_id', data.workspace_id).eq('user_id', data.created_by).maybeSingle();
+  if (issuerError || issuer?.role !== 'admin') return json({ error: 'Key issuer no longer authorized' }, 403);
   admin.from('api_keys').update({ last_used_at: new Date().toISOString() }).eq('id', data.id).then(() => {});
   return data as KeyRow;
 }
@@ -64,6 +67,10 @@ function requireScope(key: KeyRow, scope: string, minRole: Role): Response | nul
   return null;
 }
 
+const PRIVATE_TABLES = new Set(['knowledge_items','uploaded_documents','processes','projects','clients','company_skills','memory_entries']);
+function visibleQuery(query: any, table: string, key: KeyRow) {
+  return PRIVATE_TABLES.has(table) && !mayReadRestricted(key.role, key.scopes) ? query.in('confidentiality', ['public_internal','internal']) : query;
+}
 // ─── Route handlers ────────────────────────────────────────────────────────
 async function handleDecisions(req: Request, key: KeyRow, id?: string) {
   if (req.method === 'GET') {
@@ -107,7 +114,7 @@ async function handleLessons(req: Request, key: KeyRow) {
   if (req.method === 'GET') {
     const denied = requireScope(key, 'lessons:read', 'viewer');
     if (denied) return denied;
-    const { data, error } = await admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(100);
+    const { data, error } = await visibleQuery(admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id), 'knowledge_items', key).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(100);
     if (error) return json({ error: error.message }, 400);
     return json({ data });
   }
@@ -135,7 +142,7 @@ async function handleKnowledge(req: Request, key: KeyRow) {
   if (req.method === 'GET') {
     const denied = requireScope(key, 'knowledge:read', 'viewer');
     if (denied) return denied;
-    const { data, error } = await admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id).order('created_at', { ascending: false }).limit(100);
+    const { data, error } = await visibleQuery(admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id), 'knowledge_items', key).order('created_at', { ascending: false }).limit(100);
     if (error) return json({ error: error.message }, 400);
     return json({ data });
   }
@@ -143,6 +150,7 @@ async function handleKnowledge(req: Request, key: KeyRow) {
     const denied = requireScope(key, 'knowledge:write', 'writer');
     if (denied) return denied;
     const body = await req.json().catch(() => null);
+    if (body?.confidentiality && !['internal','public_internal'].includes(body.confidentiality) && key.role !== 'admin') return json({ error: 'Restricted classification requires admin' }, 403);
     if (!body?.title || !body?.content) return json({ error: 'title and content required' }, 400);
     const { data, error } = await admin.from('knowledge_items').insert({
       workspace_id: key.workspace_id,
@@ -219,9 +227,9 @@ async function handleProcessLinks(req: Request, key: KeyRow) {
 
 async function handleReadOnly(req: Request, key: KeyRow, table: string, scope: string) {
   if (req.method !== 'GET') return json({ error: 'Read-only endpoint' }, 405);
-  const denied = requireScope(key, scope, 'viewer');
+  const denied = requireScope(key, scope, table === 'audit_events' || table === 'notifications' ? 'admin' : 'viewer');
   if (denied) return denied;
-  const { data, error } = await admin.from(table).select('*').eq('workspace_id', key.workspace_id).order('created_at', { ascending: false }).limit(100);
+  const { data, error } = await visibleQuery(admin.from(table).select('*').eq('workspace_id', key.workspace_id), table, key).order('created_at', { ascending: false }).limit(100);
   if (error) return json({ error: error.message }, 400);
   return json({ data });
 }
@@ -324,11 +332,11 @@ async function handleExport(req: Request, key: KeyRow) {
   const out: Record<string, unknown[]> = {};
   for (const name of requested) {
     const { table, scope } = EXPORTABLE[name];
-    const denied = requireScope(key, scope, 'viewer');
+    const denied = requireScope(key, scope, table === 'audit_events' || table === 'notifications' ? 'admin' : 'viewer');
     if (denied) return denied;
     const isStepAudit = name === 'step_audits';
     const isAudit = name === 'audit';
-    let q = admin.from(table).select('*').eq('workspace_id', key.workspace_id)
+    let q = visibleQuery(admin.from(table).select('*').eq('workspace_id', key.workspace_id), table, key)
       .order('created_at', { ascending: false }).limit(limit);
     if (isStepAudit) q = q.like('event_type', 'step.audit.%');
     if (since) q = q.gte(isStepAudit || table === 'audit_events' ? 'created_at' : 'updated_at', since);
@@ -432,6 +440,8 @@ async function handleImport(req: Request, key: KeyRow) {
   const errors: { index: number; error: string }[] = [];
   records.forEach((r: unknown, i: number) => {
     if (!r || typeof r !== 'object') { errors.push({ index: i, error: 'record must be an object' }); return; }
+    const classification = (r as Record<string, any>).confidentiality;
+    if (classification && !['internal','public_internal'].includes(classification) && key.role !== 'admin') { errors.push({ index: i, error: 'Restricted classification requires admin' }); return; }
     const mapped = map(r as Record<string, any>, key);
     if (typeof mapped === 'string') errors.push({ index: i, error: mapped });
     else rows.push(mapped);

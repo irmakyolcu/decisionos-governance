@@ -22,11 +22,11 @@ Deno.serve(async (req) => {
     if (!document_id) return json({ error: 'document_id required' }, 400);
 
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-    const { data: doc, error } = await admin.from('uploaded_documents').select('*').eq('id', document_id).single();
+    const { data: doc, error } = await supa.from('uploaded_documents').select('*').eq('id', document_id).single();
     if (error || !doc) return json({ error: 'not found' }, 404);
 
     // Membership check
-    const { data: memberOk } = await admin.rpc('is_workspace_member', { _user_id: claims.claims.sub, _workspace_id: doc.workspace_id });
+    const { data: memberOk } = await admin.rpc('is_workspace_writer', { _user_id: claims.claims.sub, _workspace_id: doc.workspace_id });
     if (!memberOk) return json({ error: 'forbidden' }, 403);
 
     // If we already have text, skip
@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     if (!doc.file_path) return json({ error: 'no file to ingest' }, 400);
 
     // Download file
-    const { data: blob, error: dErr } = await admin.storage.from('company-docs').download(doc.file_path);
+    const { data: blob, error: dErr } = await supa.storage.from('company-docs').download(doc.file_path);
     if (dErr || !blob) return json({ error: dErr?.message ?? 'download failed' }, 400);
 
     const mime = doc.mime_type || blob.type || 'application/octet-stream';
@@ -72,15 +72,16 @@ Deno.serve(async (req) => {
 
     extracted = (extracted || '').slice(0, 50000);
 
-    await admin.from('uploaded_documents').update({
+    const { error: updateError } = await supa.from('uploaded_documents').update({
       content_text: extracted,
       process_status: 'indexed',
     }).eq('id', document_id);
 
+    if (updateError) return json({ error: 'Document update failed' }, 500);
     if (extracted.length > 50) {
-      await admin.from('knowledge_items').insert({
+      const { error: indexError } = await supa.from('knowledge_items').insert({
         workspace_id: doc.workspace_id,
-        created_by: doc.created_by,
+        created_by: claims.claims.sub,
         document_id: doc.id,
         title: doc.title,
         content: extracted.slice(0, 10000),
@@ -88,6 +89,10 @@ Deno.serve(async (req) => {
         confidentiality: doc.confidentiality || 'internal',
         source_date: new Date().toISOString(),
       });
+      if (indexError) {
+        await supa.from('uploaded_documents').update({ process_status: 'failed' }).eq('id', document_id);
+        return json({ error: 'Knowledge indexing failed' }, 500);
+      }
     }
 
     return json({ ok: true, length: extracted.length });

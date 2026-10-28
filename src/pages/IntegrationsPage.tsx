@@ -62,14 +62,16 @@ export default function IntegrationsPage() {
         display_name: entry.display_name,
         kind: entry.kind,
         status: 'connected' as const,
-        last_synced_at: new Date().toISOString(),
+        last_synced_at: null,
         config: { simulated: true, connected_by: user.id },
         created_by: user.id,
       };
       if (existing) {
-        await supabase.from('integrations').update(payload).eq('id', existing.id);
+        const { error } = await supabase.from('integrations').update(payload).eq('id', existing.id);
+        if (error) throw error;
       } else {
-        await supabase.from('integrations').insert(payload);
+        const { error } = await supabase.from('integrations').insert(payload);
+        if (error) throw error;
       }
       toast.success(`${entry.display_name} connected (simulated)`);
       load();
@@ -127,14 +129,14 @@ export default function IntegrationsPage() {
                               <p className="text-xs text-muted-foreground mt-1">{translate(entry.description)}</p>
                             </div>
                             <Badge variant="outline" className={connected ? 'bg-success/10 text-success border-success/20' : 'bg-muted text-muted-foreground'}>
-                              {connected ? <><Check className="h-3 w-3 mr-1" />{translate("Connected")}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}
+                              {connected ? <><Check className="h-3 w-3 mr-1" />{translate('integrity.simulated')}</> : <><X className="h-3 w-3 mr-1" />{translate("Not connected")}</>}
                             </Badge>
                           </div>
                         </CardHeader>
                         <CardContent onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-between">
                             <div className="text-xs text-muted-foreground">
-                              {existing?.last_synced_at ? translate("Last synced {v0}", {v0: new Date(existing.last_synced_at).toLocaleString()}) : translate("Never synced")}
+                              {existing?.last_synced_at && !existing.config?.simulated ? translate("Last synced {v0}", {v0: new Date(existing.last_synced_at).toLocaleString()}) : translate("Never synced")}
                             </div>
                             <div className="flex gap-2">
                               <Button size="sm" variant="ghost" onClick={() => navigate(`/integrations/${entry.provider}`)}>{translate("Details")}</Button>

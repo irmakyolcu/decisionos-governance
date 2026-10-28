@@ -2,6 +2,7 @@
 // Compares the new score to the previous one and stores an append-only record.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { isWriter } from '../_shared/integrity.ts';
 import { aiChatRaw, AiError } from '../_shared/aiClient.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -32,7 +33,7 @@ Deno.serve(async (req) => {
     const { data: membership } = await admin
       .from('workspace_members').select('role')
       .eq('workspace_id', decision.workspace_id).eq('user_id', user.id).maybeSingle();
-    if (!membership) return json({ error: 'forbidden' }, 403);
+    if (!membership || !isWriter(membership.role)) return json({ error: 'forbidden' }, 403);
 
     const { data: prior } = await admin
       .from('decision_risk_assessments')
@@ -51,7 +52,7 @@ Rules:
 - Compare against the previous assessment when one exists.
 - Explain WHY the score changed (or stayed the same), referring to the prior assessments.
 - Use plain executive language. Cite the specific fields that drove the score.
-- Output STRICT JSON only.`;
+- Scores are subjective AI estimates, not measured probabilities. Never invent historical outcomes or economic sources. Output STRICT JSON only.`;
 
     const prompt = `KARAR:
 Başlık: ${decision.title}
@@ -108,18 +109,13 @@ Aşağıdaki JSON şemasında yanıt ver:
         risk_level: String(parsed.risk_level || 'medium').toLowerCase(),
         verdict: parsed.verdict ?? null,
         commentary: parsed.commentary ?? '',
-        comparison_note: parsed.comparison_note ?? null,
+        comparison_note: previousScore == null ? 'İlk AI değerlendirmesi; geçmiş karar sonucu değildir.' : `Önceki AI risk skoru ${previousScore}/100; yeni AI risk skoru ${newScore}/100. Bu skorlar ölçülmüş olasılık değil, AI tahminidir.`,
         previous_score: previousScore,
         score_delta: delta,
         triggered_by: user.id,
         trigger_reason: trigger_reason ?? 'manual',
         model,
-        snapshot: {
-          title: decision.title,
-          budget: decision.budget,
-          risk_level: decision.risk_level,
-          status: decision.status,
-        },
+        snapshot: { decision, assessment_kind: 'subjective_ai_estimate_not_probability' },
       })
       .select()
       .maybeSingle();

@@ -3,6 +3,7 @@
 // decision and stores an append-only assessment.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { isWriter } from '../_shared/integrity.ts';
 import { aiChatRaw, AiError } from '../_shared/aiClient.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -30,14 +31,14 @@ Deno.serve(async (req) => {
     const { data: membership } = await admin
       .from('workspace_members').select('role')
       .eq('workspace_id', decision.workspace_id).eq('user_id', user.id).maybeSingle();
-    if (!membership) return json({ error: 'forbidden' }, 403);
+    if (!membership || !isWriter(membership.role)) return json({ error: 'forbidden' }, 403);
 
     const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-2.5-pro';
     const sys = `Sen DecisionOS Makro Analistisin. Bir kurumsal kararı; sektör, ulusal ve küresel ekonomik durum,
 jeopolitik gerilimler (savaş, yaptırım, ticaret savaşları), enflasyon, faiz, döviz kuru, enerji fiyatları,
 tedarik zinciri, düzenleyici riskler ve talep görünümü açısından değerlendirirsin.
 Kurallar:
-- Bilgin bir kesme tarihine sahiptir; kesin fiyat/kur verme, aralık ve yön belirt.
+- Canlı ekonomik kaynak sağlanmadı. Güncel ekonomik veri, yön, aralık, kur, olasılık veya kaynak uydurma. Eksik veriyi bilinmiyor diye belirt; sadece koşullu senaryoları tartış.
 - Türkçe, yönetici diliyle yaz. Kısa, kanıta dayalı, spekülatif değil.
 - SADECE geçerli JSON döndür.`;
 
@@ -101,16 +102,16 @@ Aşağıdaki JSON şemasında yanıt ver:
         decision_id,
         sector: parsed.sector ?? null,
         geographies: Array.isArray(parsed.geographies) ? parsed.geographies : null,
-        macro_score: parsed.macro_score != null ? Number(parsed.macro_score) : null,
+        macro_score: null,
         macro_level: parsed.macro_level ?? null,
         outlook: parsed.outlook ?? null,
         headline: parsed.headline ?? null,
-        commentary: parsed.commentary ?? '',
+        commentary: 'Canlı ekonomik veri sağlanmadı; koşullu AI senaryosu, ölçülmüş sonuç değildir. ' + (parsed.commentary ?? ''),
         risks: parsed.risks ?? [],
         opportunities: parsed.opportunities ?? [],
-        indicators: parsed.indicators ?? {},
+        indicators: {},
         geopolitical_notes: parsed.geopolitical_notes ?? null,
-        sources: parsed.sources ?? [],
+        sources: [],
         model,
         triggered_by: user.id,
         trigger_reason: trigger_reason ?? 'manual',

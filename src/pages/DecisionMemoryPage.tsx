@@ -38,7 +38,7 @@ export default function DecisionMemoryPage() {
     <div className="space-y-6">
       <div className="page-header">
         <h1 className="page-title">{translate("Decision Memory")}</h1>
-        <p className="page-description">{translate("The CEO's past decisions, why they were made, and what was learned. This is the substrate the Judgment Layer reasons from.")}</p>
+        <p className="page-description">{translate('integrity.demo')}</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 md:items-center">
