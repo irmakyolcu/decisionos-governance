@@ -3489,6 +3489,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_workspace_invite: { Args: { _token: string }; Returns: string }
       can_view_confidential: {
         Args: {
           _creator: string
