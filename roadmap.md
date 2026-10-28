@@ -1,7 +1,7 @@
 # Signup permissions
-- [ ] Add admin, viewer and read-only auditor permissions to invitations, team management and audit access.
-- [ ] Fix automatic administrator assignment during registration after confirming who may become a workspace administrator.
-- [ ] Verify registration permissions and preserve existing workspace access.
+- [x] Add admin, viewer and read-only auditor permissions to invitations, team management and audit access.
+- [x] Fix automatic administrator assignment during registration; membership requires administrator approval.
+- [x] Verify registration permissions and preserve existing workspace access with permission tests and the authenticated administrator screen.
 
 # Translation corrections
 - [x] Audit all application pages, shared controls, messages and locale formatting.
