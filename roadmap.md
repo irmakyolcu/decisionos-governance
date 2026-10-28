@@ -1,3 +1,8 @@
+# Website optimization
+- [ ] Rework the public homepage into the requested seven-section enterprise narrative while keeping the demo video, sign-in, language switching and existing routes.
+- [ ] Make demo and pilot buttons reach valid demo-request destinations, with accurate available/planned capability and trust wording.
+- [ ] Update homepage metadata and verify links, form route, Turkish/English copy and mobile layout.
+
 # Back navigation
 - [x] Add localized back navigation to application pages without duplicating existing detail-page controls.
 - [x] Verify previous-page navigation, direct-entry fallback, and mobile layout.
