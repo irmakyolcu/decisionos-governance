@@ -2,6 +2,7 @@
 // Never executes external actions.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { sanitizeAnalysis, isWriter } from '../_shared/integrity.ts';
 import { aiChatRaw, AiError } from '../_shared/aiClient.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -33,14 +34,16 @@ Deno.serve(async (req) => {
       .eq('workspace_id', decision.workspace_id)
       .eq('user_id', user.id)
       .maybeSingle();
-    if (!membership || !['admin', 'approver'].includes(membership.role)) {
+    if (!membership || !isWriter(membership.role)) {
       return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
     // Always derive workspace_id from the decision, never trust client input
     const workspace_id = decision.workspace_id;
 
+    const { data: suppliedEvidence, error: evidenceError } = await userClient.from('decision_evidence').select('id,source,summary,is_verified').eq('decision_id', decision_id);
+    if (evidenceError) throw evidenceError;
     const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-3-flash-preview';
-    const sys = `You are the DecisionOS Decision Agent. You prepare decisions for human leaders to approve. You do NOT execute actions. You MUST distinguish facts, assumptions, and unknowns. Output strict JSON only.`;
+    const sys = `You are the DecisionOS Decision Agent. You prepare decisions for human leaders to approve. You do NOT execute actions. You MUST distinguish facts, assumptions, and unknowns. Use only supplied evidence IDs. Do not fabricate historical outcomes, sources, verification, financial estimates or probabilities. If missing, return null and state unknown. Output strict JSON only.`;
     const prompt = `Decision title: ${decision.title}
 Description: ${decision.description || ''}
 Problem statement: ${decision.problem_statement || ''}
@@ -48,6 +51,7 @@ Options considered: ${JSON.stringify(decision.options_considered || [])}
 Budget: ${decision.budget || 0}
 Risk level: ${decision.risk_level || 'unknown'}
 
+Existing evidence (never modify): ${JSON.stringify(suppliedEvidence ?? [])}
 Produce JSON with shape:
 {
   "alternatives": [{"title": str, "description": str, "estimated_cost": number, "expected_value": number, "time_to_impact": str, "risk_level": "low|medium|high|critical", "reversibility": "high|medium|low", "confidence": 0-1, "is_recommended": bool}],
@@ -74,30 +78,30 @@ Include exactly one recommended alternative. Include all four scenarios. Include
     }
 
     const content = aiJson.choices?.[0]?.message?.content || '{}';
-    const parsed = JSON.parse(content);
+    const parsed = sanitizeAnalysis(JSON.parse(content));
 
-    // Clear prior derived rows
-    await admin.from('decision_alternatives').delete().eq('decision_id', decision_id);
-    await admin.from('decision_evidence').delete().eq('decision_id', decision_id);
-    await admin.from('decision_assumptions').delete().eq('decision_id', decision_id);
-    await admin.from('decision_unknowns').delete().eq('decision_id', decision_id);
-    await admin.from('decision_scenarios').delete().eq('decision_id', decision_id);
-
-    const base = { workspace_id, decision_id };
+    const { data: snapshot, error: snapshotError } = await admin.from('decision_context_snapshots').insert({ workspace_id, decision_id, recorded_by: user.id, analysis_input: { decision, evidence: suppliedEvidence }, analysis_output: parsed, analysis_model: model }).select('id').single();
+    if (snapshotError || !snapshot) throw snapshotError ?? new Error('Snapshot failed');
+    const base = { workspace_id, decision_id, analysis_snapshot_id: snapshot.id };
+    async function persist(table: string, rows: unknown[]) {
+      if (!rows.length) return;
+      const { error } = await admin.from(table).insert(rows);
+      if (error) throw error;
+    }
     let recommendedAltId: string | null = null;
 
     if (Array.isArray(parsed.alternatives)) {
       for (const a of parsed.alternatives) {
-        const { data } = await admin.from('decision_alternatives').insert({ ...base, ...a }).select().maybeSingle();
+        const { data, error } = await admin.from('decision_alternatives').insert({ ...base, ...a }).select().maybeSingle();
+        if (error) throw error;
         if (a.is_recommended && data) recommendedAltId = data.id;
       }
     }
-    if (Array.isArray(parsed.evidence)) await admin.from('decision_evidence').insert(parsed.evidence.map((e: any) => ({ ...base, ...e })));
-    if (Array.isArray(parsed.assumptions)) await admin.from('decision_assumptions').insert(parsed.assumptions.map((e: any) => ({ ...base, ...e })));
-    if (Array.isArray(parsed.unknowns)) await admin.from('decision_unknowns').insert(parsed.unknowns.map((e: any) => ({ ...base, ...e })));
-    if (Array.isArray(parsed.scenarios)) await admin.from('decision_scenarios').insert(parsed.scenarios.map((s: any) => ({ ...base, ...s })));
+    if (Array.isArray(parsed.assumptions)) await persist('decision_assumptions', parsed.assumptions.map((e: any) => ({ ...base, ...e })));
+    if (Array.isArray(parsed.unknowns)) await persist('decision_unknowns', parsed.unknowns.map((e: any) => ({ ...base, ...e })));
+    if (Array.isArray(parsed.scenarios)) await persist('decision_scenarios', parsed.scenarios.map((s: any) => ({ ...base, ...s })));
     if (parsed.recommendation) {
-      await admin.from('decision_recommendations').insert({
+      await persist('decision_recommendations', [{
         ...base,
         recommended_alternative_id: recommendedAltId,
         rationale: parsed.recommendation.rationale,
@@ -105,7 +109,7 @@ Include exactly one recommended alternative. Include all four scenarios. Include
         invalidation_conditions: parsed.recommendation.invalidation_conditions,
         devils_advocate: parsed.recommendation.devils_advocate,
         model,
-      });
+      }]);
     }
 
     await admin.from('audit_events').insert({
@@ -120,7 +124,7 @@ Include exactly one recommended alternative. Include all four scenarios. Include
     });
 
 
-    return new Response(JSON.stringify({ ok: true, model }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ ok: true, model, analysis_snapshot_id: snapshot.id }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }

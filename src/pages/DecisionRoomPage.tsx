@@ -18,7 +18,7 @@ export default function DecisionRoomPage() {
   useLanguage();
   const { id } = useParams();
   const nav = useNavigate();
-  const { workspace } = useWorkspace();
+  const { workspace, role } = useWorkspace();
   const [decision, setDecision] = useState<any>(null);
   const [alternatives, setAlternatives] = useState<any[]>([]);
   const [evidence, setEvidence] = useState<any[]>([]);
@@ -39,9 +39,11 @@ export default function DecisionRoomPage() {
       db.from('decision_recommendations').select('*').eq('decision_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
       db.from('decision_scenarios').select('*').eq('decision_id', id),
     ]);
-    setDecision(d.data); setAlternatives(a.data || []); setEvidence(ev.data || []);
-    setAssumptions(as_.data || []); setUnknowns(un.data || []);
-    setRecommendation(rec.data); setScenarios(sc.data || []);
+    const current = rec.data?.analysis_snapshot_id;
+    const latest = (rows: any[]) => rows.filter(r => !r.analysis_snapshot_id || r.analysis_snapshot_id === current);
+    setDecision(d.data); setAlternatives(latest(a.data || [])); setEvidence(ev.data || []);
+    setAssumptions(latest(as_.data || [])); setUnknowns(latest(un.data || []));
+    setRecommendation(rec.data); setScenarios(latest(sc.data || []));
   }
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
 
@@ -88,10 +90,10 @@ export default function DecisionRoomPage() {
           </div>
         </div>
         <div className="flex gap-2 flex-shrink-0">
-          <Button variant="outline" onClick={runAnalysis} disabled={analyzing}>
+          <Button variant="outline" onClick={runAnalysis} disabled={analyzing || !['admin','approver'].includes(role ?? '')}>
             <Sparkles className="h-4 w-4 mr-2" />{analyzing ? translate("Analyzing…") : translate("Run AI Analysis")}
           </Button>
-          {decision.status !== 'Approved' && (
+          {['admin','approver'].includes(role ?? '') && decision.status !== 'Approved' && (
             <Button onClick={approveDecision}><CheckCircle className="h-4 w-4 mr-2" />{translate("Approve Decision")}</Button>
           )}
         </div>
@@ -214,8 +216,8 @@ export default function DecisionRoomPage() {
                 <Card key={s.id}><CardHeader><CardTitle className="text-sm capitalize">{s.scenario}</CardTitle></CardHeader>
                   <CardContent className="text-sm space-y-1">
                     <p>{s.summary}</p>
-                    <p className="text-xs"><strong>{translate("Financial impact:")}</strong> €{Number(s.financial_impact || 0).toLocaleString(getLocale())}</p>
-                    <p className="text-xs"><strong>{translate("Probability:")}</strong> {Math.round((s.probability || 0) * 100)}%</p>
+                    <p className="text-xs"><strong>{translate("Financial impact:")}</strong> {s.financial_impact == null ? '—' : `€${Number(s.financial_impact).toLocaleString(getLocale())}`}</p>
+                    <p className="text-xs"><strong>{translate("Probability:")}</strong> {s.probability == null ? translate('integrity.unmeasured') : `${Math.round(s.probability * 100)}%`}</p>
                   </CardContent></Card>
               ))}
           </div>

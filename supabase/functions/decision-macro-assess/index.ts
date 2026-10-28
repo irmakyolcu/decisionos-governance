@@ -3,6 +3,7 @@
 // decision and stores an append-only assessment.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { isWriter } from '../_shared/integrity.ts';
 import { aiChatRaw, AiError } from '../_shared/aiClient.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
     const { data: membership } = await admin
       .from('workspace_members').select('role')
       .eq('workspace_id', decision.workspace_id).eq('user_id', user.id).maybeSingle();
-    if (!membership || !['admin', 'approver'].includes(membership.role)) return json({ error: 'forbidden' }, 403);
+    if (!membership || !isWriter(membership.role)) return json({ error: 'forbidden' }, 403);
 
     const model = Deno.env.get('AI_CHAT_MODEL') || 'google/gemini-2.5-pro';
     const sys = `Sen DecisionOS Makro Analistisin. Bir kurumsal kararı; sektör, ulusal ve küresel ekonomik durum,
@@ -110,7 +111,7 @@ Aşağıdaki JSON şemasında yanıt ver:
         opportunities: parsed.opportunities ?? [],
         indicators: parsed.indicators ?? {},
         geopolitical_notes: parsed.geopolitical_notes ?? null,
-        sources: parsed.sources ?? [],
+        sources: [],
         model,
         triggered_by: user.id,
         trigger_reason: trigger_reason ?? 'manual',
