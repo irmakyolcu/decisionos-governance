@@ -1,4 +1,9 @@
 # Translation corrections
+# Signup permissions
+- [ ] Fix automatic administrator assignment during registration after confirming who may become a workspace administrator.
+- [ ] Verify registration permissions and preserve existing workspace access.
+
+# Translation corrections
 - [x] Audit all application pages, shared controls, messages and locale formatting.
 - [x] Localize remaining interface copy without changing user data or stored business values.
 - [x] Verify all navigable pages in Turkish and English and run language regression tests.
