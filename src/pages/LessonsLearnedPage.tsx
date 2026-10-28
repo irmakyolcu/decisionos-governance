@@ -62,9 +62,9 @@ export default function LessonsLearnedPage() {
   }, [rows.length, persist]);
 
   function save() {
-    if (!form.title.trim()) return toast.error('Başlık gerekli');
+    if (!form.title.trim()) return toast.error(translate('Title is required'));
     persist([{ ...form, id: crypto.randomUUID(), created_at: new Date().toISOString() }, ...rows]);
-    setOpen(false); setForm(empty); toast.success('Ders eklendi');
+    setOpen(false); setForm(empty); toast.success(translate('Lesson added'));
   }
   function remove(id: string) { persist(rows.filter((r) => r.id !== id)); }
 
@@ -167,7 +167,7 @@ export default function LessonsLearnedPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge variant="outline" className="text-xs">{translate(r.category)}</Badge>
-                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">{impactIcon(r.impact)} {r.impact}</span>
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">{impactIcon(r.impact)} {translate(r.impact)}</span>
                     </div>
                     <h3 className="font-semibold mt-2">{r.title}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{r.source} · {new Date(r.created_at).toLocaleDateString(getLocale())}</p>
