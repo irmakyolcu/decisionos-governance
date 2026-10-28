@@ -105,6 +105,7 @@ function ProtectedRoutes() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<ExecutiveDashboardPage />} />
+        <Route path="/index" element={<Navigate to="/" replace />} />
         <Route path="/ask" element={<AskDecisionOSPage />} />
         <Route path="/brain" element={<CompanyBrainPage />} />
         <Route path="/clients" element={<ClientsPage />} />

@@ -6,12 +6,14 @@ import { signupTranslations } from '@/lib/i18n/signupTranslations';
 import { notificationTranslations } from '@/lib/i18n/notificationTranslations';
 import { askTranslations } from '@/lib/i18n/askTranslations';
 import { websiteTranslations } from '@/lib/i18n/websiteTranslations';
+import { integrityTranslations } from '@/lib/i18n/integrityTranslations';
 
 export type Lang = 'en' | 'tr';
 
 type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
+  ...integrityTranslations,
   ...websiteTranslations,
   ...askTranslations,
   ...notificationTranslations,
