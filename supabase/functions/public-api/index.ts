@@ -1,5 +1,6 @@
 // Public REST API — workspace-scoped, API-key auth, role + scope rules
 import { mayReadRestricted } from '../_shared/integrity.ts';
+import { normalizeProcessSteps } from '../_shared/processSteps.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -398,7 +399,7 @@ const IMPORTABLE: Record<string, { table: string; scope: string; map: Mapper }> 
       name: String(r.name).slice(0, 300),
       purpose: r.purpose ? String(r.purpose).slice(0, 5000) : (r.description ? String(r.description).slice(0, 5000) : null),
       department: r.department ? String(r.department).slice(0, 120) : null,
-      steps: Array.isArray(r.steps) ? r.steps.slice(0, 100) : [],
+      steps: normalizeProcessSteps(r.steps),
       confidentiality: r.confidentiality ?? 'internal',
     }),
   },
@@ -444,9 +445,11 @@ async function handleImport(req: Request, key: KeyRow) {
     if (!r || typeof r !== 'object') { errors.push({ index: i, error: 'record must be an object' }); return; }
     const classification = (r as Record<string, any>).confidentiality;
     if (classification && !['internal','public_internal'].includes(classification) && key.role !== 'admin') { errors.push({ index: i, error: 'Restricted classification requires admin' }); return; }
-    const mapped = map(r as Record<string, any>, key);
-    if (typeof mapped === 'string') errors.push({ index: i, error: mapped });
-    else rows.push(mapped);
+    try {
+      const mapped = map(r as Record<string, any>, key);
+      if (typeof mapped === 'string') errors.push({ index: i, error: mapped });
+      else rows.push(mapped);
+    } catch (error) { errors.push({ index: i, error: error instanceof Error ? error.message : 'Invalid record' }); }
   });
 
   if (body?.dry_run) return json({ dry_run: true, valid: rows.length, invalid: errors.length, errors });
