@@ -71,6 +71,13 @@
       "when": 1793260322789,
       "tag": "0009_private_document_storage_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793260520712,
+      "tag": "0010_validate_memory_trigger_table_fields",
+      "breakpoints": true
     }
   ]
 }
