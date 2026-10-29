@@ -199,9 +199,9 @@ export default function DecisionDetailPage() {
       )}
 
       <Tabs defaultValue="details">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="details">{translate("Detaylar")}</TabsTrigger>
-          <TabsTrigger value="intel">{t('di.title')}</TabsTrigger>
+          <TabsTrigger value="intel">{translate('di.title')}</TabsTrigger>
           <TabsTrigger value="risk"><Gauge className="h-3.5 w-3.5 mr-1" />{translate("AI Risk (")}{assessments.length})</TabsTrigger>
           <TabsTrigger value="macro"><Globe2 className="h-3.5 w-3.5 mr-1" />{translate("Makro & Jeopolitik (")}{macros.length})</TabsTrigger>
           <TabsTrigger value="context"><Activity className="h-3.5 w-3.5 mr-1" />{translate("Bağlam & Sonuç")}</TabsTrigger>
