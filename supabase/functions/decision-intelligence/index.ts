@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       supa.from('decision_evidence').select('id,source,summary,reliability,source_date,is_verified').eq('decision_id', decision_id).limit(40),
       supa.from('decision_outcomes').select('decision_id,outcome_status,summary,measured_at').eq('workspace_id', ws).limit(500),
       supa.from('decisions').select('id,title,description,decision_type,budget,risk_level,status,decision_date,created_at').eq('workspace_id', ws).neq('id', decision_id).order('created_at', { ascending: false }).limit(40),
-      supa.from('record_links').select('source_kind,source_id,target_kind,target_id,relation').eq('workspace_id', ws).or(`source_id.eq.${decision_id},target_id.eq.${decision_id}`).limit(50),
+      supa.from('record_links').select('source_kind,source_id,target_kind,target_id').eq('workspace_id', ws).or(`source_id.eq.${decision_id},target_id.eq.${decision_id}`).limit(50),
       supa.from('knowledge_items').select('id,title,content,created_at').eq('workspace_id', ws).eq('entity_type', 'lesson').order('created_at', { ascending: false }).limit(15),
       supa.from('risks').select('id,summary,severity,status,department,updated_at').eq('workspace_id', ws).in('status', ['new', 'investigating', 'action_required']).limit(20),
       supa.from('risk_criteria').select('key,label,weight,enabled').eq('workspace_id', ws),
@@ -56,14 +56,14 @@ Deno.serve(async (req) => {
     const external_status = !(srcs.data ?? []).some((s: any) => s.configured) ? 'not_configured' : observations.length === 0 ? 'no_data' : observations.every((o) => o.stale) ? 'stale' : 'available';
 
     // Linked records (projects/processes/documents/etc.) resolved via RLS.
-    const linked = (links.data ?? []).map((l: any) => (l.source_id === decision_id ? { kind: l.target_kind, id: l.target_id, relation: l.relation } : { kind: l.source_kind, id: l.source_id, relation: l.relation }));
+    const linked = (links.data ?? []).map((l: any) => (l.source_id === decision_id ? { kind: l.target_kind, id: l.target_id } : { kind: l.source_kind, id: l.source_id }));
 
     const records: Record<string, any>[] = [
       ...(ev.data ?? []).map((e: any) => ({ id: e.id, type: 'evidence', source: e.source, summary: cut(e.summary), reliability: e.reliability, date: e.source_date, verified: e.is_verified })),
       ...(others.data ?? []).map((d: any) => ({ id: d.id, type: 'past_decision', title: d.title, summary: cut(d.description, 250), decision_type: d.decision_type, budget: d.budget, risk_level: d.risk_level, date: d.decision_date || d.created_at, recorded_outcome: outcomeLabel(outcomeBy.get(d.id)?.outcome_status), outcome_summary: cut(outcomeBy.get(d.id)?.summary, 200) })),
       ...(lessons.data ?? []).map((l: any) => ({ id: l.id, type: 'lesson', title: l.title, summary: cut(l.content, 250), date: l.created_at })),
       ...(risks.data ?? []).map((r: any) => ({ id: r.id, type: 'open_risk', summary: cut(r.summary, 200), severity: r.severity, department: r.department, date: r.updated_at })),
-      ...linked.map((l) => ({ id: l.id, type: `linked_${l.kind}`, relation: l.relation })),
+      ...linked.map((l) => ({ id: l.id, type: `linked_${l.kind}` })),
       ...observations.map((o) => ({ id: o.id, type: `external_${o.kind}`, source: o.source, title: o.title, value: o.value, summary: cut(o.summary, 200), published_at: o.published_at, stale: o.stale })),
     ];
     const allowed = new Set(records.map((r) => r.id));
@@ -132,7 +132,7 @@ Rules:
       data_as_of: dates.length ? new Date(Math.max(...dates)).toISOString() : null,
     }).select().single();
     if (insErr) throw insErr;
-    await admin.from('audit_events').insert({ workspace_id: ws, actor_id: user.id, event_type: 'decision_intelligence.generated', entity_type: 'decision', entity_id: decision_id, metadata: { run_id: run.id, risk_level: run.risk_level } }).then(() => {}, () => {});
+    await admin.from('audit_events').insert({ workspace_id: ws, actor_user_id: user.id, event_type: 'decision_intelligence.generated', decision_id, model: raw?.model ?? null, metadata: { run_id: run.id, risk_level: run.risk_level } }).then(() => {}, () => {});
     return json({ run });
   } catch (e) {
     console.error('decision-intelligence', e);
