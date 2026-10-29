@@ -12,6 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Database, FileText, Loader2, Sparkles, Globe, Plus, RefreshCw } from 'lucide-react';
+import { DocumentDetails } from '@/components/DocumentDetails';
+import { uploadDocument } from '@/lib/documentUpload';
+import { canWriteMemory } from '@/lib/records';
 import { useToast } from '@/hooks/use-toast';
 
 const ACCEPTS = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.md,.json,.xml,.log,.rtf,.html,.htm,.png,.jpg,.jpeg,.webp,.gif,.tiff,.mp3,.wav,.m4a,.ogg';
@@ -29,7 +32,7 @@ const CONNECTORS = [
 export default function DataSourcesPage() {
   useLanguage();
   const { user } = useAuth();
-  const { workspace } = useWorkspace();
+  const { workspace, role } = useWorkspace();
   const { toast } = useToast();
   const [sources, setSources] = useState<any[]>([]);
   const [docs, setDocs] = useState<any[]>([]);
@@ -48,10 +51,10 @@ export default function DataSourcesPage() {
   });
 
   const load = async () => {
-    if (!workspace) return;
+    if (!workspace) {setDocs([]);setSources([]);return;}
     const { data: s } = await supabase.from('data_sources').select('*').eq('workspace_id', workspace.id);
     setSources(s ?? []);
-    const { data: d } = await supabase.from('uploaded_documents').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false }).limit(20);
+    const { data: d } = await supabase.from('uploaded_documents').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false });
     setDocs(d ?? []);
   };
   useEffect(() => { load(); }, [workspace]);
@@ -60,38 +63,10 @@ export default function DataSourcesPage() {
     if (!workspace || !user || !form.title) return;
     setUploading(true);
     try {
-      let filePath: string | null = null;
-      if (file) {
-        const path = `${workspace.id}/${crypto.randomUUID()}-${file.name}`;
-        const { error: upErr } = await supabase.storage.from('company-docs').upload(path, file);
-        if (upErr) throw upErr;
-        filePath = path;
-      }
-      const contentText = form.content_text || (file && file.type.startsWith('text/') ? await file.text() : '');
-      const { data: doc, error } = await supabase.from('uploaded_documents').insert({
-        workspace_id: workspace.id, created_by: user.id,
-        title: form.title, file_path: filePath, content_text: contentText,
-        mime_type: file?.type || form.mime_type,
-        confidentiality: form.confidentiality as any,
-        process_status: contentText ? 'indexed' : (filePath ? 'processing' : 'indexed'),
-      }).select().single();
-      if (error) throw error;
-
-      if (contentText && doc) {
-        await supabase.from('knowledge_items').insert({
-          workspace_id: workspace.id, created_by: user.id, document_id: doc.id,
-          title: form.title, content: contentText.slice(0, 5000),
-          summary: contentText.slice(0, 300),
-          confidentiality: form.confidentiality as any,
-          source_date: new Date().toISOString(),
-        });
-      } else if (doc && filePath) {
-        // Trigger AI extraction in background
-        supabase.functions.invoke('ingest-document', { body: { document_id: doc.id } })
-          .then(() => load())
-          .catch(() => void 0);
-      }
-      toast({ title: translate("Yüklendi"), description: contentText ? 'Doküman indekslendi.' : 'Doküman yüklendi; AI ile içerik çıkarılıyor…' });
+      const actualFile = file ?? new File([form.content_text], 'note.txt', {type:'text/plain'});
+      const result = await uploadDocument(workspace.id,user.id,actualFile,form.title,form.confidentiality,undefined,form.content_text);
+      if(result.extractionError)toast({title:translate('Upload failed'),description:result.extractionError,variant:'destructive'});
+      else toast({title:translate('Yüklendi')});
       setUploadOpen(false); setFile(null); setForm({ title: '', content_text: '', confidentiality: 'internal', mime_type: 'text/plain' });
       load();
     } catch (e: any) {
@@ -180,7 +155,7 @@ export default function DataSourcesPage() {
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-bold">{translate("Data Sources")}</h1><p className="text-sm text-muted-foreground">{translate("Connect systems and upload knowledge.")}</p></div>
         <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-          <DialogTrigger asChild><Button><Upload className="h-4 w-4 mr-2" />{translate("Upload")}</Button></DialogTrigger>
+          <DialogTrigger asChild><Button disabled={!canWriteMemory(role)}><Upload className="h-4 w-4 mr-2" />{translate("Upload")}</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>{translate("Upload Knowledge")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
@@ -365,19 +340,7 @@ export default function DataSourcesPage() {
         ) : (
           <div className="space-y-2">
             {docs.map((d) => (
-              <Card key={d.id} className="p-3 flex items-center gap-3">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{d.title}</div>
-                  <div className="text-[10px] text-muted-foreground">{d.confidentiality} · {d.process_status} · {d.mime_type || '—'}</div>
-                </div>
-                <Badge variant="outline" className="text-[10px]">{d.source_kind || 'upload'}</Badge>
-                {d.file_path && (
-                  <Button size="sm" variant="ghost" onClick={() => reingest(d.id)} className="gap-1">
-                    <Sparkles className="h-3 w-3" /> {translate("AI çıkar")}
-                  </Button>
-                )}
-              </Card>
+              <Card key={d.id} className="p-4"><DocumentDetails doc={d} reload={load}/></Card>
             ))}
           </div>
         )}

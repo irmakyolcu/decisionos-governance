@@ -1,3 +1,4 @@
+import { RecordLinks } from '@/components/RecordLinks';
 import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -156,7 +157,7 @@ export default function ProcessesPage() {
             const outgoing = links.filter((l) => l.from_process_id === p.id);
             const incoming = links.filter((l) => l.to_process_id === p.id);
             return (
-              <Card key={p.id} className="p-4">
+              <Card id={`record-${p.id}`} key={p.id} className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <div className="font-semibold">{p.name}</div>
@@ -217,10 +218,11 @@ export default function ProcessesPage() {
 
                 {Array.isArray(p.steps) && p.steps.length > 0 && (
                   <ol className="text-xs space-y-1 pl-4 list-decimal text-muted-foreground">
-                    {p.steps.slice(0, 5).map((s: any, i: number) => <li key={i}>{s.title || s}</li>)}
+                    {p.steps.map((s: any, i: number) => <li id={`record-${s.id}`} key={s.id??i}>{s.title || s}{s.id&&<RecordLinks kind="step" id={s.id}/>}</li>)}
                   </ol>
                 )}
-              </Card>
+              <RecordLinks kind="process" id={p.id}/>
+</Card>
             );
           })}
         </div>
