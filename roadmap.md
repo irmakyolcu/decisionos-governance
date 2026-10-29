@@ -54,3 +54,12 @@
 ## AI decision intelligence & executive risk
 - [x] Evidence-grounded analysis, explainable risk, external context registry, CEO intelligence, PDF report
 - [ ] Live external economic/industry feeds — waiting on chosen provider + API key
+
+## Integration hub & workflow automation
+- [ ] Hub page, inbound API, outbound webhooks, Slack allowlist + review inbox, automation rules, tests
+
+## Access governance, team management & company skills
+- [ ] Invitation email delivery end-to-end (needs email domain setup) with honest status/errors
+- [ ] Extended roles (executive, department manager, owners, member, reviewer) + per-record confidential access, enforced in search/AI/reports/API
+- [ ] Company Skills: purpose, instructions, data sources, permissions, allowed actions, activation, version history, server-side authorization
+- [ ] Tests for invites, roles, confidential access, search/AI restrictions, skill permissions
