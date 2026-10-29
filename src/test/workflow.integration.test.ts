@@ -47,4 +47,18 @@ describe.skipIf(!enabled)('Persistent workflow completion gates', () => {
   expect((await supabase.rpc('workflow_apply',args)).error).toBeNull();expect((await supabase.rpc('workflow_apply',args)).error).toBeNull();
   const deliveries=await supabase.from('workflow_deliveries').select('id').eq('event_key',request);expect(deliveries.data).toHaveLength(1);
  });
+ it('completes only after corrective verification and hands off once',async()=>{
+  const corrections=await supabase.from('workflow_tasks').select('id').eq('step_id',first).eq('corrective',true);
+  const correction=corrections.data?.[0]?.id;if(!correction)throw new Error('Correction missing');
+  expect((await apply('task_status',first,{task_id:correction,status:'completed'})).error).toBeNull();
+  expect((await apply('quality_verify',first)).error).toBeNull();
+  await apply('request_approval',first);await apply('vote',first,{vote:'approve'});
+  expect((await apply('edit_step',second,{title:'TEST handoff',owner_id:userId,required_approvals:0,assigned_users:[],approver_ids:[]})).error).toBeNull();
+  expect((await apply('step_status',first,{status:'completed'})).error).toBeNull();
+  const handoffs=await supabase.from('workflow_deliveries').select('id').eq('run_id',run).like('event_key',`handoff:${second}:%`);expect(handoffs.data).toHaveLength(1);
+  const tasks=await supabase.from('workflow_tasks').select('id').eq('step_id',second);
+  for(const t of tasks.data??[])await apply('task_status',second,{task_id:t.id,status:'completed'});
+  expect((await apply('step_status',second,{status:'completed'})).error).toBeNull();
+  const final=await supabase.from('workflow_runs').select('status').eq('id',run).single();expect(final.data?.status).toBe('completed');
+ });
 });
