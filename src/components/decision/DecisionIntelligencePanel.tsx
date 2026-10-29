@@ -46,12 +46,12 @@ export function DecisionIntelligencePanel({ decisionId, canRun }: { decisionId: 
   const claims = (run?.claims ?? []) as any[];
   const srcLabel = new Map<string, any>(((run?.sources ?? []) as any[]).map((s) => [s.id, s]));
   const linkFor = (s: any) => {
-    if (s.type === 'past_decision') return `/decisions/${s.id}`;
+    if (s.type === 'past_decision') return recordHref('decision', s.id);
     const kind = s.type.replace(/^linked_/, '');
     if (s.type.startsWith('external_')) return s.url || null;
     if (s.type === 'evidence') return null;
-    if (s.type === 'open_risk') return '/risks';
-    try { return recordHref(kind as any, s.id); } catch { return null; }
+    if (s.type === 'open_risk') return recordHref('risk', s.id);
+    return recordHref(kind, s.id);
   };
 
   return (
@@ -113,7 +113,7 @@ export function DecisionIntelligencePanel({ decisionId, canRun }: { decisionId: 
               <h3 className="font-semibold text-sm">{t('di.similar')}</h3>
               {(run.similar_decisions as any[]).length === 0 ? <p className="text-xs text-muted-foreground">—</p> : (run.similar_decisions as any[]).map((s) => (
                 <div key={s.id} className="rounded border p-2 text-sm space-y-1">
-                  <div className="flex justify-between gap-2"><Link to={`/decisions/${s.id}`} className="font-medium hover:underline">{s.title}</Link><Badge variant="outline">{s.recorded_outcome === 'No recorded outcome' ? t('di.noOutcome') : t(s.recorded_outcome)}</Badge></div>
+                  <div className="flex justify-between gap-2"><Link to={recordHref('decision', s.id)} className="font-medium hover:underline">{s.title}</Link><Badge variant="outline">{s.recorded_outcome === 'No recorded outcome' ? t('di.noOutcome') : t(s.recorded_outcome)}</Badge></div>
                   <p className="text-xs"><b>{t('di.similarities')}:</b> {s.similarities}</p>
                   <p className="text-xs"><b>{t('di.differences')}:</b> {s.differences}</p>
                 </div>
