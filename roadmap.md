@@ -50,3 +50,7 @@
 - [x] Connect navigation, search, dashboard and shared labels to TR/EN selection.
 - [x] Translate sign-in and demo booking, including validation messages.
 - [x] Verify language persistence and page-to-page switching, including the authenticated dashboard.
+
+## AI decision intelligence & executive risk
+- [x] Evidence-grounded analysis, explainable risk, external context registry, CEO intelligence, PDF report
+- [ ] Live external economic/industry feeds — waiting on chosen provider + API key

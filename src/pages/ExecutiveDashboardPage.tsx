@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { CeoIntelligence } from '@/components/CeoIntelligence';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Clock, CheckCircle2, Activity, ShieldAlert, Plus } from 'lucide-react';
@@ -26,7 +27,7 @@ export default function ExecutiveDashboardPage() {
   ].slice(0, 6);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-4 md:p-6">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t('Executive Dashboard')}</h1>
@@ -70,6 +71,8 @@ export default function ExecutiveDashboardPage() {
           )}
         </CardContent>
       </Card>
+
+      <CeoIntelligence />
 
       <div className="grid md:grid-cols-2 gap-4">
         <Card>

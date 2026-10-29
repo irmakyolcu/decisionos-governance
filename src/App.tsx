@@ -64,6 +64,7 @@ import ProjectsPage from "./pages/ProjectsPage";
 import ProcessesPage from "./pages/ProcessesPage";
 import CompanySkillsPage from "./pages/CompanySkillsPage";
 import RisksPage from "./pages/RisksPage";
+import ExternalContextPage from "./pages/ExternalContextPage";
 import DataSourcesPage from "./pages/DataSourcesPage";
 import AdminPermissionsPage from "./pages/AdminPermissionsPage";
 import DecisionDetailPage from "./pages/DecisionDetailPage";
@@ -113,6 +114,7 @@ function ProtectedRoutes() {
         <Route path="/processes" element={<ProcessesPage />} />
         <Route path="/skills" element={<CompanySkillsPage />} />
         <Route path="/risks" element={<RisksPage />} />
+        <Route path="/external-context" element={<ExternalContextPage />} />
         <Route path="/data-sources" element={<DataSourcesPage />} />
         <Route path="/admin" element={<AdminPermissionsPage />} />
         <Route path="/home-legacy" element={<HomePage />} />

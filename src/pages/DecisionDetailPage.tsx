@@ -20,6 +20,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ArrowLeft, Lock, Save, Trash2, Plus, History, FileText, ShieldCheck, Sparkles, TrendingUp, TrendingDown, Minus, Loader2, Gauge, Globe2, AlertTriangle, Lightbulb, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 import ContextOutcomePanel from '@/components/decision/ContextOutcomePanel';
+import { DecisionIntelligencePanel } from '@/components/decision/DecisionIntelligencePanel';
 
 const db = supabase as any;
 const STATUSES = ['Draft', 'Pending', 'Under Review', 'Approved', 'Rejected', 'Escalated', 'Executed'] as const;
@@ -198,8 +199,9 @@ export default function DecisionDetailPage() {
       )}
 
       <Tabs defaultValue="details">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="details">{translate("Detaylar")}</TabsTrigger>
+          <TabsTrigger value="intel">{translate('di.title')}</TabsTrigger>
           <TabsTrigger value="risk"><Gauge className="h-3.5 w-3.5 mr-1" />{translate("AI Risk (")}{assessments.length})</TabsTrigger>
           <TabsTrigger value="macro"><Globe2 className="h-3.5 w-3.5 mr-1" />{translate("Makro & Jeopolitik (")}{macros.length})</TabsTrigger>
           <TabsTrigger value="context"><Activity className="h-3.5 w-3.5 mr-1" />{translate("Bağlam & Sonuç")}</TabsTrigger>
@@ -229,6 +231,10 @@ export default function DecisionDetailPage() {
               </div>
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="intel" className="mt-4">
+          <DecisionIntelligencePanel decisionId={decision.id} canRun={writable} />
         </TabsContent>
 
         <TabsContent value="risk" className="mt-4 space-y-3">

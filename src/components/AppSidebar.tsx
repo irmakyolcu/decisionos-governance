@@ -2,7 +2,7 @@ import {
   Home, Sparkles, Brain, GitBranch, Building2, FolderKanban, Workflow,
   Zap, AlertTriangle, Database, Users, Shield, ShieldCheck, ChevronLeft, ChevronRight,
   BookOpen, Lightbulb, History, BookMarked, Link2, KeyRound, FileBarChart, StickyNote, Search, CalendarRange,
-  Lock, Building, FileCheck,
+  Lock, Building, FileCheck, Globe2,
 } from 'lucide-react';
 import { useLanguage , translate } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Processes', url: '/processes', icon: Workflow },
       { title: 'Company Skills', url: '/skills', icon: Zap },
       { title: 'Risks & Alerts', url: '/risks', icon: AlertTriangle },
+      { title: 'External Context', url: '/external-context', icon: Globe2 },
     ],
   },
   {
