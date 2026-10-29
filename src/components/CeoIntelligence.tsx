@@ -104,7 +104,7 @@ export function CeoIntelligence() {
           {list.length === 0 ? <p className="text-sm text-muted-foreground">{t('ceo.nothing')}</p> : list.slice(0, 6).map((a) => (
             <div key={a.key} className="rounded border p-3 text-sm space-y-1">
               <div className="flex items-start justify-between gap-2"><span className="font-medium">{a.title}</span><Button asChild size="sm" variant="outline"><Link to={a.href}>{t('ceo.open')}</Link></Button></div>
-              <p className="text-xs"><b>{t('ceo.why')}:</b> {a.why}</p>
+              <p className="text-xs line-clamp-3"><b>{t('ceo.why')}:</b> {a.why}</p>
               <p className="text-xs text-muted-foreground"><b>{t('ceo.evidence')}:</b> {a.evidence} · <b>{t('ceo.process')}:</b> {a.process ?? '—'} · <b>{t('ceo.owner')}:</b> {a.owner ?? t('ceo.unassigned')}</p>
               <p className="text-xs"><b>{t('ceo.next')}:</b> {a.next}</p>
             </div>
