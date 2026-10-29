@@ -33,12 +33,15 @@ Mevcut durumda proje oluşturma/dosya ekleme, süreç sahibi, metin adımları v
 
 ## Teknik yaklaşım
 - Mevcut `projects`, `processes`, `process_links`, `record_links`, `notifications` ve denetim kayıtları temel alınacak.
-- Adımların kalıcı görev ilişkileri için normalleştirilmiş kayıtlar eklenecek; mevcut JSON adımlarının kimlikleri korunarak taşınacak. Eski veri silinmeyecek; eski okuma yolları uyumluluk döneminde korunacak ve tek yetkili adım kaynağı kullanılacak.
+- Mevcut JSON adım tanımları ve UUID kimlikleri korunacak; görevler ve bağımlılıklar için aynı kimliklere bağlı, işlem içinde eşitlenen bir adım kayıt dizini eklenecek. Yinelenen kimlikler önce denetlenecek; bağlantısı olan adımlar sessizce silinmeyecek veya yeniden kimliklendirilmeyecek.
+- Süreç kütüphanesi tanımları ile projedeki yürütmeler ayrılacak: aynı süreç farklı projelerde kullanıldığında görev/onay durumları birbirine karışmayacak. Mevcut adım bağlantıları tanıma gitmeye devam edecek; yürütme ekranı proje ve çalışma bağlamını koruyacak.
 - Fazlar, proje-süreç ilişkileri, adım/görev atamaları, bağımlılıklar, onaylar ve bildirim kuralları eklemeli veritabanı değişiklikleriyle kurulacak.
 - Şirket izolasyonu ve gizli süreç izinleri tüm alt kayıtlara uygulanacak. Admin/approver yazma yetkileri korunacak; viewer/auditor salt okunur kalacak. Atanmış olmak tek başına ek yetki kazandırmayacak.
+- Bildirim alıcılarının kaynak kaydı görme izni doğrulanacak; gizli süreç başlıkları veya bağlantıları yetkisiz kişilere taşınmayacak. Süreç bağlantıları iki uçtaki görünürlük kurallarını koruyacak.
 - Tamamlanma, onay ve devir işlemleri atomik ve sunucuda doğrulanan işlemler olacak; eşzamanlı güncellemeler ve tekrar istekler mükerrer sonuç üretmeyecek.
 - Zamanlanmış hatırlatmalar gerçek bir zamanlayıcıyla çalıştırılacak; yalnızca sayfa açıkken işleyen hatırlatma tam otomatik olarak sunulmayacak.
 - Yeni arayüz mevcut tasarım, geri gezinme ve Türkçe/İngilizce sözlüklerine uyacak; telefon ve bilgisayarda adımlar okunabilir olacak.
+- Adım ilişkileri aynı paylaşılan kayıt kataloğunu kullanacak; her adım için bütün şirket kayıtları yeniden yüklenmeyecek. Mevcut API ve iç kurulumun adım okuma/yazma yolları da kimlik koruma kurallarına uyarlanacak.
 
 ## Kabul testleri
 1. Proje → faz → süreç → adımlar → atanan görev oluşturma; yenileme sonrası tüm ilişkilerin korunması.
