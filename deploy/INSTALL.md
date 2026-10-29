@@ -8,6 +8,16 @@ veritabanı, dosya depolama, kimlik doğrulama ve dil modeli aynı sunucuda yaş
 
 ## 1. Donanım gereksinimleri
 
+Bilgi/kanıt güncellemesi: paket hem `supabase/migrations` hem `drizzle/migrations`
+dosyalarını ve `ingest-document` işlevinin yerel Office okuyucu bağımlılıklarını içermelidir.
+Hava boşluklu kurulumdan önce işlev bağımlılıklarının imajda önbelleğe alınmış olduğunu
+doğrulayın; yalnızca kaynak dosyalarını kopyalamak çevrimdışı bağımlılık çözümünü kanıtlamaz.
+`company-docs` özel tutulur ve tek dosya sınırı 20MB olarak Storage API ile ayarlanır.
+Yerel TXT/CSV/DOCX/XLSX çıkarımı dış AI gerektirmez; PDF/resim çıkarımı yapılandırılmış
+AI sağlayıcısına gönderim için ekran üzerinde açık izin ister. Yerel AI kullanılıyorsa
+sağlayıcı ayarlarını şirket içi adreslere sabitleyin. Bu sürümün çevrimdışı Docker
+uçtan uca çalışması ayrıca izole kurulumda doğrulanmalıdır.
+
 | Bileşen | Minimum | Önerilen |
 | --- | --- | --- |
 | CPU | 8 vCPU | 16 vCPU |
