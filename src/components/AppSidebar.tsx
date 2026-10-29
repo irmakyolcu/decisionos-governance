@@ -47,6 +47,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
       { title: 'Processes', url: '/processes', icon: Workflow },
       { title: 'Company Skills', url: '/skills', icon: Zap },
       { title: 'Risks & Alerts', url: '/risks', icon: AlertTriangle },
+      { title: 'External Context', url: '/external-context', icon: Globe2 },
     ],
   },
   {
