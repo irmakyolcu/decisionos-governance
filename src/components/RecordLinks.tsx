@@ -16,7 +16,7 @@ export function RecordLinks({ kind, id }: { kind: RecordKind; id: string }) {
   const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   useEffect(() => {
-    let active = true; setLinks([]); setError(null);
+    let active = true; setLinks([]); setError(null); setTarget('');
     if (!workspace) return;
     supabase.from('record_links').select('*').eq('workspace_id', workspace.id).or(`and(source_kind.eq.${kind},source_id.eq.${id}),and(target_kind.eq.${kind},target_id.eq.${id})`).then(({ data, error }) => { if (active) { setLinks(data ?? []); setError(error?.message ?? null); } });
     return () => { active = false; };

@@ -57,7 +57,8 @@ export default function DataSourcesPage() {
     const { data: d } = await supabase.from('uploaded_documents').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false });
     setDocs(d ?? []);
   };
-  useEffect(() => { load(); }, [workspace]);
+  useEffect(() => {setDocs([]);setSources([]);load();},[workspace?.id]);
+  useEffect(()=>{if(!docs.some(d=>d.process_status==='processing'))return;const timer=setInterval(load,2500);return()=>clearInterval(timer);},[docs,workspace?.id]);
 
   const upload = async () => {
     if (!workspace || !user || !form.title) return;
@@ -190,7 +191,7 @@ export default function DataSourcesPage() {
               <Card key={c.kind} className="p-3 flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium">{translate(c.label)}</div>
-                  <div className="text-[10px] text-muted-foreground">{existing ? existing.status : translate("Not connected")}</div>
+                  <div className="text-[10px] text-muted-foreground">{existing ? translate(existing.status) : translate("Not connected")}</div>
                 </div>
                 {existing ? <Badge variant="secondary" className="text-[10px]">{translate("Soon")}</Badge>
                   : <Button size="sm" variant="outline" onClick={() => addConnector(c.kind, c.label)}>{translate("Add")}</Button>}

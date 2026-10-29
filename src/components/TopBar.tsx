@@ -74,7 +74,7 @@ export function TopBar() {
       const {data,error}=await supabase.rpc('search_memory',{_workspace:workspace.id,_term:term});
       if(!active)return;
       setSearchError(Boolean(error));
-      setHits((data??[]).map(r=>({id:r.id,title:r.title,kind:r.kind,href:recordHref(r.kind==='knowledge'?'document':r.kind,r.parent_id??r.id)})));
+      setHits((data??[]).map(r=>({id:r.id,title:r.title,kind:r.kind,href:recordHref(r.kind==='knowledge'?'knowledge':r.kind,r.parent_id??r.id)})));
       setLoading(false);setOpen(true);
     },300);
     return()=>{active=false;clearTimeout(timer);};

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { supabase } from '@/integrations/supabase/client';
 import { lessonPayload } from '@/lib/records';
@@ -7,13 +7,16 @@ export type LinkChangeSource = 'manual' | 'suggestion' | 'auto_link_all';
 export function lessonsKey(wsId?: string) { return wsId ? `mem:lessons:${wsId}` : 'mem:lessons'; }
 export function useLessons() {
  const { workspace } = useWorkspace(); const [rows, setRows] = useState<Lesson[]>([]); const [loading,setLoading]=useState(true); const [error,setError]=useState<string|null>(null);
+ const request=useRef(0);
  const reload=useCallback(async()=>{
+ const version=++request.current;
   if(!workspace){setRows([]);setLoading(false);return;} setLoading(true);setError(null);
   const [items,links]=await Promise.all([supabase.from('knowledge_items').select('*').eq('workspace_id',workspace.id).eq('entity_type','lesson').order('created_at',{ascending:false}),supabase.from('record_links').select('*').eq('workspace_id',workspace.id)]);
+  if(version!==request.current)return;
   if(items.error||links.error){setError(items.error?.message??links.error?.message??'Error');setRows([]);} else setRows((items.data??[]).map(r=>{const d=r.lesson_data as Partial<Lesson>;return {context:r.content??'',recommendation:r.summary??'',what_worked:'',what_failed:'',category:'Strategy',impact:'mixed' as const,source:'',...d,id:r.id,title:r.title,created_at:r.created_at,decisionIds:(links.data??[]).flatMap(l=>l.source_kind==='lesson'&&l.source_id===r.id&&l.target_kind==='decision'?[l.target_id]:l.target_kind==='lesson'&&l.target_id===r.id&&l.source_kind==='decision'?[l.source_id]:[])};}));setLoading(false);
  },[workspace?.id]);
- useEffect(()=>{setRows([]);reload();},[reload]);
- async function save(lesson: Partial<Lesson>){if(!workspace)throw new Error('No workspace');const payload={...lessonPayload(lesson),workspace_id:workspace.id};const {error}=lesson.id?await supabase.from('knowledge_items').update(payload).eq('id',lesson.id):await supabase.from('knowledge_items').insert({...payload,created_by:(await supabase.auth.getUser()).data.user?.id??''});if(error)throw error;await reload();}
+ useEffect(()=>{setRows([]);reload();return()=>{request.current++;};},[reload]);
+ async function save(lesson: Partial<Lesson>){if(!workspace)throw new Error('No workspace');const payload={...lessonPayload(lesson),tags:['lesson'],workspace_id:workspace.id};const {error}=lesson.id?await supabase.from('knowledge_items').update(payload).eq('id',lesson.id):await supabase.from('knowledge_items').insert({...payload,created_by:(await supabase.auth.getUser()).data.user?.id??''});if(error)throw error;await reload();}
  async function remove(id:string){const {error}=await supabase.from('knowledge_items').delete().eq('id',id);if(error)throw error;await reload();}
  async function persist(next:Lesson[]){for(const l of next)await save(l);}
  async function setLinks(lessonId:string,ids:string[],_source:LinkChangeSource='manual'){
