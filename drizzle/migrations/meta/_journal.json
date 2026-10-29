@@ -99,6 +99,27 @@
       "when": 1793263561125,
       "tag": "0013_workflow_atomic_commands",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793264201080,
+      "tag": "0014_workflow_transition_guards",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1793264254960,
+      "tag": "0015_workflow_scoped_invalidation",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1793264420138,
+      "tag": "0016_workflow_child_trigger_fields",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,8 @@
 import { RecordLinks } from '@/components/RecordLinks';
+import { WorkflowExecution } from '@/components/WorkflowExecution';
+import { canWriteMemory } from '@/lib/records';
+import { reorderIds } from '@/lib/workflow';
+import { ArrowUp, ArrowDown, Pencil, GripVertical } from 'lucide-react';
 import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,13 +39,14 @@ interface ProcessLink {
 export default function ProcessesPage() {
   useLanguage();
   const { user } = useAuth();
-  const { workspace } = useWorkspace();
+  const { workspace, role } = useWorkspace(); const writer=canWriteMemory(role);
+  const [editingId,setEditingId]=useState<string|null>(null);const [stepRows,setStepRows]=useState<{id:string;title:string;[key:string]:unknown}[]>([]);const [dragged,setDragged]=useState('');
   const { toast } = useToast();
   const [rows, setRows] = useState<any[]>([]);
   const [links, setLinks] = useState<ProcessLink[]>([]);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', purpose: '', department: '', steps: '', owner_id: '' });
-  const [members, setMembers] = useState<{ user_id: string; display_name: string | null }[]>([]);
+  const [form, setForm] = useState({ name: '', purpose: '', department: '', steps: '', owner_id: '', status:'draft', entry_conditions:'', completion_criteria:'' });
+  const [members, setMembers] = useState<{ user_id: string; display_name: string | null; role?: string }[]>([]);
   const [linkFor, setLinkFor] = useState<any | null>(null);
   const [linkForm, setLinkForm] = useState<{ to: string; relation: Relation; note: string }>({
     to: '',
@@ -55,7 +60,7 @@ export default function ProcessesPage() {
       supabase.from('processes').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false }),
       supabase
         .from('workspace_members')
-        .select('user_id')
+        .select('user_id,role')
         .eq('workspace_id', workspace.id),
       supabase.from('process_links').select('*').eq('workspace_id', workspace.id),
     ]);
@@ -64,7 +69,7 @@ export default function ProcessesPage() {
     const failure = procR.error ?? memR.error ?? linkR.error ?? profiles.error;
     if (failure) toast({ title: translate('Error'), description: failure.message, variant: 'destructive' });
     setRows(procR.data ?? []);
-    setMembers((memR.data ?? []).map(m => ({ user_id: m.user_id, display_name: profiles.data?.find(p => p.user_id === m.user_id)?.display_name ?? null })));
+    setMembers((memR.data ?? []).map(m => ({ user_id: m.user_id, role:m.role, display_name: profiles.data?.find(p => p.user_id === m.user_id)?.display_name ?? null })));
     setLinks((linkR.data as ProcessLink[]) ?? []);
   };
 
@@ -83,14 +88,11 @@ export default function ProcessesPage() {
 
   const create = async () => {
     if (!workspace || !user || !form.name) return;
-    const steps = form.steps.split('\n').filter(Boolean).map((s, i) => ({ order: i + 1, title: s }));
-    const { error } = await supabase.from('processes').insert({
-      workspace_id: workspace.id, created_by: user.id,
-      name: form.name, purpose: form.purpose, department: form.department, steps,
-      owner_id: form.owner_id || null,
-    });
-    if (error) return toast({ title: translate("Error"), description: error.message, variant: 'destructive' });
-    setOpen(false); setForm({ name: '', purpose: '', department: '', steps: '', owner_id: '' }); load();
+    const steps=stepRows.map((s,i)=>({...s,order:i+1}));
+    const payload={name:form.name,purpose:form.purpose,department:form.department,steps,owner_id:form.owner_id||null,status:form.status,entry_conditions:form.entry_conditions,completion_criteria:form.completion_criteria};
+    const response=editingId?await supabase.from('processes').update(payload).eq('id',editingId):await supabase.from('processes').insert({...payload,workspace_id:workspace.id,created_by:user.id});
+    if(response.error)return toast({title:translate('Error'),description:response.error.message,variant:'destructive'});
+    setOpen(false);setEditingId(null);setStepRows([]);setForm({name:'',purpose:'',department:'',steps:'',owner_id:'',status:'draft',entry_conditions:'',completion_criteria:''});load();
   };
 
   const createLink = async () => {
@@ -121,9 +123,9 @@ export default function ProcessesPage() {
       <div className="flex items-center justify-between">
         <div><h1 className="text-2xl font-bold">{translate("Processes")}</h1><p className="text-sm text-muted-foreground">{translate("Company process library.")}</p></div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" />{translate("New Process")}</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>{translate("New Process")}</DialogTitle></DialogHeader>
+          {writer&&<Button onClick={()=>{setEditingId(null);setStepRows([]);setForm({name:'',purpose:'',department:'',steps:'',owner_id:'',status:'draft',entry_conditions:'',completion_criteria:''});setOpen(true);}}><Plus className="h-4 w-4 mr-2" />{translate("New Process")}</Button>}
+          <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+            <DialogHeader><DialogTitle>{translate(editingId?'wf.edit':"New Process")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div><Label>{translate("Name")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
               <div><Label>{translate("Purpose")}</Label><Textarea value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} /></div>
@@ -140,13 +142,17 @@ export default function ProcessesPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div><Label>{translate("Steps (one per line)")}</Label><Textarea rows={5} value={form.steps} onChange={(e) => setForm({ ...form, steps: e.target.value })} /></div>
-              <Button onClick={create} className="w-full">{translate("Create")}</Button>
+              <div><Label>{translate('Status')}</Label><Select value={form.status} onValueChange={v=>setForm({...form,status:v})}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent>{['draft','active','archived'].map(v=><SelectItem key={v} value={v}>{translate(v)}</SelectItem>)}</SelectContent></Select></div>
+              <div><Label>{translate('wf.entry')}</Label><Textarea value={form.entry_conditions} onChange={e=>setForm({...form,entry_conditions:e.target.value})}/></div><div><Label>{translate('wf.criteria')}</Label><Textarea value={form.completion_criteria} onChange={e=>setForm({...form,completion_criteria:e.target.value})}/></div>
+              <Label>{translate('wf.steps')}</Label><ol className="space-y-2">{stepRows.map((step,i)=><li key={step.id} className="flex gap-2 items-center" draggable onDragStart={()=>setDragged(step.id)} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();const ids=reorderIds(stepRows.map(s=>s.id),dragged,step.id);setStepRows(ids.flatMap(id=>stepRows.filter(s=>s.id===id)));}}><GripVertical className="h-4 w-4 shrink-0 text-muted-foreground"/><Input aria-label={`${translate('wf.steps')} ${i+1}`} value={step.title} onChange={e=>setStepRows(stepRows.map(s=>s.id===step.id?{...s,title:e.target.value}:s))}/><Button size="icon" variant="ghost" disabled={i===0} aria-label={translate('wf.moveUp')} onClick={()=>{const ids=reorderIds(stepRows.map(s=>s.id),step.id,stepRows[i-1]?.id??step.id);setStepRows(ids.flatMap(id=>stepRows.filter(s=>s.id===id)));}}><ArrowUp className="h-4 w-4"/></Button><Button size="icon" variant="ghost" disabled={i===stepRows.length-1} aria-label={translate('wf.moveDown')} onClick={()=>{const ids=reorderIds(stepRows.map(s=>s.id),step.id,stepRows[i+1]?.id??step.id);setStepRows(ids.flatMap(id=>stepRows.filter(s=>s.id===id)));}}><ArrowDown className="h-4 w-4"/></Button></li>)}</ol><Button variant="outline" size="sm" onClick={()=>setStepRows([...stepRows,{id:crypto.randomUUID(),title:''}])}><Plus className="h-4 w-4 mr-2"/>{translate('wf.addStep')}</Button>
+              <Button onClick={create} disabled={!form.name.trim()||stepRows.some(s=>!s.title.trim())} className="w-full">{translate(editingId?'Save':"Create")}</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
+      <WorkflowExecution members={members}/>
+      <h2 className="text-lg font-semibold">{translate('wf.library')}</h2>
       {rows.length === 0 ? (
         <Card className="p-12 text-center"><Workflow className="h-8 w-8 text-muted-foreground mx-auto mb-2" /><p className="text-sm text-muted-foreground">{translate("No processes yet.")}</p></Card>
       ) : (
@@ -163,10 +169,12 @@ export default function ProcessesPage() {
                     <div className="font-semibold">{p.name}</div>
                     {p.department && <div className="text-xs text-muted-foreground">{p.department}</div>}
                   </div>
-                  <div className="flex gap-1 items-center">
+                  <div className="flex gap-1 items-center flex-wrap justify-end">
+                    {writer&&<Button size="icon" variant="ghost" aria-label={translate('wf.edit')} onClick={()=>{setEditingId(p.id);setForm({name:p.name,purpose:p.purpose??'',department:p.department??'',owner_id:p.owner_id??'',steps:'',status:p.status??'draft',entry_conditions:p.entry_conditions??'',completion_criteria:p.completion_criteria??''});setStepRows(Array.isArray(p.steps)?p.steps:[]);setOpen(true);}}><Pencil className="h-4 w-4"/></Button>}
                     {unowned && <Badge variant="destructive" className="text-[10px]"><AlertCircle className="h-2.5 w-2.5 mr-1" />{translate("No owner")}</Badge>}
                     {stale && <Badge variant="secondary" className="text-[10px]">{translate("Not verified")}</Badge>}
                     <Button
+                      disabled={!writer}
                       size="sm"
                       variant="outline"
                       className="h-7 text-xs"
@@ -179,7 +187,7 @@ export default function ProcessesPage() {
                 {p.purpose && <p className="text-sm text-muted-foreground mb-2">{p.purpose}</p>}
                 <div className="flex items-center gap-2 mb-2">
                   <Label className="text-xs text-muted-foreground">{translate("Owner")}</Label>
-                  <Select value={p.owner_id ?? 'none'} onValueChange={(v) => setOwner(p.id, v === 'none' ? null : v)}>
+                  <Select disabled={!writer} value={p.owner_id ?? 'none'} onValueChange={(v) => setOwner(p.id, v === 'none' ? null : v)}>
                     <SelectTrigger className="h-8 w-56 text-xs"><SelectValue placeholder={translate("Unassigned")} /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">{translate("Unassigned")}</SelectItem>
@@ -201,9 +209,9 @@ export default function ProcessesPage() {
                         <Badge variant="secondary" className="text-[10px]">{RELATION_LABELS[l.relation]}</Badge>
                         <span>{processName(l.to_process_id)}</span>
                         {l.note && <span className="text-muted-foreground">— {l.note}</span>}
-                        <button onClick={() => removeLink(l.id)} className="ml-auto text-muted-foreground hover:text-destructive" aria-label={translate("Bağlantıyı kaldır")}>
+                        <Button disabled={!writer} variant="ghost" size="icon" onClick={() => removeLink(l.id)} className="ml-auto text-muted-foreground" aria-label={translate("Bağlantıyı kaldır")}>
                           <X className="h-3 w-3" />
-                        </button>
+                        </Button>
                       </div>
                     ))}
                     {incoming.map((l) => (

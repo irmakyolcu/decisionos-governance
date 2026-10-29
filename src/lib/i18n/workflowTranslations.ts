@@ -1,4 +1,5 @@
 export const workflowTranslations = {
+ 'wf.active':{en:'Active',tr:'Etkin'},'wf.configure_run':{en:'Notification rules updated',tr:'Bildirim kuralları güncellendi'},'wf.add_step':{en:'Step added',tr:'Adım eklendi'},'wf.reorder':{en:'Steps reordered',tr:'Adımlar sıralandı'},'wf.add_task':{en:'Task assigned',tr:'Görev atandı'},'wf.edit_task':{en:'Task updated',tr:'Görev güncellendi'},'wf.verify_conditions':{en:'Conditions verified',tr:'Koşullar doğrulandı'},'wf.request_approval':{en:'Approval requested',tr:'Onay istendi'},
  'wf.runs':{en:'Project workflows',tr:'Proje iş akışları'}, 'wf.attach':{en:'Start project process',tr:'Proje süreci başlat'},
  'wf.library':{en:'Process library',tr:'Süreç kütüphanesi'},'wf.edit':{en:'Edit',tr:'Düzenle'},'wf.phase':{en:'Phase',tr:'Faz'},'wf.phases':{en:'Phases',tr:'Fazlar'},
  'wf.participants':{en:'Participants',tr:'Katılımcılar'},'wf.startDate':{en:'Start date',tr:'Başlangıç tarihi'},'wf.endDate':{en:'End date',tr:'Bitiş tarihi'},

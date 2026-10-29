@@ -32,7 +32,7 @@ export function useWorkflow(projectId?: string) {
   const [busy, setBusy] = useState(false);
   const command = useCallback(async (operation: string, run: string | null, step: string | null, payload: Json = {}) => {
     setBusy(true); try {
-      const response = await supabase.rpc('workflow_command', { _operation: operation, _run: run ?? undefined, _step: step ?? undefined, _payload: payload, _request: crypto.randomUUID() });
+      const response = await supabase.rpc('workflow_apply', { _operation: operation, _run: run ?? undefined, _step: step ?? undefined, _payload: payload, _request: crypto.randomUUID() });
       if (response.error) throw response.error;
       await cache.invalidateQueries({ queryKey: ['workflow', scope] }); return response.data;
     } finally { setBusy(false); }
