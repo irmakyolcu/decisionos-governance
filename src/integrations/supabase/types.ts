@@ -3633,6 +3633,10 @@ export type Database = {
     }
     Functions: {
       accept_workspace_invite: { Args: { _token: string }; Returns: string }
+      can_read_company_file: {
+        Args: { _name: string; _owner: string }
+        Returns: boolean
+      }
       can_view_confidential: {
         Args: {
           _creator: string
