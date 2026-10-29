@@ -1,4 +1,5 @@
 # Project conventions
+- Workflow execution uses project-specific runs and a registry keyed by preserved JSON step UUIDs; server-authorized atomic commands own transitions and deduplicated notifications to prevent cross-project state mixing and client bypass.
 - Knowledge lessons use knowledge_items as the shared source; record_links resolves both directions with caller-visible same-workspace endpoints to avoid competing memory stores.
 - Document uploads share validation and ingestion; local Office extraction precedes consent-gated external extraction, with private originals and durable processing states to preserve provenance.
 - Memory audit triggers store identifiers and changed-field names, not confidential payloads; search runs as the caller so record permissions remain authoritative.

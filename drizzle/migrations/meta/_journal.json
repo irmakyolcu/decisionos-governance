@@ -85,6 +85,20 @@
       "when": 1793260814937,
       "tag": "0011_require_document_record_for_file_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793263501613,
+      "tag": "0012_connected_workflow_records",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793263561125,
+      "tag": "0013_workflow_atomic_commands",
+      "breakpoints": true
     }
   ]
 }
