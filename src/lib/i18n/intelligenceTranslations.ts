@@ -56,6 +56,10 @@ export const intelligenceTranslations = {
   'ext.liveNote': e('Live feeds require a chosen provider and API key; until connected, only manually recorded, dated observations are used.', 'Canlı veri akışları seçilmiş bir sağlayıcı ve API anahtarı gerektirir; bağlanana kadar yalnızca elle kaydedilmiş tarihli gözlemler kullanılır.'),
   // CEO dashboard
   'External Context': e('External Context', 'Dış Bağlam'),
+  'Period': e('Period', 'Dönem'),
+  'Contains only records you are authorized to view.': e('Contains only records you are authorized to view.', 'Yalnızca görüntüleme yetkiniz olan kayıtları içerir.'),
+  'Open risks by severity': e('Open risks by severity', 'Önem derecesine göre açık riskler'),
+  'Decision outcomes': e('Decision outcomes', 'Karar sonuçları'),
   'ceo.intel': e('CEO executive intelligence', 'CEO yönetici zekası'),
   'ceo.why': e('Why it matters', 'Neden önemli'), 'ceo.evidence': e('Evidence', 'Kanıt'), 'ceo.process': e('Affected process', 'Etkilenen süreç'),
   'ceo.owner': e('Accountable owner', 'Sorumlu kişi'), 'ceo.next': e('Next action', 'Sonraki adım'), 'ceo.open': e('Open', 'Aç'),

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage, translate } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,7 +55,7 @@ export function CeoIntelligence() {
   const alerts: Alert[] = [];
   for (const r of data.risks.filter((x: any) => ['high', 'critical'].includes(x.severity))) {
     const ev = Array.isArray(r.evidence) ? r.evidence.length : 0;
-    alerts.push({ key: `r${r.id}`, group: 'risk', title: r.summary, why: r.why_it_matters || t('ceo.why.risk', { s: t(`di.level.${r.severity}`) }), evidence: ev ? `${ev}` : '—', process: r.affected_entity_type === 'process' ? data.processes.find((p: any) => p.id === r.affected_entity_id)?.name ?? null : r.department, owner: name(r.owner_id), next: r.recommended_action || t('ceo.next.resolve'), href: recordHref('risk', r.id) });
+    alerts.push({ key: `r${r.id}`, group: 'risk', title: r.summary, why: r.why_it_matters || translate('ceo.why.risk', { s: t(`di.level.${r.severity}`) }), evidence: ev ? `${ev}` : '—', process: r.affected_entity_type === 'process' ? data.processes.find((p: any) => p.id === r.affected_entity_id)?.name ?? null : r.department, owner: name(r.owner_id), next: r.recommended_action || t('ceo.next.resolve'), href: recordHref('risk', r.id) });
   }
   for (const d of data.decisions.filter((x: any) => ['Pending', 'Under Review', 'Escalated'].includes(x.status))) {
     const intel = latestIntel.get(d.id);
@@ -63,11 +63,11 @@ export function CeoIntelligence() {
   }
   for (const s of data.steps.filter((x: any) => x.quality_status === 'failed' || (x.due_date && x.due_date < today))) {
     const run: any = runById.get(s.run_id);
-    alerts.push({ key: `s${s.id}`, group: 'work', title: s.title, why: s.quality_status === 'failed' ? t('ceo.why.blocked') : t('ceo.why.overdue', { d: s.due_date }), evidence: '—', process: procName(s.run_id), owner: name(s.owner_id), next: t('ceo.next.resolve'), href: run ? `/processes?record=${run.process_id}&step=${s.id}` : '/processes' });
+    alerts.push({ key: `s${s.id}`, group: 'work', title: s.title, why: s.quality_status === 'failed' ? t('ceo.why.blocked') : translate('ceo.why.overdue', { d: s.due_date }), evidence: '—', process: procName(s.run_id), owner: name(s.owner_id), next: t('ceo.next.resolve'), href: run ? `/processes?record=${run.process_id}&step=${s.id}` : '/processes' });
   }
   for (const k of data.tasks.filter((x: any) => x.due_date && x.due_date < today)) {
     const run: any = runById.get(k.run_id);
-    alerts.push({ key: `t${k.id}`, group: 'work', title: k.title, why: t('ceo.why.overdue', { d: k.due_date }), evidence: (stepById.get(k.step_id) as any)?.title ?? '—', process: procName(k.run_id), owner: name(k.assignee_id), next: t('ceo.next.resolve'), href: run ? `/processes?record=${run.process_id}&step=${k.step_id}` : '/processes' });
+    alerts.push({ key: `t${k.id}`, group: 'work', title: k.title, why: translate('ceo.why.overdue', { d: k.due_date }), evidence: (stepById.get(k.step_id) as any)?.title ?? '—', process: procName(k.run_id), owner: name(k.assignee_id), next: t('ceo.next.resolve'), href: run ? `/processes?record=${run.process_id}&step=${k.step_id}` : '/processes' });
   }
 
   const depts = new Map<string, { risks: number; tasks: number }>();
