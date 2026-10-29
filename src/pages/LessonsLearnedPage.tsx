@@ -162,6 +162,7 @@ export default function LessonsLearnedPage() {
                   </div>
                   {writable && <div className="flex gap-1"><Button variant="outline" size="sm" onClick={()=>{setEditing(r.id);setForm({...empty,...r});setOpen(true);}}>{translate('Edit')}</Button><Button aria-label={translate('Delete')} variant="ghost" size="icon" onClick={() => remove(r.id)}><Trash2 className="h-4 w-4" /></Button></div>}
                 </div>
+                {r.observed_outcome && <p className="text-sm"><strong>{translate("km.observed")}: </strong>{r.observed_outcome}</p>}
                 {r.context && <p className="text-sm text-muted-foreground">{r.context}</p>}
                 <div className="grid gap-2">
                   {r.what_worked && <Row label={translate("Worked")} tone="positive" value={r.what_worked} />}

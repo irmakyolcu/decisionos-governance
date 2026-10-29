@@ -1,3 +1,4 @@
+import { EvidenceDocumentPicker } from '@/components/EvidenceDocumentPicker';
 import { RecordLinks } from '@/components/RecordLinks';
 import { DecisionMemoryFields, emptyMemoryFields } from '@/components/DecisionMemoryFields';
 import { canWriteMemory } from '@/lib/records';
@@ -419,6 +420,8 @@ function formatVal(v: any) {
 
 function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisionId: string; workspaceId: string; evidence: any[]; onChange: () => void }) {
   useLanguage();
+  const [documentId,setDocumentId]=useState('');
+  const {role}=useWorkspace();
   const [form, setForm] = useState({ source: '', summary: '', owner: '', reliability: 'medium', supports: '' });
   const [adding, setAdding] = useState(false);
 
@@ -428,7 +431,7 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
     const { error } = await db.from('decision_evidence').insert({
       workspace_id: workspaceId, decision_id: decisionId,
       source: form.source, summary: form.summary, owner: form.owner || null,
-      reliability: form.reliability, supports: form.supports || null,
+      reliability: form.reliability, supports: form.supports || null, document_id:documentId||null,
     });
     setAdding(false);
     if (error) return toast.error(error.message);
@@ -448,6 +451,7 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Plus className="h-4 w-4" />{translate("Yeni kaynak")}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
+          <EvidenceDocumentPicker value={documentId} onChange={setDocumentId}/>
           <Input placeholder={translate("Kaynak (belge, URL, kişi, sistem)")} value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
           <Textarea placeholder={translate("Özet / kanıt içeriği")} rows={2} value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} />
           <div className="grid grid-cols-3 gap-2">
@@ -462,7 +466,7 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
             </Select>
             <Input placeholder={translate("Neyi destekliyor?")} value={form.supports} onChange={(e) => setForm({ ...form, supports: e.target.value })} />
           </div>
-          <Button onClick={add} disabled={adding || !form.source.trim()} size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Ekle")}</Button>
+          <Button onClick={add} disabled={adding || !form.source.trim() || !canWriteMemory(role)} size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Ekle")}</Button>
         </CardContent>
       </Card>
 
@@ -473,6 +477,7 @@ function EvidencePanel({ decisionId, workspaceId, evidence, onChange }: { decisi
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="font-medium">{e.source}</p>
+                {e.document_id&&<Link to={`/data-sources?record=${e.document_id}`} className="text-primary underline">{translate("km.document")}</Link>}
                 <Badge variant="outline">{e.reliability ?? 'medium'}</Badge>
                 {e.is_verified && <Badge variant="secondary">{translate("verified")}</Badge>}
               </div>
