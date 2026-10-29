@@ -3675,6 +3675,15 @@ export type Database = {
         Args: { _notification_id?: string; _workspace_id: string }
         Returns: number
       }
+      search_memory: {
+        Args: { _term: string; _workspace: string }
+        Returns: {
+          id: string
+          kind: string
+          parent_id: string
+          title: string
+        }[]
+      }
       seed_workspace_demo_data: {
         Args: { _creator: string; _workspace_id: string }
         Returns: undefined
