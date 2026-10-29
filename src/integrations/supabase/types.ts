@@ -4305,6 +4305,17 @@ export type Database = {
         Args: { _run: string; _user?: string }
         Returns: boolean
       }
+      workflow_command: {
+        Args: {
+          _operation: string
+          _payload?: Json
+          _request?: string
+          _run?: string
+          _step?: string
+        }
+        Returns: Json
+      }
+      workflow_invalidate: { Args: { _step: string }; Returns: undefined }
       workflow_notify: {
         Args: {
           _body: string
@@ -4315,6 +4326,11 @@ export type Database = {
         }
         Returns: undefined
       }
+      workflow_project_config: {
+        Args: { _participants?: string[]; _phases?: Json; _project: string }
+        Returns: undefined
+      }
+      workflow_reminders: { Args: never; Returns: number }
     }
     Enums: {
       action_status:
