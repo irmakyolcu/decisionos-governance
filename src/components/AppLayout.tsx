@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { TopBar } from '@/components/TopBar';
 import { LicenseBanner } from '@/components/LicenseBanner';
 import { PageBackButton } from '@/components/PageBackButton';
+import { RecordFocus } from '@/components/RecordFocus';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   useLanguage();
@@ -15,6 +16,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <TopBar />
           <LicenseBanner />
           <main className="flex-1 overflow-auto p-4 sm:p-6 bg-background">
+            <RecordFocus />
             <PageBackButton />
             {children}
           </main>

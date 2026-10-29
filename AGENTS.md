@@ -1,4 +1,7 @@
 # Project conventions
+- Knowledge lessons use knowledge_items as the shared source; record_links resolves both directions with caller-visible same-workspace endpoints to avoid competing memory stores.
+- Document uploads share validation and ingestion; local Office extraction precedes consent-gated external extraction, with private originals and durable processing states to preserve provenance.
+- Memory audit triggers store identifiers and changed-field names, not confidential payloads; search runs as the caller so record permissions remain authoritative.
 - AI decision analysis appends snapshot-linked generations and never deletes human evidence or accepts model-created verification; this preserves provenance and user records.
 - Machine-key restricted-data access requires an explicit confidential read scope and an admin key; user-session reports use caller RLS to preserve confidentiality.
 - Self-hosted packages include both historical Supabase and subsequent Drizzle SQL, stopping before potentially destructive unreviewed cleanup to preserve installation parity and data.
