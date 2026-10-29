@@ -1,4 +1,6 @@
 export const knowledgeTranslations: Record<string, { en: string; tr: string }> = {
+ "km.externalAnalysis":{"en":"Allow AI analysis using the configured external service","tr":"Yapılandırılmış dış hizmetle AI analizine izin ver"},
+ "km.processingNotice":{"en":"Local extraction runs first; external AI extraction requires consent in Documents.","tr":"Önce yerel çıkarım yapılır; dış AI çıkarımı için Belgeler bölümünde izin gerekir."},
   "km.related": {
     "en": "Related records",
     "tr": "İlgili kayıtlar"

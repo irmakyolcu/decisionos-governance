@@ -10,5 +10,5 @@ export function lessonPayload(lesson: Record<string, unknown>) {
   if (!title || title.length > 255) throw new Error('Title is required');
   const impact = lesson.impact ?? 'mixed';
   if (!['positive', 'negative', 'mixed'].includes(String(impact))) throw new Error('Invalid impact');
-  return { title, entity_type: 'lesson', content: String(lesson.context ?? ''), summary: String(lesson.recommendation ?? ''), lesson_data: { context: lesson.context ?? '', what_worked: lesson.what_worked ?? '', what_failed: lesson.what_failed ?? '', recommendation: lesson.recommendation ?? '', category: lesson.category ?? 'Strategy', impact, source: lesson.source ?? '', observed_outcome: lesson.observed_outcome ?? '' } };
+  return { title, entity_type: 'lesson', content: String(String(lesson.context ?? '')), summary: String(String(lesson.recommendation ?? '')), lesson_data: { context: String(lesson.context ?? ''), what_worked: String(lesson.what_worked ?? ''), what_failed: String(lesson.what_failed ?? ''), recommendation: String(lesson.recommendation ?? ''), category: String(lesson.category ?? 'Strategy'), impact: String(impact), source: String(lesson.source ?? ''), observed_outcome: String(lesson.observed_outcome ?? '') } };
 }

@@ -186,7 +186,7 @@ export default function LessonsLearnedPage() {
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
                       {linked.map((d) => (
-                        <Badge key={d.id} variant="secondary" className="gap-1 text-xs" asChild><Link to={`/decisions/list/${d.id}`}>
+                        <Badge key={d.id} variant="secondary" className="gap-1 text-xs"><Link to={`/decisions/list/${d.id}`}>
                           <GitBranch className="h-3 w-3" /> {d.title}</Link>
                         </Badge>
                       ))}

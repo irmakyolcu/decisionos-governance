@@ -13,7 +13,7 @@ export function useRecordCatalog() {
     if (!workspace) { setLoading(false); return; }
     setLoading(true);
     Promise.all(Object.entries(RECORD_TABLES).map(async ([kind, table]) => {
-      let query = supabase.from(table).select('*').eq('workspace_id', workspace.id);
+      let query = (supabase as any).from(table).select('*').eq('workspace_id', workspace.id);
       if (kind === 'lesson') query = query.eq('entity_type', 'lesson');
       const { data, error } = await query;
       if (error) throw error;
