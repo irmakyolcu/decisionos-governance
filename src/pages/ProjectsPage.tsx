@@ -1,3 +1,5 @@
+import { uploadDocument } from '@/lib/documentUpload';
+import { RecordLinks } from '@/components/RecordLinks';
 import { useLanguage, translate } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,24 +60,8 @@ export default function ProjectsPage() {
     if (!workspace || !user || !uploadFor || !file) return;
     setUploading(true);
     try {
-      const path = `${workspace.id}/${uploadFor}/${crypto.randomUUID()}-${file.name}`;
-      const { error: upErr } = await supabase.storage.from('company-docs').upload(path, file);
-      if (upErr) throw upErr;
-      const isText = file.type.startsWith('text/') || /\.(txt|md|csv|json)$/i.test(file.name);
-      const contentText = isText ? await file.text() : '';
-      const { data: doc, error } = await supabase.from('uploaded_documents').insert({
-        workspace_id: workspace.id, created_by: user.id,
-        title: file.name, file_path: path, content_text: contentText,
-        mime_type: file.type || 'application/octet-stream',
-        related_project_id: uploadFor,
-        confidentiality: 'internal',
-        process_status: contentText ? 'indexed' : 'processing',
-      }).select().single();
-      if (error) throw error;
-      if (!contentText && doc) {
-        supabase.functions.invoke('ingest-document', { body: { document_id: doc.id } }).then(() => load()).catch(() => void 0);
-      }
-      toast({ title: translate("Yüklendi"), description: contentText ? 'Dosya projeye eklendi.' : 'Dosya yüklendi; AI ile içerik çıkarılıyor…' });
+      const result=await uploadDocument(workspace.id,user.id,file,file.name,'internal',uploadFor);
+      if(result.extractionError)toast({title:translate('Error'),description:result.extractionError,variant:'destructive'});else toast({title:translate('Yüklendi')});
       setUploadFor(null); setFile(null); load();
     } catch (e: any) {
       toast({ title: translate("Hata"), description: e.message, variant: 'destructive' });
@@ -128,7 +114,7 @@ export default function ProjectsPage() {
           {rows.map((p) => {
             const docs = docsByProject[p.id] || [];
             return (
-              <Card key={p.id} className="p-4 space-y-3">
+              <Card id={`record-${p.id}`} key={p.id} className="p-4 space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="font-semibold">{p.name}</div>
                   <Badge variant="outline" className="text-[10px]">{translate(p.status)}</Badge>
@@ -158,7 +144,8 @@ export default function ProjectsPage() {
                     </div>
                   )}
                 </div>
-              </Card>
+              <RecordLinks kind="project" id={p.id}/>
+</Card>
             );
           })}
         </div>
@@ -171,7 +158,7 @@ export default function ProjectsPage() {
             <div>
               <Label>{translate("PDF, Word, Excel, CSV, resim vb.")}</Label>
               <Input type="file" accept={ACCEPTS} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-              <p className="text-[10px] text-muted-foreground mt-1">{translate("Binary dosyalarda içerik AI ile otomatik çıkarılır ve Company Brain'e indekslenir.")}</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{translate("km.processingNotice")}</p>
             </div>
             <Button onClick={uploadFile} disabled={!file || uploading} className="w-full">
               {uploading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{translate("Yükleniyor")}</> : translate("Yükle & İndeksle")}

@@ -8,11 +8,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { useDecisions } from '@/hooks/useDecisions';
+import { DecisionMemoryFields, emptyMemoryFields } from '@/components/DecisionMemoryFields';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import type { RiskLevel } from '@/types/decision';
 
 export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode }) {
   useLanguage();
+  const [memory,setMemory]=useState(emptyMemoryFields);
+  const [allowAI,setAllowAI]=useState(false);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -34,11 +38,11 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
         problemStatement: problemStatement.trim(),
         budget: Number(budget) || 0,
         riskLevel,
-        status: 'Under Review',
+        status: 'Under Review', memory, allowAI,
       });
       toast({ title: translate("Karar oluşturuldu"), description: title });
       setOpen(false);
-      setTitle(''); setDescription(''); setProblemStatement(''); setBudget(''); setRiskLevel('Medium');
+      setMemory(emptyMemoryFields); setAllowAI(false); setTitle(''); setDescription(''); setProblemStatement(''); setBudget(''); setRiskLevel('Medium');
     } catch (err: any) {
       toast({ title: translate("Oluşturulamadı"), description: err.message, variant: 'destructive' });
     } finally {
@@ -51,7 +55,7 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
       <DialogTrigger asChild>
         {trigger ?? <Button size="sm"><Plus className="h-4 w-4 mr-1" />{translate("Yeni Karar")}</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{translate("Yeni Karar Oluştur")}</DialogTitle>
@@ -89,6 +93,7 @@ export function CreateDecisionDialog({ trigger }: { trigger?: React.ReactNode })
               </div>
             </div>
           </div>
+          <DecisionMemoryFields value={memory} onChange={setMemory}/><label className="flex gap-2 text-sm my-3"><Checkbox checked={allowAI} onCheckedChange={v=>setAllowAI(v===true)}/>{translate("km.externalAnalysis")}</label>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>{translate("İptal")}</Button>
             <Button type="submit" disabled={submitting || !title.trim()}>{submitting ? translate("Oluşturuluyor…") : translate("Oluştur")}</Button>

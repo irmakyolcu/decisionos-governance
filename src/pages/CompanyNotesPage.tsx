@@ -1,3 +1,6 @@
+import { RecordLinks } from '@/components/RecordLinks';
+import { canWriteMemory } from '@/lib/records';
+import { validateDocument, validateSignature } from '../../supabase/functions/_shared/documentRules';
 import { tr as trLocale, enUS } from "date-fns/locale";
 import { useLanguage, translate , getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
@@ -281,7 +284,7 @@ export default function CompanyNotesPage() {
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {pinned.map((n) => (
-                  <NoteCard key={n.id} note={n} workspaceId={workspace!.id} onPin={togglePin} onEdit={openEdit} onDelete={remove} />
+                  <NoteCard key={n.id} note={n} workspaceId={workspace?.id??""} onPin={togglePin} onEdit={openEdit} onDelete={remove} />
                 ))}
               </div>
             </div>
@@ -293,7 +296,7 @@ export default function CompanyNotesPage() {
               )}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {rest.map((n) => (
-                  <NoteCard key={n.id} note={n} workspaceId={workspace!.id} onPin={togglePin} onEdit={openEdit} onDelete={remove} />
+                  <NoteCard key={n.id} note={n} workspaceId={workspace?.id??""} onPin={togglePin} onEdit={openEdit} onDelete={remove} />
                 ))}
               </div>
             </div>
@@ -334,6 +337,7 @@ function NoteCard({
   onDelete: (id: string) => void;
 }) {
   useLanguage();
+  const {role}=useWorkspace();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -359,6 +363,7 @@ function NoteCard({
     }
     setUploading(true);
     try {
+      const ext=validateDocument(file.name,file.size);validateSignature(ext,new Uint8Array(await file.slice(0,4096).arrayBuffer()));
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
       if (!uid) throw new Error('Oturum yok');
@@ -405,7 +410,7 @@ function NoteCard({
   }
 
   return (
-    <Card className="group">
+    <Card id={`record-${note.id}`} className="group">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
@@ -448,6 +453,7 @@ function NoteCard({
           </div>
         )}
 
+        <RecordLinks kind="note" id={note.id}/>
         {/* Attachments */}
         <div className="pt-2 border-t space-y-2">
           <div className="flex items-center justify-between">
@@ -460,7 +466,7 @@ function NoteCard({
                 className="hidden"
                 accept={ACCEPTED_TYPES}
                 onChange={handleUpload}
-                disabled={uploading}
+                disabled={uploading||!canWriteMemory(role)}
               />
               <span className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
                 {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}

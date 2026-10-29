@@ -1,3 +1,5 @@
+import { recordHref } from '@/lib/records';
+import { Link } from 'react-router-dom';
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -321,6 +323,9 @@ export default function InternalAuditPage() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium">{e.event_type}</p>
+                  {e.metadata?.document_id && <Link className="text-primary underline text-xs" to={recordHref('document',e.metadata.document_id)}>{translate('km.document')}</Link>}
+                  {e.metadata?.note_id && <Link className="text-primary underline text-xs" to={recordHref('note',e.metadata.note_id)}>{translate('km.note')}</Link>}
+                  {e.metadata?.changed_fields?.length>0 && <p className="text-xs text-muted-foreground">{e.metadata.changed_fields.join(', ')}</p>}
                   {e.reason && <p className="text-xs text-muted-foreground">{e.reason}</p>}
                   <p className="text-xs font-mono text-muted-foreground mt-0.5">
                     {e.actor_user_id && <>{translate("actor:")}{String(e.actor_user_id).slice(0, 8)} </>}

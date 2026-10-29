@@ -154,6 +154,8 @@ export function useDecisions() {
     budget: number;
     riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
     status?: 'Draft' | 'Pending' | 'Under Review';
+    memory?: {decision_date:string;owner_id:string;rationale:string;expected_outcomes:string;options:string};
+    allowAI?: boolean;
   }) => {
     if (!workspace) throw new Error('No workspace');
     const { data: { user } } = await supabase.auth.getUser();
@@ -170,13 +172,14 @@ export function useDecisions() {
         risk_level: input.riskLevel,
         status: input.status ?? 'Draft',
         created_by: user.id,
+        decision_date: input.memory?.decision_date || null, owner_id: input.memory?.owner_id || user.id, rationale: input.memory?.rationale ?? "", expected_outcomes: input.memory?.expected_outcomes ?? "", options_considered: input.memory?.options.split("\n").filter(Boolean) ?? [],
       })
       .select('id')
       .single();
     if (error) throw error;
 
     // Fire-and-forget AI evaluation (don't block UI on AI latency)
-    if (inserted?.id) {
+    if (inserted?.id && input.allowAI) {
       const id = inserted.id;
       setEvaluatingStates(prev => {
         const next = new Map(prev);

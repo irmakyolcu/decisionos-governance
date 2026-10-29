@@ -95,7 +95,9 @@ async function handleDecisions(req: Request, key: KeyRow, id?: string) {
     if (!body?.title) return json({ error: 'title is required' }, 400);
     const { data, error } = await admin.from('decisions').insert({
       workspace_id: key.workspace_id,
-      title: String(body.title).slice(0, 500),
+      title: String(body.title).slice(0, 255),
+      entity_type: 'lesson',
+      lesson_data: {context:String(body.context??body.content??'').slice(0,10000),recommendation:String(body.recommendation??body.summary??'').slice(0,10000),what_worked:String(body.what_worked??'').slice(0,10000),what_failed:String(body.what_failed??'').slice(0,10000),source:String(body.source??'').slice(0,1000),observed_outcome:String(body.observed_outcome??'').slice(0,10000),category:String(body.category??'Strategy').slice(0,100),impact:['positive','negative','mixed'].includes(body.impact)?body.impact:'mixed'},
       description: body.description ? String(body.description).slice(0, 5000) : null,
       problem_statement: body.problem_statement ? String(body.problem_statement).slice(0, 5000) : null,
       budget: typeof body.budget === 'number' ? body.budget : null,
@@ -114,7 +116,7 @@ async function handleLessons(req: Request, key: KeyRow) {
   if (req.method === 'GET') {
     const denied = requireScope(key, 'lessons:read', 'viewer');
     if (denied) return denied;
-    const { data, error } = await visibleQuery(admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id), 'knowledge_items', key).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(100);
+    const { data, error } = await visibleQuery(admin.from('knowledge_items').select('*').eq('workspace_id', key.workspace_id), 'knowledge_items', key).or('entity_type.eq.lesson,tags.cs.["lesson"]').order('created_at', { ascending: false }).limit(100);
     if (error) return json({ error: error.message }, 400);
     return json({ data });
   }

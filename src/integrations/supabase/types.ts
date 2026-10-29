@@ -1315,6 +1315,7 @@ export type Database = {
           contradicts: string | null
           created_at: string
           decision_id: string
+          document_id: string | null
           id: string
           is_verified: boolean | null
           owner: string | null
@@ -1329,6 +1330,7 @@ export type Database = {
           contradicts?: string | null
           created_at?: string
           decision_id: string
+          document_id?: string | null
           id?: string
           is_verified?: boolean | null
           owner?: string | null
@@ -1343,6 +1345,7 @@ export type Database = {
           contradicts?: string | null
           created_at?: string
           decision_id?: string
+          document_id?: string | null
           id?: string
           is_verified?: boolean | null
           owner?: string | null
@@ -1359,6 +1362,13 @@ export type Database = {
             columns: ["decision_id"]
             isOneToOne: false
             referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_evidence_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_documents"
             referencedColumns: ["id"]
           },
           {
@@ -1955,13 +1965,17 @@ export type Database = {
           created_at: string
           created_by: string
           deadline: string | null
+          decision_date: string | null
           decision_type: string | null
           description: string
+          expected_outcomes: string
           id: string
           meeting_id: string | null
           options_considered: Json
           outcome_status: Database["public"]["Enums"]["outcome_status"] | null
+          owner_id: string | null
           problem_statement: string
+          rationale: string
           review_due_at: string | null
           risk_level: Database["public"]["Enums"]["risk_level"]
           status: Database["public"]["Enums"]["decision_status"]
@@ -1976,13 +1990,17 @@ export type Database = {
           created_at?: string
           created_by: string
           deadline?: string | null
+          decision_date?: string | null
           decision_type?: string | null
           description?: string
+          expected_outcomes?: string
           id?: string
           meeting_id?: string | null
           options_considered?: Json
           outcome_status?: Database["public"]["Enums"]["outcome_status"] | null
+          owner_id?: string | null
           problem_statement?: string
+          rationale?: string
           review_due_at?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           status?: Database["public"]["Enums"]["decision_status"]
@@ -1997,13 +2015,17 @@ export type Database = {
           created_at?: string
           created_by?: string
           deadline?: string | null
+          decision_date?: string | null
           decision_type?: string | null
           description?: string
+          expected_outcomes?: string
           id?: string
           meeting_id?: string | null
           options_considered?: Json
           outcome_status?: Database["public"]["Enums"]["outcome_status"] | null
+          owner_id?: string | null
           problem_statement?: string
+          rationale?: string
           review_due_at?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           status?: Database["public"]["Enums"]["decision_status"]
@@ -2215,6 +2237,7 @@ export type Database = {
           entity_id: string | null
           entity_type: string | null
           id: string
+          lesson_data: Json
           source_date: string | null
           source_url: string | null
           summary: string | null
@@ -2234,6 +2257,7 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string | null
           id?: string
+          lesson_data?: Json
           source_date?: string | null
           source_url?: string | null
           summary?: string | null
@@ -2253,6 +2277,7 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string | null
           id?: string
+          lesson_data?: Json
           source_date?: string | null
           source_url?: string | null
           summary?: string | null
@@ -3070,6 +3095,47 @@ export type Database = {
           },
         ]
       }
+      record_links: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          source_id: string
+          source_kind: string
+          target_id: string
+          target_kind: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          source_id: string
+          source_kind: string
+          target_id: string
+          target_kind: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          source_id?: string
+          source_kind?: string
+          target_id?: string
+          target_kind?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "record_links_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       report_schedules: {
         Row: {
           active: boolean
@@ -3348,6 +3414,7 @@ export type Database = {
       uploaded_documents: {
         Row: {
           access_scope: string | null
+          category: string
           confidentiality:
             | Database["public"]["Enums"]["confidentiality_level"]
             | null
@@ -3355,6 +3422,10 @@ export type Database = {
           created_at: string | null
           created_by: string
           data_source_id: string | null
+          extraction_attempts: number
+          extraction_error: string | null
+          extraction_finished_at: string | null
+          extraction_started_at: string | null
           file_path: string | null
           id: string
           metadata: Json | null
@@ -3371,6 +3442,7 @@ export type Database = {
         }
         Insert: {
           access_scope?: string | null
+          category?: string
           confidentiality?:
             | Database["public"]["Enums"]["confidentiality_level"]
             | null
@@ -3378,6 +3450,10 @@ export type Database = {
           created_at?: string | null
           created_by: string
           data_source_id?: string | null
+          extraction_attempts?: number
+          extraction_error?: string | null
+          extraction_finished_at?: string | null
+          extraction_started_at?: string | null
           file_path?: string | null
           id?: string
           metadata?: Json | null
@@ -3394,6 +3470,7 @@ export type Database = {
         }
         Update: {
           access_scope?: string | null
+          category?: string
           confidentiality?:
             | Database["public"]["Enums"]["confidentiality_level"]
             | null
@@ -3401,6 +3478,10 @@ export type Database = {
           created_at?: string | null
           created_by?: string
           data_source_id?: string | null
+          extraction_attempts?: number
+          extraction_error?: string | null
+          extraction_finished_at?: string | null
+          extraction_started_at?: string | null
           file_path?: string | null
           id?: string
           metadata?: Json | null
@@ -3594,9 +3675,22 @@ export type Database = {
         Args: { _notification_id?: string; _workspace_id: string }
         Returns: number
       }
+      search_memory: {
+        Args: { _term: string; _workspace: string }
+        Returns: {
+          id: string
+          kind: string
+          parent_id: string
+          title: string
+        }[]
+      }
       seed_workspace_demo_data: {
         Args: { _creator: string; _workspace_id: string }
         Returns: undefined
+      }
+      visible_record: {
+        Args: { _id: string; _kind: string; _workspace: string }
+        Returns: boolean
       }
     }
     Enums: {

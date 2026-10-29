@@ -1,3 +1,6 @@
+import { RecordLinks } from '@/components/RecordLinks';
+import { DecisionMemoryFields, emptyMemoryFields } from '@/components/DecisionMemoryFields';
+import { canWriteMemory } from '@/lib/records';
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -25,7 +28,9 @@ export default function DecisionDetailPage() {
   useLanguage();
   const { id } = useParams<{ id: string }>();
   const nav = useNavigate();
-  const { workspace } = useWorkspace();
+  const { workspace, role } = useWorkspace();
+  const writable=canWriteMemory(role);
+  const [memory,setMemory]=useState(emptyMemoryFields);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [decision, setDecision] = useState<any>(null);
@@ -58,6 +63,7 @@ export default function DecisionDetailPage() {
     ]);
     if (!d) { setLoading(false); return; }
     setDecision(d);
+    setMemory({decision_date:d.decision_date??"",owner_id:d.owner_id??d.created_by??"",rationale:d.rationale??"",expected_outcomes:d.expected_outcomes??"",options:(d.options_considered??[]).join("\n")});
     setEvidence(ev ?? []);
     setHistory(hist ?? []);
     setAssessments(ras ?? []);
@@ -75,7 +81,7 @@ export default function DecisionDetailPage() {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [id, workspace?.id]);
 
   async function save() {
-    if (!id) return;
+    if (!id || locked || !writable) return;
     setSaving(true);
     const { error } = await db.from('decisions').update({
       title: form.title,
@@ -84,13 +90,14 @@ export default function DecisionDetailPage() {
       budget: Number(form.budget) || 0,
       risk_level: form.risk_level,
       status: form.status,
+      decision_date:memory.decision_date||null,owner_id:memory.owner_id||null,rationale:memory.rationale,expected_outcomes:memory.expected_outcomes,options_considered:memory.options.split("\n").filter(Boolean),
     }).eq('id', id);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success('Karar güncellendi');
     await load();
     // Trigger AI risk re-assessment after edits (non-blocking)
-    runRiskAssessment('field_updated');
+    // User explicitly requests external analysis separately.
   }
 
   async function remove() {
@@ -155,10 +162,10 @@ export default function DecisionDetailPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={save} disabled={saving || locked}><Save className="h-4 w-4 mr-2" />{saving ? translate("Kaydediliyor…") : translate("Kaydet")}</Button>
+          <Button onClick={save} disabled={saving || locked || !writable}><Save className="h-4 w-4 mr-2" />{saving ? translate("Kaydediliyor…") : translate("Kaydet")}</Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="icon" disabled={locked}><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="destructive" size="icon" disabled={locked || !writable}><Trash2 className="h-4 w-4" /></Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -174,6 +181,7 @@ export default function DecisionDetailPage() {
         </div>
       </div>
 
+      <RecordLinks kind="decision" id={decision.id}/>
       <RiskSummaryCard latest={latest} count={assessments.length} onRun={() => runRiskAssessment('manual')} assessing={assessing} />
 
       {locked && (
@@ -199,14 +207,15 @@ export default function DecisionDetailPage() {
         </TabsList>
 
         <TabsContent value="details" className="space-y-4 mt-4">
+          <DecisionMemoryFields value={memory} onChange={setMemory} disabled={locked||!writable}/>
           <div className="grid gap-4">
-            <div><Label>{translate("Başlık")}</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} disabled={locked} /></div>
-            <div><Label>{translate("Açıklama")}</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} disabled={locked} /></div>
-            <div><Label>{translate("Problem ifadesi")}</Label><Textarea value={form.problem_statement} onChange={(e) => setForm({ ...form, problem_statement: e.target.value })} disabled={locked} rows={2} /></div>
+            <div><Label>{translate("Başlık")}</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} disabled={locked || !writable} /></div>
+            <div><Label>{translate("Açıklama")}</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} disabled={locked || !writable} /></div>
+            <div><Label>{translate("Problem ifadesi")}</Label><Textarea value={form.problem_statement} onChange={(e) => setForm({ ...form, problem_statement: e.target.value })} disabled={locked || !writable} rows={2} /></div>
             <div className="grid grid-cols-3 gap-3">
-              <div><Label>{translate("Bütçe (€)")}</Label><Input type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} disabled={locked} /></div>
+              <div><Label>{translate("Bütçe (€)")}</Label><Input type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} disabled={locked || !writable} /></div>
               <div><Label>Risk</Label>
-                <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked}>
+                <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked || !writable}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{RISKS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                 </Select>

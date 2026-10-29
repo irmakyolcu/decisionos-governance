@@ -1,3 +1,4 @@
+import { RecordLinks } from '@/components/RecordLinks';
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -106,6 +107,7 @@ export default function DecisionRoomPage() {
         </CardContent>
       </Card>
 
+      <RecordLinks kind="decision" id={decision.id}/>
       <Tabs defaultValue="summary">
         <TabsList className="grid grid-cols-4 md:grid-cols-7">
           <TabsTrigger value="summary">{translate("Summary")}</TabsTrigger>

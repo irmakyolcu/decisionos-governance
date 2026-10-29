@@ -1,3 +1,4 @@
+import { RecordLinks } from '@/components/RecordLinks';
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -135,7 +136,7 @@ export default function ClientsPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
           {rows.map((c) => (
-            <Card key={c.id} className="p-4 space-y-2">
+            <Card id={`record-${c.id}`} key={c.id} className="p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="font-semibold flex-1">{c.name}</div>
                 <Badge variant={riskColor(c.risk_level) as any} className="text-[10px]">{translate(c.risk_level)}</Badge>
@@ -154,7 +155,8 @@ export default function ClientsPage() {
                   <Trash2 className="h-3 w-3 mr-1" />{translate("Sil")}
                 </Button>
               </div>
-            </Card>
+            <RecordLinks kind="client" id={c.id}/>
+</Card>
           ))}
         </div>
       )}
