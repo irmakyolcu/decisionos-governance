@@ -1,3 +1,8 @@
+# Project, process, step and task engine
+- [ ] Plan connected persistent projects, phases, processes, steps, tasks, dependencies, approvals and notifications while preserving existing records.
+- [ ] After plan approval, implement project/process execution views, assignment, blocked-state enforcement, handoffs, corrective tasks and deduplicated notification rules.
+- [ ] Verify project-to-completion flow, task assignment/readback, approval/dependency blocks, notifications, quality-failure handling and authorized access.
+
 # Knowledge, evidence and decision memory
 - [x] Inspect and plan additive document management, persistent lessons, bidirectional links, authorized search and immutable referenced audit history.
 - [x] Implement persistent lessons/decision memory, context fields, private uploads/local Office extraction, retries/consent, typed bidirectional links, caller search and trusted audit references.
