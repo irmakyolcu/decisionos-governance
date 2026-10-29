@@ -1,7 +1,8 @@
 # Project, process, step and task engine
 - [x] Plan connected persistent projects, phases, processes, steps, tasks, dependencies, approvals and notifications while preserving existing records.
-- [ ] After plan approval, implement project/process execution views, assignment, blocked-state enforcement, handoffs, corrective tasks and deduplicated notification rules.
-- [ ] Verify project-to-completion flow, task assignment/readback, approval/dependency blocks, notifications, quality-failure handling and authorized access.
+- [x] Implement project/process execution views, phases/participants/dates, preserved step registry, assignment, blocked-state enforcement, handoffs, corrective tasks and deduplicated notification rules; hourly reminder job ran successfully.
+- [x] Verify authenticated TEST project creation through completion in the UI, persistent task readback, approval/dependency blocks, corrective verification, handoff and deduplication, direct-write denial, Turkish/English and mobile display; 54 regression tests plus 8 live integration tests passed.
+- [ ] Full viewer/auditor/second-company end-to-end checks and offline installer validation: blocked by missing disposable multi-role and installation environment. External email/Slack delivery is not enabled; current delivery tracking covers in-app persistence and read acknowledgement only.
 
 # Knowledge, evidence and decision memory
 - [x] Inspect and plan additive document management, persistent lessons, bidirectional links, authorized search and immutable referenced audit history.
