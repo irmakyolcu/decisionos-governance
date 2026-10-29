@@ -27,11 +27,11 @@ async function fnError(error: any) {
 
 export default function IntegrationHubPage() {
   const { workspace, role } = useWorkspace();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const ws = workspace?.id;
   const isAdmin = role === 'admin';
   const canView = role === 'admin' || role === 'auditor';
-  const fmt = (d?: string | null) => (d ? new Date(d).toLocaleString(getLocale(language)) : t('ih.never'));
+  const fmt = (d?: string | null) => (d ? new Date(d).toLocaleString(getLocale()) : t('ih.never'));
 
   const [configs, setConfigs] = useState<Row[]>([]);
   const [inbound, setInbound] = useState<Row[]>([]);
