@@ -23,6 +23,7 @@ const ALL_SCOPES = [
   'risks:read', 'risks:write',
   'meetings:read',
   'notifications:read', 'audit:read',
+  'inbound:write',
 ];
 
 

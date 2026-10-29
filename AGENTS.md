@@ -15,3 +15,4 @@
 - Format localized dates using the locale exposed by LanguageContext so displayed dates follow the selected language.
 - Shared display-only translation helpers require each consuming React view to subscribe to LanguageContext; translate only rendered labels, never control values, identity props or stored data.
 - Decision intelligence risk scores are computed deterministically from model criterion ratings in a shared module; uncited facts are downgraded and numeric probabilities require enough recorded outcomes, so AI cannot assert unsupported conclusions.
+- Integrations use an outbound_events outbox filled by DB triggers; webhook deliveries, automation rules and inbound events are deduplicated by unique keys, webhook secrets are column-hidden from clients, and Slack reads only admin-allowlisted channels into a human review inbox.

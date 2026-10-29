@@ -126,8 +126,63 @@ Deno.serve(async (req) => {
     }
 
     // ---- IMPORT meetings/notes ----
-    if (action !== 'import') return json({ error: 'Unknown action' }, 400);
+    // ---- TEST the caller's Slack connection with a real call ----
+    if (action === 'test' && connector_id === 'slack') {
+      try {
+        const r = await call('/api/auth.test');
+        await admin.from('integration_runs').insert({ workspace_id: workspaceId, kind: 'slack_test', status: r.ok ? 'success' : 'failed', detail: { team: r.team ?? null }, error: r.ok ? null : r.error, actor_id: user.id });
+        return json({ ok: !!r.ok, team: r.team ?? null, error: r.ok ? null : r.error });
+      } catch (e) {
+        await admin.from('integration_runs').insert({ workspace_id: workspaceId, kind: 'slack_test', status: 'failed', error: String(e).slice(0, 300), actor_id: user.id });
+        return json({ ok: false, error: String(e).slice(0, 300) }, 502);
+      }
+    }
+
+    if (action !== 'import' && action !== 'extract') return json({ error: 'Unknown action' }, 400);
     if (!source_id) return json({ error: 'source_id required' }, 400);
+
+    const { data: member } = await admin.from('workspace_members').select('role').eq('workspace_id', workspaceId).eq('user_id', user.id).maybeSingle();
+    if (!member || !['admin', 'approver'].includes(member.role)) return json({ error: 'Writer role required' }, 403);
+
+    if (connector_id === 'slack') {
+      // Only channels an administrator explicitly allowed may be read.
+      const { data: allowed } = await admin.from('slack_channel_allowlist').select('id').eq('workspace_id', workspaceId).eq('channel_id', source_id).maybeSingle();
+      if (!allowed) return json({ error: 'channel_not_allowed', message: 'Bu Slack kanalı yönetici tarafından izinli listeye eklenmedi.' }, 403);
+    }
+
+    // ---- EXTRACT candidate decisions/actions into the review inbox (nothing is created yet) ----
+    if (action === 'extract') {
+      if (connector_id !== 'slack') return json({ error: 'extract supports slack only' }, 400);
+      if (!aiEnabled()) return json({ error: 'ai_not_configured' }, 503);
+      const oldest = Math.floor(since.getTime() / 1000);
+      const hist = await call(`/api/conversations.history?channel=${encodeURIComponent(source_id)}&limit=200&oldest=${oldest}`);
+      if (!hist.ok) return json({ error: hist.error ?? 'slack_error' }, 502);
+      const msgs = (hist.messages ?? []).filter((m: any) => m.text && !m.bot_id).reverse();
+      if (!msgs.length) return json({ suggestions: 0, message: 'Bu kanalda seçilen aralıkta mesaj yok.' });
+      const transcript = msgs.map((m: any) => `[${m.ts}] ${m.user ?? 'user'}: ${m.text}`).join('\n').slice(0, 20000);
+      let items: any[] = [];
+      try {
+        const out = await aiChat({
+          messages: [
+            { role: 'system', content: 'Extract only explicitly stated decisions and action items from the Slack messages. Do not invent owners or deadlines; use null when not stated. Quote the supporting message text. Return JSON {"items":[{"kind":"decision"|"action","title":string,"owner":string|null,"due":string|null,"quote":string}]}' },
+            { role: 'user', content: transcript },
+          ],
+          jsonMode: true,
+        });
+        items = (JSON.parse(out || '{}').items ?? []).filter((i: any) => ['decision', 'action'].includes(i?.kind) && typeof i?.title === 'string' && i.title.trim()).slice(0, 30);
+      } catch (e) {
+        await admin.from('integration_runs').insert({ workspace_id: workspaceId, kind: 'slack_extract', status: 'failed', error: String(e).slice(0, 300), actor_id: user.id });
+        return json({ error: 'extraction_failed' }, 502);
+      }
+      const rows = items.map((i) => ({
+        workspace_id: workspaceId, source: 'slack', source_ref: `slack:${source_id}`, kind: i.kind,
+        title: i.title.slice(0, 200), owner_hint: i.owner ? String(i.owner).slice(0, 120) : null,
+        due_hint: i.due ? String(i.due).slice(0, 60) : null, quote: i.quote ? String(i.quote).slice(0, 1000) : null,
+      }));
+      if (rows.length) await admin.from('extraction_suggestions').upsert(rows, { onConflict: 'workspace_id,source_ref,kind,title', ignoreDuplicates: true });
+      await admin.from('integration_runs').insert({ workspace_id: workspaceId, kind: 'slack_extract', status: 'success', detail: { channel: source_id, suggestions: rows.length }, actor_id: user.id });
+      return json({ suggestions: rows.length });
+    }
 
     const imported: any[] = [];
 
