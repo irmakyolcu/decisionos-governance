@@ -1,5 +1,5 @@
 # Knowledge, evidence and decision memory
-- [ ] Inspect and plan additive document management, persistent lessons, bidirectional links, authorized search and immutable referenced audit history.
+- [x] Inspect and plan additive document management, persistent lessons, bidirectional links, authorized search and immutable referenced audit history.
 - [ ] Implement the approved scope with persistent storage, permission checks, extraction retry, and localized loading/error states.
 - [ ] Verify upload, manual decision and lesson creation, bidirectional navigation, authorized search and audit history with persistent data.
 
