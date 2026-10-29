@@ -4,6 +4,8 @@
 Mevcut Projeler ve Süreçler sayfalarını gerçek görev yürütme akışına bağlamak. Kararlar, çıkarılan dersler, belgeler, riskler ve bildirimler aynı kayıtlara bağlı kalacak; ayrı bir görev yönetimi sistemi kurulmayacak.
 
 ## 1. Projeler ve süreçler
+Mevcut durumda proje oluşturma/dosya ekleme, süreç sahibi, metin adımları ve süreçler arası bağlantılar var; görev yürütme, gerçek ilerleme ve adım tamamlanma kontrolleri henüz yok.
+
 - Proje oluşturma ve düzenleme: hedef, yönetici, katılımcılar, durum, başlangıç/bitiş tarihleri ve fazlar.
 - Bir projeye birden fazla süreç bağlama; mevcut süreç bağlantılarını ve dosyaları koruma.
 - Süreç oluşturma/düzenleme: açıklama, sorumlu, departman, durum, giriş koşulları, tamamlanma ölçütleri ve onay gereksinimleri.

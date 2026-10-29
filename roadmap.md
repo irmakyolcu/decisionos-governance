@@ -1,5 +1,5 @@
 # Project, process, step and task engine
-- [ ] Plan connected persistent projects, phases, processes, steps, tasks, dependencies, approvals and notifications while preserving existing records.
+- [x] Plan connected persistent projects, phases, processes, steps, tasks, dependencies, approvals and notifications while preserving existing records.
 - [ ] After plan approval, implement project/process execution views, assignment, blocked-state enforcement, handoffs, corrective tasks and deduplicated notification rules.
 - [ ] Verify project-to-completion flow, task assignment/readback, approval/dependency blocks, notifications, quality-failure handling and authorized access.
 
