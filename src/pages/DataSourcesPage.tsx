@@ -57,7 +57,8 @@ export default function DataSourcesPage() {
     const { data: d } = await supabase.from('uploaded_documents').select('*').eq('workspace_id', workspace.id).order('created_at', { ascending: false });
     setDocs(d ?? []);
   };
-  useEffect(() => { load(); }, [workspace]);
+  useEffect(() => {setDocs([]);setSources([]);load();},[workspace?.id]);
+  useEffect(()=>{if(!docs.some(d=>d.process_status==='processing'))return;const timer=setInterval(load,2500);return()=>clearInterval(timer);},[docs,workspace?.id]);
 
   const upload = async () => {
     if (!workspace || !user || !form.title) return;

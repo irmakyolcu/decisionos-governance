@@ -1,4 +1,12 @@
 export const knowledgeTranslations: Record<string, { en: string; tr: string }> = {
+ "km.knowledge":{"en":"Knowledge","tr":"Bilgi"},
+ "Download":{"en":"Download","tr":"İndir"},
+ "Source":{"en":"Source","tr":"Kaynak"},
+ "uploaded":{"en":"Uploaded","tr":"Yüklendi"},
+ "processing":{"en":"Processing","tr":"İşleniyor"},
+ "indexed":{"en":"Indexed","tr":"İndekslendi"},
+ "needs_review":{"en":"Needs review","tr":"İnceleme gerekiyor"},
+ "manual_upload":{"en":"Manual upload","tr":"Elle yükleme"},
  "km.externalAnalysis":{"en":"Allow AI analysis using the configured external service","tr":"Yapılandırılmış dış hizmetle AI analizine izin ver"},
  "km.processingNotice":{"en":"Local extraction runs first; external AI extraction requires consent in Documents.","tr":"Önce yerel çıkarım yapılır; dış AI çıkarımı için Belgeler bölümünde izin gerekir."},
   "km.related": {

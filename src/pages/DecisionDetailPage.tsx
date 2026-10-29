@@ -217,7 +217,7 @@ export default function DecisionDetailPage() {
               <div><Label>Risk</Label>
                 <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })} disabled={locked || !writable}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{RISKS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                  <SelectContent>{RISKS.map(r => <SelectItem key={r} value={r}>{translate(r)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><Label>{translate("Durum")}</Label>
