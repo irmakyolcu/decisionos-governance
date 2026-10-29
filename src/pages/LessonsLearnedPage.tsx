@@ -10,63 +10,47 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lightbulb, Plus, Search, Trash2, TrendingUp, TrendingDown, Minus, GitBranch, Link2 } from 'lucide-react';
 import { useLessons, type Lesson } from '@/hooks/useLessons';
-import { memoryDecisions } from '@/data/ceoTwin';
+import { useTable } from '@/hooks/useGovernance';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { canWriteMemory } from '@/lib/records';
+import { RecordLinks } from '@/components/RecordLinks';
+import { Checkbox } from '@/components/ui/checkbox';
+import { lessonsKey } from '@/hooks/useLessons';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import LessonsAiInsights from '@/components/LessonsAiInsights';
 
 const CATEGORIES = ['Strategy', 'Product', 'Hiring', 'Sales', 'Ops', 'Finance', 'Partnership', 'Crisis'];
 
-const seed: Lesson[] = [
-  {
-    id: 's1',
-    title: 'Enterprise pilots need executive sponsor before day 1',
-    context: 'Q2 pilot with a Fortune-500 buyer stalled for 4 months.',
-    what_worked: 'Champion inside product team was highly engaged and technical.',
-    what_failed: 'No VP-level sponsor meant procurement blocked commercial expansion.',
-    recommendation: 'Only start paid pilots when a named EVP sponsor is on the kickoff call.',
-    category: 'Sales', impact: 'negative', source: 'Deal review – Acme Corp',
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 's2',
-    title: 'Small async design reviews beat 90-min meetings',
-    context: 'Weekly design review meetings ran long without decisions.',
-    what_worked: 'Switching to Loom + written responses cut cycle time by 60%.',
-    what_failed: 'Live meetings encouraged tangents and social debate.',
-    recommendation: 'Default to async design reviews; live only for tier-1 launches.',
-    category: 'Product', impact: 'positive', source: 'Design ops retro',
-    created_at: new Date().toISOString(),
-  },
-];
-
 export default function LessonsLearnedPage() {
   useLanguage();
-  const { rows, persist } = useLessons();
+  const { rows, save: saveLesson, remove: deleteLesson, loading, error } = useLessons();
+  const { workspace, role } = useWorkspace();
+  const writable = canWriteMemory(role);
+  const { rows: memoryDecisions } = useTable<any>('decisions');
+  const [editing, setEditing] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [legacy, setLegacy] = useState<Lesson[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
   const [impact, setImpact] = useState('all');
   const [open, setOpen] = useState(false);
   const empty: Omit<Lesson, 'id' | 'created_at'> = {
     title: '', context: '', what_worked: '', what_failed: '', recommendation: '',
-    category: 'Strategy', impact: 'mixed', source: '', decisionIds: [],
+    category: 'Strategy', impact: 'mixed', source: '', observed_outcome: '', decisionIds: [],
   };
   const [form, setForm] = useState(empty);
 
-  // Seed once if empty
   useEffect(() => {
-    if (rows.length === 0 && !localStorage.getItem('mem:lessons:seeded')) {
-      persist(seed);
-      localStorage.setItem('mem:lessons:seeded', '1');
-    }
-  }, [rows.length, persist]);
-
-  function save() {
-    if (!form.title.trim()) return toast.error(translate('Title is required'));
-    persist([{ ...form, id: crypto.randomUUID(), created_at: new Date().toISOString() }, ...rows]);
-    setOpen(false); setForm(empty); toast.success(translate('Lesson added'));
+    try { setLegacy(JSON.parse(localStorage.getItem(lessonsKey(workspace?.id)) || '[]')); } catch { setLegacy([]); }
+  }, [workspace?.id]);
+  async function save() {
+    setSaving(true);
+    try { await saveLesson({ ...form, ...(editing ? { id: editing } : {}) }); setOpen(false); setEditing(null); setForm(empty); toast.success(translate('Saved')); } catch(e: any) { toast.error(e.message); } finally { setSaving(false); }
   }
-  function remove(id: string) { persist(rows.filter((r) => r.id !== id)); }
+  async function remove(id: string) { try { await deleteLesson(id); } catch(e: any) { toast.error(e.message); } }
+  async function importSelected() { setSaving(true); try { for(const lesson of legacy.filter(l=>selected.includes(l.id))) { const {id,decisionIds,created_at,...rest}=lesson; await saveLesson(rest); } setSelected([]); toast.success(translate('Saved')); } catch(e:any) {toast.error(e.message);} finally {setSaving(false);} }
 
   const filtered = useMemo(() => rows.filter((r) => {
     const okC = cat === 'all' || r.category === cat;
@@ -89,13 +73,13 @@ export default function LessonsLearnedPage() {
           <p className="page-description">{translate("Distilled insights from past decisions, deals, launches and crises.")}</p>
         </div>
         <div className="flex gap-2">
-          <Button asChild variant="outline" size="sm">
+          {writable && <Button asChild variant="outline" size="sm">
             <Link to="/memory/links"><Link2 className="h-4 w-4 mr-2" /> {translate("Link to decisions")}</Link>
-          </Button>
+          </Button>}
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm"><Plus className="h-4 w-4 mr-2" /> {translate("New Lesson")}</Button>
-            </DialogTrigger>
+            {writable && <DialogTrigger asChild>
+              <Button size="sm" onClick={()=>{setEditing(null);setForm(empty);}}><Plus className="h-4 w-4 mr-2" /> {translate("New Lesson")}</Button>
+            </DialogTrigger>}
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>{translate("Capture a lesson")}</DialogTitle></DialogHeader>
               <div className="space-y-3">
@@ -126,7 +110,8 @@ export default function LessonsLearnedPage() {
                 <div><Label>{translate("Recommendation for next time")}</Label><Textarea rows={2} value={form.recommendation} onChange={(e) => setForm({ ...form, recommendation: e.target.value })} /></div>
                 <div><Label>{translate("Source (project, deal, incident…)")}</Label><Input value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} /></div>
               </div>
-              <DialogFooter><Button onClick={save}>{translate("Save")}</Button></DialogFooter>
+              <div><Label>{translate("km.observed")}</Label><Textarea value={form.observed_outcome} onChange={e=>setForm({...form,observed_outcome:e.target.value})}/></div>
+              <DialogFooter><Button disabled={saving} onClick={save}>{translate("Save")}</Button></DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
@@ -155,13 +140,16 @@ export default function LessonsLearnedPage() {
         </Select>
       </CardContent></Card>
 
+      {loading && <p>{translate('Loading…')}</p>}
+      {error && <p role="alert" className="text-destructive">{error}</p>}
+      {writable && legacy.length > 0 && <details className="border border-border rounded-md p-4"><summary>{translate('km.import')}</summary><p className="text-sm text-muted-foreground my-3">{translate('km.localWarning')}</p>{legacy.map(l=><label key={l.id} className="flex gap-2 py-2"><Checkbox checked={selected.includes(l.id)} onCheckedChange={v=>setSelected(v?[...selected,l.id]:selected.filter(id=>id!==l.id))}/><span>{l.title} · {l.source}</span></label>)}<Button disabled={saving||!selected.length} onClick={importSelected}>{translate('km.importConfirm')}</Button></details>}
       <LessonsAiInsights lessons={rows} />
 
       <div className="grid md:grid-cols-2 gap-3">
         {filtered.map((r) => {
           const linked = memoryDecisions.filter((d) => r.decisionIds?.includes(d.id));
           return (
-            <Card key={r.id}>
+            <Card key={r.id} id={`record-${r.id}`}>
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -172,7 +160,7 @@ export default function LessonsLearnedPage() {
                     <h3 className="font-semibold mt-2">{r.title}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{r.source} · {new Date(r.created_at).toLocaleDateString(getLocale())}</p>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => remove(r.id)}><Trash2 className="h-4 w-4" /></Button>
+                  {writable && <div className="flex gap-1"><Button variant="outline" size="sm" onClick={()=>{setEditing(r.id);setForm({...empty,...r});setOpen(true);}}>{translate('Edit')}</Button><Button aria-label={translate('Delete')} variant="ghost" size="icon" onClick={() => remove(r.id)}><Trash2 className="h-4 w-4" /></Button></div>}
                 </div>
                 {r.context && <p className="text-sm text-muted-foreground">{r.context}</p>}
                 <div className="grid gap-2">
@@ -185,6 +173,7 @@ export default function LessonsLearnedPage() {
                     </div>
                   )}
                 </div>
+                <RecordLinks kind="lesson" id={r.id} />
                 <div className="pt-2 border-t">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{translate("Linked decisions (")}{linked.length})</span>
@@ -197,8 +186,8 @@ export default function LessonsLearnedPage() {
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
                       {linked.map((d) => (
-                        <Badge key={d.id} variant="secondary" className="gap-1 text-xs">
-                          <GitBranch className="h-3 w-3" /> {d.title}
+                        <Badge key={d.id} variant="secondary" className="gap-1 text-xs" asChild><Link to={`/decisions/list/${d.id}`}>
+                          <GitBranch className="h-3 w-3" /> {d.title}</Link>
                         </Badge>
                       ))}
                     </div>

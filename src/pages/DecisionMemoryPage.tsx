@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { memoryDecisions } from '@/data/ceoTwin';
+import { useTable } from '@/hooks/useGovernance';
+import { RecordLinks } from '@/components/RecordLinks';
 import type { DecisionCategory } from '@/types/ceoTwin';
 import { Search, BookOpen, Lightbulb, Link2 } from 'lucide-react';
 import { useLessons } from '@/hooks/useLessons';
@@ -17,6 +18,9 @@ export default function DecisionMemoryPage() {
   const [q, setQ] = useState('');
   const [active, setActive] = useState<DecisionCategory | 'All'>('All');
   const { rows: lessons } = useLessons();
+  const { rows: realDecisions, loading, error } = useTable<any>('decisions');
+  const { rows: outcomes } = useTable<any>('decision_outcomes');
+  const memoryDecisions = realDecisions.map(d=>({...d,category:d.decision_type??'Strategy',date:d.decision_date??d.created_at,finalDecision:d.description??'',reasoning:d.rationale??d.problem_statement??'',lessons:'',outcome:outcomes.filter(o=>o.decision_id===d.id).map(o=>o.summary).join(' · '),acceptedRisks:[d.risk_level]}));
   const lessonsByDecision = useMemo(() => {
     const map: Record<string, typeof lessons> = {};
     lessons.forEach((l) => (l.decisionIds ?? []).forEach((did) => {
@@ -32,13 +36,13 @@ export default function DecisionMemoryPage() {
       const matchQ = !ql || [d.title, d.finalDecision, d.reasoning, d.lessons, d.outcome].some((t) => t.toLowerCase().includes(ql));
       return matchCat && matchQ;
     });
-  }, [q, active]);
+  }, [q, active, realDecisions, outcomes]);
 
   return (
     <div className="space-y-6">
       <div className="page-header">
         <h1 className="page-title">{translate("Decision Memory")}</h1>
-        <p className="page-description">{translate('integrity.demo')}</p>
+        <p className="page-description">{translate('km.shared')}</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 md:items-center">
@@ -54,6 +58,7 @@ export default function DecisionMemoryPage() {
         </div>
       </div>
 
+      {loading && <p>{translate("Loading…")}</p>}{error && <p role="alert" className="text-destructive">{error}</p>}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {items.length === 0 && (
           <Card><CardContent className="p-10 text-center text-sm text-muted-foreground"><BookOpen className="h-6 w-6 mx-auto mb-2 opacity-50" />{translate("No decisions match.")}</CardContent></Card>
@@ -63,11 +68,12 @@ export default function DecisionMemoryPage() {
             <CardContent className="p-5 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-foreground">{d.title}</h3>
+                  <Link to={`/decisions/list/${d.id}`} className="font-semibold text-primary underline">{d.title}</Link>
                   <p className="text-xs text-muted-foreground mt-0.5">{new Date(d.date).toLocaleDateString(getLocale())} · {translate(d.category)}</p>
                 </div>
                 <Badge variant="secondary">{translate(d.category)}</Badge>
               </div>
+              <RecordLinks kind="decision" id={d.id} />
               <Field label={translate("Final decision")} value={d.finalDecision} />
               <Field label={translate("Why")} value={d.reasoning} />
               <Field label={translate("Outcome")} value={d.outcome} />
