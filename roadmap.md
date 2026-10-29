@@ -56,7 +56,7 @@
 - [ ] Live external economic/industry feeds — waiting on chosen provider + API key
 
 ## Integration hub & workflow automation
-- [ ] Hub page, inbound API, outbound webhooks, Slack allowlist + review inbox, automation rules, tests
+- [x] Hub page, inbound API, outbound webhooks, Slack allowlist + review inbox, automation rules, tests
 
 ## Access governance, team management & company skills
 - [ ] Invitation email delivery end-to-end (needs email domain setup) with honest status/errors
