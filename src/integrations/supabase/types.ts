@@ -2840,14 +2840,49 @@ export type Database = {
           },
         ]
       }
+      process_step_refs: {
+        Row: {
+          id: string
+          process_id: string
+          workspace_id: string
+        }
+        Insert: {
+          id: string
+          process_id: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          process_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_step_refs_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "process_step_refs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       processes: {
         Row: {
+          completion_criteria: string | null
           confidentiality:
             | Database["public"]["Enums"]["confidentiality_level"]
             | null
           created_at: string | null
           created_by: string
           department: string | null
+          entry_conditions: string | null
           exceptions: string | null
           flags: Json | null
           id: string
@@ -2859,6 +2894,7 @@ export type Database = {
           purpose: string | null
           related_policies: Json | null
           required_approvals: Json | null
+          status: string
           steps: Json | null
           systems_used: Json | null
           updated_at: string | null
@@ -2866,12 +2902,14 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          completion_criteria?: string | null
           confidentiality?:
             | Database["public"]["Enums"]["confidentiality_level"]
             | null
           created_at?: string | null
           created_by: string
           department?: string | null
+          entry_conditions?: string | null
           exceptions?: string | null
           flags?: Json | null
           id?: string
@@ -2883,6 +2921,7 @@ export type Database = {
           purpose?: string | null
           related_policies?: Json | null
           required_approvals?: Json | null
+          status?: string
           steps?: Json | null
           systems_used?: Json | null
           updated_at?: string | null
@@ -2890,12 +2929,14 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          completion_criteria?: string | null
           confidentiality?:
             | Database["public"]["Enums"]["confidentiality_level"]
             | null
           created_at?: string | null
           created_by?: string
           department?: string | null
+          entry_conditions?: string | null
           exceptions?: string | null
           flags?: Json | null
           id?: string
@@ -2907,6 +2948,7 @@ export type Database = {
           purpose?: string | null
           related_policies?: Json | null
           required_approvals?: Json | null
+          status?: string
           steps?: Json | null
           systems_used?: Json | null
           updated_at?: string | null
@@ -2967,6 +3009,81 @@ export type Database = {
           },
         ]
       }
+      project_participants: {
+        Row: {
+          id: string
+          project_id: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_participants_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_participants_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_phases: {
+        Row: {
+          id: string
+          name: string
+          position: number
+          project_id: string
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          position?: number
+          project_id: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          position?: number
+          project_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_phases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_phases_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           client_id: string | null
@@ -2976,6 +3093,7 @@ export type Database = {
           created_at: string | null
           created_by: string
           dependencies: Json | null
+          end_date: string | null
           id: string
           knowledge_gaps: Json | null
           milestones: Json | null
@@ -2984,6 +3102,7 @@ export type Database = {
           objective: string | null
           open_questions: Json | null
           owner_id: string | null
+          start_date: string | null
           status: string | null
           team: Json | null
           updated_at: string | null
@@ -2997,6 +3116,7 @@ export type Database = {
           created_at?: string | null
           created_by: string
           dependencies?: Json | null
+          end_date?: string | null
           id?: string
           knowledge_gaps?: Json | null
           milestones?: Json | null
@@ -3005,6 +3125,7 @@ export type Database = {
           objective?: string | null
           open_questions?: Json | null
           owner_id?: string | null
+          start_date?: string | null
           status?: string | null
           team?: Json | null
           updated_at?: string | null
@@ -3018,6 +3139,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string
           dependencies?: Json | null
+          end_date?: string | null
           id?: string
           knowledge_gaps?: Json | null
           milestones?: Json | null
@@ -3026,6 +3148,7 @@ export type Database = {
           objective?: string | null
           open_questions?: Json | null
           owner_id?: string | null
+          start_date?: string | null
           status?: string | null
           team?: Json | null
           updated_at?: string | null
@@ -3527,6 +3650,480 @@ export type Database = {
           },
         ]
       }
+      workflow_approvals: {
+        Row: {
+          approver_id: string
+          created_at: string
+          id: string
+          run_id: string
+          step_id: string
+          step_version: number
+          vote: string
+          workspace_id: string
+        }
+        Insert: {
+          approver_id: string
+          created_at?: string
+          id?: string
+          run_id: string
+          step_id: string
+          step_version: number
+          vote: string
+          workspace_id: string
+        }
+        Update: {
+          approver_id?: string
+          created_at?: string
+          id?: string
+          run_id?: string
+          step_id?: string
+          step_version?: number
+          vote?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_approvals_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_approvals_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_approvals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_deliveries: {
+        Row: {
+          channel: string
+          created_at: string
+          event_key: string
+          id: string
+          notification_id: string | null
+          recipient_id: string
+          run_id: string
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          event_key: string
+          id?: string
+          notification_id?: string | null
+          recipient_id: string
+          run_id: string
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          event_key?: string
+          id?: string
+          notification_id?: string | null
+          recipient_id?: string
+          run_id?: string
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_deliveries_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_deliveries_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_deliveries_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_dependencies: {
+        Row: {
+          id: string
+          prerequisite_id: string
+          run_id: string
+          step_id: string
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          prerequisite_id: string
+          run_id: string
+          step_id: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          prerequisite_id?: string
+          run_id?: string
+          step_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_dependencies_prerequisite_id_fkey"
+            columns: ["prerequisite_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_dependencies_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_dependencies_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_dependencies_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          request_id: string
+          run_id: string
+          step_id: string | null
+          workspace_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          request_id: string
+          run_id: string
+          step_id?: string | null
+          workspace_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          request_id?: string
+          run_id?: string
+          step_id?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_events_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_events_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_runs: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          notification_rules: Json
+          phase_id: string | null
+          process_id: string
+          project_id: string
+          status: string
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          notification_rules?: Json
+          phase_id?: string | null
+          process_id: string
+          project_id: string
+          status?: string
+          version?: number
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          notification_rules?: Json
+          phase_id?: string | null
+          process_id?: string
+          project_id?: string
+          status?: string
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_runs_phase_id_fkey"
+            columns: ["phase_id"]
+            isOneToOne: false
+            referencedRelation: "project_phases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_runs_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_runs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_runs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_steps: {
+        Row: {
+          approval_expires_at: string | null
+          approval_requested: boolean
+          approver_ids: string[]
+          assigned_users: string[]
+          completed_at: string | null
+          completion_criteria: string
+          corrective_title: string
+          criteria_verified: boolean
+          definition_id: string
+          department: string
+          due_date: string | null
+          entry_conditions: string
+          entry_verified: boolean
+          id: string
+          owner_id: string | null
+          position: number
+          priority: string
+          quality_blocks: boolean
+          quality_owner_id: string | null
+          quality_status: string
+          required_approvals: number
+          run_id: string
+          status: string
+          title: string
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          approval_expires_at?: string | null
+          approval_requested?: boolean
+          approver_ids?: string[]
+          assigned_users?: string[]
+          completed_at?: string | null
+          completion_criteria?: string
+          corrective_title?: string
+          criteria_verified?: boolean
+          definition_id: string
+          department?: string
+          due_date?: string | null
+          entry_conditions?: string
+          entry_verified?: boolean
+          id?: string
+          owner_id?: string | null
+          position: number
+          priority?: string
+          quality_blocks?: boolean
+          quality_owner_id?: string | null
+          quality_status?: string
+          required_approvals?: number
+          run_id: string
+          status?: string
+          title: string
+          version?: number
+          workspace_id: string
+        }
+        Update: {
+          approval_expires_at?: string | null
+          approval_requested?: boolean
+          approver_ids?: string[]
+          assigned_users?: string[]
+          completed_at?: string | null
+          completion_criteria?: string
+          corrective_title?: string
+          criteria_verified?: boolean
+          definition_id?: string
+          department?: string
+          due_date?: string | null
+          entry_conditions?: string
+          entry_verified?: boolean
+          id?: string
+          owner_id?: string | null
+          position?: number
+          priority?: string
+          quality_blocks?: boolean
+          quality_owner_id?: string | null
+          quality_status?: string
+          required_approvals?: number
+          run_id?: string
+          status?: string
+          title?: string
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_steps_definition_id_fkey"
+            columns: ["definition_id"]
+            isOneToOne: false
+            referencedRelation: "process_step_refs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_steps_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_steps_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_tasks: {
+        Row: {
+          assignee_id: string
+          corrective: boolean
+          created_at: string
+          due_date: string | null
+          id: string
+          priority: string
+          required: boolean
+          run_id: string
+          status: string
+          step_id: string
+          title: string
+          version: number
+          workspace_id: string
+        }
+        Insert: {
+          assignee_id: string
+          corrective?: boolean
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          priority?: string
+          required?: boolean
+          run_id: string
+          status?: string
+          step_id: string
+          title: string
+          version?: number
+          workspace_id: string
+        }
+        Update: {
+          assignee_id?: string
+          corrective?: boolean
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          priority?: string
+          required?: boolean
+          run_id?: string
+          status?: string
+          step_id?: string
+          title?: string
+          version?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_tasks_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_tasks_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_invites: {
         Row: {
           accepted_at: string | null
@@ -3695,6 +4292,28 @@ export type Database = {
       visible_record: {
         Args: { _id: string; _kind: string; _workspace: string }
         Returns: boolean
+      }
+      workflow_assert_members: {
+        Args: { _ids: string[]; _workspace: string }
+        Returns: undefined
+      }
+      workflow_blockers: {
+        Args: { _completion?: boolean; _step: string }
+        Returns: string[]
+      }
+      workflow_can_read: {
+        Args: { _run: string; _user?: string }
+        Returns: boolean
+      }
+      workflow_notify: {
+        Args: {
+          _body: string
+          _key: string
+          _kind: string
+          _recipient: string
+          _run: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
