@@ -78,6 +78,13 @@
       "when": 1793260520712,
       "tag": "0010_validate_memory_trigger_table_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793260814937,
+      "tag": "0011_require_document_record_for_file_reads",
+      "breakpoints": true
     }
   ]
 }
