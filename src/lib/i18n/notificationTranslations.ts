@@ -1,4 +1,10 @@
 export const notificationTranslations = {
+  'system.task_assigned': { en: 'Task assigned to you', tr: 'Size görev atandı' },
+  'system.step_handoff': { en: 'Your next step is ready', tr: 'Sıradaki adımınız hazır' },
+  'system.step_approval': { en: 'Step awaiting your approval', tr: 'Adım onayınızı bekliyor' },
+  'system.quality_failed': { en: 'Quality failure: corrective action required', tr: 'Kalite hatası: düzeltici görev gerekli' },
+  'system.task_overdue': { en: 'Task overdue', tr: 'Görevin süresi geçti' },
+  'system.task_escalated': { en: 'Overdue task escalated', tr: 'Geciken görev yöneticisine yükseltildi' },
   'system.decision_created': { en: 'New decision recorded', tr: 'Yeni karar kaydedildi' },
   'system.decision_status': { en: 'Decision status changed', tr: 'Kararın durumu değişti' },
   'system.risk_created': { en: 'New operational risk', tr: 'Yeni operasyonel risk' },

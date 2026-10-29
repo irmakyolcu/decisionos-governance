@@ -8,12 +8,14 @@ import { askTranslations } from '@/lib/i18n/askTranslations';
 import { websiteTranslations } from '@/lib/i18n/websiteTranslations';
 import { knowledgeTranslations } from '@/lib/i18n/knowledgeTranslations';
 import { integrityTranslations } from '@/lib/i18n/integrityTranslations';
+import { workflowTranslations } from '@/lib/i18n/workflowTranslations';
 
 export type Lang = 'en' | 'tr';
 
 type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
+  ...workflowTranslations,
   ...knowledgeTranslations,
   ...integrityTranslations,
   ...websiteTranslations,
