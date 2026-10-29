@@ -146,7 +146,7 @@ export default function ProjectsPage() {
                 <div className="pt-2 border-t border-border/50 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="text-[11px] font-medium text-muted-foreground">{translate("Dosyalar (")}{docs.length})</div>
-                    <Button size="sm" variant="ghost" className="h-7 gap-1 text-xs" onClick={() => { setUploadFor(p.id); setFile(null); }}>
+                    <Button disabled={!writer} size="sm" variant="ghost" className="h-7 gap-1 text-xs" onClick={() => { setUploadFor(p.id); setFile(null); }}>
                       <Upload className="h-3 w-3" /> {translate("Ekle")}
                     </Button>
                   </div>
@@ -157,7 +157,7 @@ export default function ProjectsPage() {
                           <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
                           <span className="flex-1 truncate" title={d.title}>{d.title}</span>
                           <Badge variant="secondary" className="text-[9px] h-4">{d.process_status}</Badge>
-                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => reingest(d.id)} title={translate("AI ile içerik çıkar")}>
+                          <Button disabled={!writer} size="icon" variant="ghost" className="h-5 w-5" onClick={() => reingest(d.id)} title={translate("AI ile içerik çıkar")}>
                             <Sparkles className="h-3 w-3" />
                           </Button>
                         </div>
