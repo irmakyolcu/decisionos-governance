@@ -1,3 +1,8 @@
+# Knowledge, evidence and decision memory
+- [ ] Inspect and plan additive document management, persistent lessons, bidirectional links, authorized search and immutable referenced audit history.
+- [ ] Implement the approved scope with persistent storage, permission checks, extraction retry, and localized loading/error states.
+- [ ] Verify upload, manual decision and lesson creation, bidirectional navigation, authorized search and audit history with persistent data.
+
 # Product architecture audit
 - [x] Audit current modules, workflows, live schema and permissions without changing application data.
 - [x] Deliver feature status, gaps, additive relationship design, priorities, risks and integration prerequisites for approval.
