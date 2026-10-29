@@ -1,3 +1,4 @@
+import { canWriteMemory } from '@/lib/records';
 import { useLanguage, translate, getLocale } from "@/contexts/LanguageContext";
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +29,8 @@ const sensColor: Record<string, string> = {
 export default function StructuredMemoryPage() {
   useLanguage();
   const { rows, refetch } = useTable<any>('memory_entries');
-  const { workspace } = useWorkspace();
+  const { workspace,role } = useWorkspace();
+  const writable=canWriteMemory(role);
   const { user } = useAuth();
   const [q, setQ] = useState('');
   const [sensFilter, setSensFilter] = useState<string>('all');
@@ -84,7 +86,7 @@ export default function StructuredMemoryPage() {
           <p className="text-muted-foreground mt-1">{translate("Structured library of past decisions. Sensitivity controls how the Twin uses each entry.")}</p>
         </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
-          <DialogTrigger asChild><Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />{translate("Add Entry")}</Button></DialogTrigger>
+          <DialogTrigger asChild><Button disabled={!writable} onClick={openNew}><Plus className="h-4 w-4 mr-2" />{translate("Add Entry")}</Button></DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader><DialogTitle>{editing ? translate("Kaydı düzenle") : translate("New memory entry")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
@@ -144,10 +146,10 @@ export default function StructuredMemoryPage() {
               <div className="flex items-center justify-between pt-1">
                 <p className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleDateString(getLocale())}</p>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(e)}><Pencil className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" disabled={!writable} onClick={() => openEdit(e)}><Pencil className="h-3.5 w-3.5" /></Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7"><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" disabled={!writable}><Trash2 className="h-3.5 w-3.5" /></Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>

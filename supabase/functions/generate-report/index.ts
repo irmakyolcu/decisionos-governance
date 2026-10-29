@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
       }
     }
     if (scope === 'lessons' || scope === 'all') {
-      const { data } = await supa.from('knowledge_items').select('id,title,summary,tags,created_at').eq('workspace_id', workspace_id).contains('tags', ['lesson']).order('created_at', { ascending: false }).limit(50);
+      const { data } = await supa.from('knowledge_items').select('id,title,summary,tags,created_at').eq('workspace_id', workspace_id).or('entity_type.eq.lesson,tags.cs.["lesson"]').order('created_at', { ascending: false }).limit(50);
       bundle.lessons = data ?? [];
       const { data: audit } = await supa.from('audit_events').select('event_type,created_at,reason').eq('workspace_id', workspace_id).order('created_at', { ascending: false }).limit(30);
       bundle.audit = audit ?? [];

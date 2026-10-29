@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage, translate } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,8 @@ import { DejaVuSans } from '@/lib/pdf/DejaVuSans';
 import { DejaVuSansBold } from '@/lib/pdf/DejaVuSansBold';
 import type { Lesson } from '@/hooks/useLessons';
 import { toast } from 'sonner';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type Insights = {
   executive_summary?: string;
@@ -26,12 +28,14 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
   const { lang, locale } = useLanguage();
   const tr = lang !== 'en';
   const t = (trS: string, enS: string) => (tr ? trS : enS);
-  const [data, setData] = useState<{ insights: Insights; generated_at: string } | null>(() => {
-    try { return JSON.parse(localStorage.getItem(CACHE) || 'null'); } catch { return null; }
-  });
+  const {workspace}=useWorkspace();
+  const [consent,setConsent]=useState(false);
+  const [data,setData]=useState<{insights:Insights;generated_at:string}|null>(null);
+  useEffect(()=>{setData(null);setConsent(false);},[workspace?.id,lang,lessons]);
   const [loading, setLoading] = useState(false);
 
   async function run() {
+    if (!consent) return;
     if (lessons.length === 0) return toast.error(t('Önce en az bir ders ekleyin', 'Add at least one lesson first'));
     setLoading(true);
     const { data: res, error } = await supabase.functions.invoke('lessons-insights', { body: { lessons, language: tr ? 'tr' : 'en' } });
@@ -44,7 +48,7 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
       return;
     }
     const next = { insights: res.insights, generated_at: res.generated_at };
-    setData(next); localStorage.setItem(CACHE, JSON.stringify(next));
+    setData(next);
   }
 
   const ins = data?.insights;
@@ -145,12 +149,13 @@ export default function LessonsAiInsights({ lessons }: { lessons: Lesson[] }) {
 
   return (
     <Card className="border-primary/30">
+      <div className="px-6 pt-4"><label className="flex gap-2 text-sm"><Checkbox checked={consent} onCheckedChange={v=>setConsent(v===true)}/>{translate("km.externalAnalysis")}</label></div>
       <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
         <CardTitle className="flex items-center gap-2 text-base"><Sparkles className="h-5 w-5 text-primary" /> {t('AI Önerileri', 'AI Recommendations')}</CardTitle>
         <div className="flex items-center gap-3">
           {data && <span className="text-xs text-muted-foreground">{new Date(data.generated_at).toLocaleString(locale)}</span>}
           {data && !loading && <Button size="sm" variant="outline" onClick={downloadReport}><Download className="h-4 w-4 mr-2" />{t('Yönetici raporu indir', 'Download executive report')}</Button>}
-          <Button size="sm" onClick={run} disabled={loading}>
+          <Button size="sm" onClick={run} disabled={loading||!consent}>
             {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
             {data ? t('Yeniden analiz et', 'Re-analyze') : t('AI analizi oluştur', 'Generate AI analysis')}
           </Button>
