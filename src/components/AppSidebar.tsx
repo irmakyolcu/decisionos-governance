@@ -62,6 +62,7 @@ const navGroups: { label: string; items: { title: string; url: string; icon: any
     label: 'Admin',
     items: [
       { title: 'Data Sources', url: '/data-sources', icon: Database },
+      { title: 'Integration Hub', url: '/integration-hub', icon: Workflow },
       { title: 'Reports', url: '/reports', icon: FileBarChart },
       { title: 'Team', url: '/team', icon: Users },
       { title: 'Admin & Permissions', url: '/admin', icon: Shield },

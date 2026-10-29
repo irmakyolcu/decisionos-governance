@@ -10,6 +10,7 @@ import { knowledgeTranslations } from '@/lib/i18n/knowledgeTranslations';
 import { integrityTranslations } from '@/lib/i18n/integrityTranslations';
 import { workflowTranslations } from '@/lib/i18n/workflowTranslations';
 import { intelligenceTranslations } from '@/lib/i18n/intelligenceTranslations';
+import { integrationHubTranslations } from '@/lib/i18n/integrationHubTranslations';
 
 export type Lang = 'en' | 'tr';
 
@@ -17,6 +18,7 @@ type Dict = Record<string, { en: string; tr: string }>;
 
 const dict: Dict = {
   ...workflowTranslations,
+  ...integrationHubTranslations,
   ...intelligenceTranslations,
   ...knowledgeTranslations,
   ...integrityTranslations,
