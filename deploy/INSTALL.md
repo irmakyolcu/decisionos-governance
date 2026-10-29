@@ -167,6 +167,19 @@ docker compose --env-file ./.env up -d
 
 ## 8. Sorun giderme
 
+### Bağlı proje iş akışları
+Yeni sürümün `drizzle/migrations/0012`–`0016` geçişlerini de pakete dahil edin.
+JSON adım UUID'leri korunur; her proje yürütmesinin görev/onay durumları ayrıdır.
+Görev ve adım değişiklikleri kullanıcı oturumuyla `workflow_apply` üzerinden yapılır;
+makine anahtarı stratejik veya yürütme onayı yerine geçmez. API'den içe alınan
+süreçlerin normalize edilmiş adım kimliklerini `/v1/processes` ile yeniden okuyun.
+
+Cloud'da gecikme bildirimleri saatlik kontrol edilir (en fazla yaklaşık bir saat
+kontrol gecikmesi). Çevrimdışı kurulumda yerel operatör `pg_cron` kuruluysa aynı
+`SELECT public.workflow_reminders();` işini saatlik zamanlamalıdır; bu zamanlama
+kaynak kodu paketlemekle otomatik kurulmuş sayılmaz. Uygulama içi kaydedilme ve
+okunma durumu izlenir; e-posta/Slack teslimatı bu sürümde eklenmemiştir.
+
 | Belirti | Kontrol |
 | --- | --- |
 | Uygulama açılıyor ama veri gelmiyor | `docker compose logs rest kong` — `ANON_KEY` ile `JWT_SECRET` uyumsuz olabilir, `generate-keys.sh`'yi tekrar çalıştırın ve app imajını yeniden build edin |
