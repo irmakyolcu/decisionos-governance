@@ -4293,6 +4293,16 @@ export type Database = {
         Args: { _id: string; _kind: string; _workspace: string }
         Returns: boolean
       }
+      workflow_apply: {
+        Args: {
+          _operation: string
+          _payload?: Json
+          _request?: string
+          _run?: string
+          _step?: string
+        }
+        Returns: Json
+      }
       workflow_assert_members: {
         Args: { _ids: string[]; _workspace: string }
         Returns: undefined
