@@ -65,7 +65,7 @@ const emptyForm = {
 
 export default function CompanyNotesPage() {
   useLanguage();
-  const { workspace } = useWorkspace();
+  const { workspace,role } = useWorkspace();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
@@ -194,7 +194,7 @@ export default function CompanyNotesPage() {
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" onClick={openNew}>
+            <Button disabled={!canWriteMemory(role)} size="sm" onClick={openNew}>
               <Plus className="h-4 w-4 mr-2" /> {translate("Yeni Not")}
             </Button>
           </DialogTrigger>
@@ -431,13 +431,13 @@ function NoteCard({
             </div>
           </div>
           <div className="flex opacity-0 group-hover:opacity-100 transition">
-            <Button variant="ghost" size="icon" onClick={() => onPin(note)} title={note.is_pinned ? translate("Sabitlemeyi kaldır") : translate("Sabitle")}>
+            <Button variant="ghost" size="icon" disabled={!canWriteMemory(role)} onClick={() => onPin(note)} title={note.is_pinned ? translate("Sabitlemeyi kaldır") : translate("Sabitle")}>
               {note.is_pinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => onEdit(note)} title={translate("Düzenle")}>
+            <Button variant="ghost" size="icon" disabled={!canWriteMemory(role)} onClick={() => onEdit(note)} title={translate("Düzenle")}>
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => onDelete(note.id)} title={translate("Sil")}>
+            <Button variant="ghost" size="icon" disabled={!canWriteMemory(role)} onClick={() => onDelete(note.id)} title={translate("Sil")}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>

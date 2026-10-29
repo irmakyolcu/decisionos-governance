@@ -1,4 +1,5 @@
 export const knowledgeTranslations: Record<string, { en: string; tr: string }> = {
+ "km.deleteDocument":{"en":"Remove this document record? The original file and audit history are preserved.","tr":"Belge kaydı kaldırılsın mı? Orijinal dosya ve denetim geçmişi korunur."},
  "km.knowledge":{"en":"Knowledge","tr":"Bilgi"},
  "Download":{"en":"Download","tr":"İndir"},
  "Source":{"en":"Source","tr":"Kaynak"},
