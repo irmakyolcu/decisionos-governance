@@ -127,6 +127,13 @@
       "when": 1793266388768,
       "tag": "0017_decision_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1793268286993,
+      "tag": "0018_integration_hub_foundation",
+      "breakpoints": true
     }
   ]
 }
