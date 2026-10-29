@@ -1427,6 +1427,84 @@ export type Database = {
           },
         ]
       }
+      decision_intelligence_runs: {
+        Row: {
+          claims: Json
+          created_at: string
+          created_by: string
+          criteria_ratings: Json
+          data_as_of: string | null
+          decision_id: string
+          external_status: string
+          id: string
+          mitigations: Json
+          model: string | null
+          probability: number | null
+          probability_basis: string | null
+          rationale: string | null
+          risk_level: string | null
+          risk_score: number | null
+          similar_decisions: Json
+          sources: Json
+          workspace_id: string
+        }
+        Insert: {
+          claims?: Json
+          created_at?: string
+          created_by: string
+          criteria_ratings?: Json
+          data_as_of?: string | null
+          decision_id: string
+          external_status?: string
+          id?: string
+          mitigations?: Json
+          model?: string | null
+          probability?: number | null
+          probability_basis?: string | null
+          rationale?: string | null
+          risk_level?: string | null
+          risk_score?: number | null
+          similar_decisions?: Json
+          sources?: Json
+          workspace_id: string
+        }
+        Update: {
+          claims?: Json
+          created_at?: string
+          created_by?: string
+          criteria_ratings?: Json
+          data_as_of?: string | null
+          decision_id?: string
+          external_status?: string
+          id?: string
+          mitigations?: Json
+          model?: string | null
+          probability?: number | null
+          probability_basis?: string | null
+          rationale?: string | null
+          risk_level?: string | null
+          risk_score?: number | null
+          similar_decisions?: Json
+          sources?: Json
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_intelligence_runs_decision_id_fkey"
+            columns: ["decision_id"]
+            isOneToOne: false
+            referencedRelation: "decisions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_intelligence_runs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       decision_macro_assessments: {
         Row: {
           commentary: string | null
@@ -2102,6 +2180,107 @@ export type Database = {
           },
           {
             foreignKeyName: "execution_records_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_observations: {
+        Row: {
+          created_by: string
+          id: string
+          published_at: string
+          reference_url: string | null
+          retrieved_at: string
+          source_id: string
+          summary: string | null
+          title: string
+          value: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_by?: string
+          id?: string
+          published_at: string
+          reference_url?: string | null
+          retrieved_at?: string
+          source_id: string
+          summary?: string | null
+          title: string
+          value?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_by?: string
+          id?: string
+          published_at?: string
+          reference_url?: string | null
+          retrieved_at?: string
+          source_id?: string
+          summary?: string | null
+          title?: string
+          value?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_observations_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "external_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_observations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_sources: {
+        Row: {
+          configured: boolean
+          created_at: string
+          created_by: string
+          freshness_days: number
+          id: string
+          kind: string
+          name: string
+          provider: string | null
+          url: string | null
+          workspace_id: string
+        }
+        Insert: {
+          configured?: boolean
+          created_at?: string
+          created_by?: string
+          freshness_days?: number
+          id?: string
+          kind: string
+          name: string
+          provider?: string | null
+          url?: string | null
+          workspace_id: string
+        }
+        Update: {
+          configured?: boolean
+          created_at?: string
+          created_by?: string
+          freshness_days?: number
+          id?: string
+          kind?: string
+          name?: string
+          provider?: string | null
+          url?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_sources_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -3308,6 +3487,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "report_schedules_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risk_criteria: {
+        Row: {
+          enabled: boolean
+          id: string
+          key: string
+          label: string
+          updated_at: string
+          weight: number
+          workspace_id: string
+        }
+        Insert: {
+          enabled?: boolean
+          id?: string
+          key: string
+          label: string
+          updated_at?: string
+          weight?: number
+          workspace_id: string
+        }
+        Update: {
+          enabled?: boolean
+          id?: string
+          key?: string
+          label?: string
+          updated_at?: string
+          weight?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_criteria_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
