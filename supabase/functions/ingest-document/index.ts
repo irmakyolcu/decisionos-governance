@@ -29,10 +29,7 @@ Deno.serve(async req=>{
  if(!text){
  if(['txt','md','csv','json','xml','log','html','htm'].includes(ext))text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
  else if(ext==='docx')text=(await mammoth.extractRawText({buffer:Buffer.from(bytes)})).value;
- else if(ext==='xlsx'){const sheets=await readXlsxFile(Buffer.from(bytes));text=sheets.map((sheet:any)=>sheet.data.map((r:any[])=>r.map(v=>v??'').join('	')).join('
-')).join('
-
-');}
+ else if(ext==='xlsx'){const sheets=await readXlsxFile(Buffer.from(bytes));text=sheets.map((sheet:any)=>sheet.data.map((r:any[])=>r.map(v=>v??'').join('\t')).join('\n')).join('\n\n');}
  else if(ext==='pdf'||['png','jpg','jpeg','webp','gif'].includes(ext)){
  if(!allow_external_ai){await client.from('uploaded_documents').update({process_status:'needs_review',extraction_error:'External AI extraction consent required',extraction_finished_at:new Date().toISOString()}).eq('id',doc.id);return json({ok:true,needs_consent:true});}
  let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.slice(i,i+32768));
