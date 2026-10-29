@@ -1,3 +1,4 @@
+import { recordHref } from '@/lib/records';
 import { Search, User, LogOut, Shield, CheckCircle, Eye, Loader2 } from 'lucide-react';
 import { NotificationsBell } from '@/components/NotificationsBell';
 import { LanguageToggle } from '@/components/LanguageToggle';
@@ -47,6 +48,7 @@ export function TopBar() {
 
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchError,setSearchError]=useState(false);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const boxRef = useRef<HTMLDivElement>(null);
@@ -66,27 +68,17 @@ export function TopBar() {
       setLoading(false);
       return;
     }
-    setLoading(true);
-    const t = setTimeout(async () => {
-      const like = `%${term}%`;
-      const [d, k, c, p] = await Promise.all([
-        supabase.from('decisions').select('id,title').eq('workspace_id', workspace.id).ilike('title', like).limit(5),
-        supabase.from('knowledge_items').select('id,title').eq('workspace_id', workspace.id).ilike('title', like).limit(5),
-        supabase.from('clients').select('id,name').eq('workspace_id', workspace.id).ilike('name', like).limit(3),
-        supabase.from('projects').select('id,name').eq('workspace_id', workspace.id).ilike('name', like).limit(3),
-      ]);
-      const next: SearchHit[] = [
-        ...(d.data ?? []).map((r: any) => ({ id: r.id, title: r.title, kind: 'Decision', href: `/decisions/${r.id}` })),
-        ...(k.data ?? []).map((r: any) => ({ id: r.id, title: r.title, kind: 'Knowledge', href: `/company-brain` })),
-        ...(c.data ?? []).map((r: any) => ({ id: r.id, title: r.name, kind: 'Client', href: `/clients` })),
-        ...(p.data ?? []).map((r: any) => ({ id: r.id, title: r.name, kind: 'Project', href: `/projects` })),
-      ];
-      setHits(next);
-      setLoading(false);
-      setOpen(true);
-    }, 300);
-    return () => clearTimeout(t);
-  }, [search, workspace]);
+    let active=true;
+    setHits([]);setSearchError(false);setLoading(true);
+    const timer=setTimeout(async()=>{
+      const {data,error}=await supabase.rpc('search_memory',{_workspace:workspace.id,_term:term});
+      if(!active)return;
+      setSearchError(Boolean(error));
+      setHits((data??[]).map(r=>({id:r.id,title:r.title,kind:r.kind,href:recordHref(r.kind==='knowledge'?'document':r.kind,r.parent_id??r.id)})));
+      setLoading(false);setOpen(true);
+    },300);
+    return()=>{active=false;clearTimeout(timer);};
+  },[search,workspace?.id]);
 
   const goAsk = () => {
     const term = search.trim();
@@ -121,7 +113,8 @@ export function TopBar() {
         />
         {open && search.trim().length >= 2 && (
           <div className="absolute top-11 left-0 right-0 z-50 rounded-md border border-border bg-popover shadow-lg overflow-hidden">
-            {hits.length === 0 && !loading && (
+            {searchError && <p role="alert" className="p-3 text-sm text-destructive">{t("km.searchError")}</p>}
+            {hits.length === 0 && !loading && !searchError && (
               <div className="px-3 py-3 text-xs text-muted-foreground">{t('No matches found.')}</div>
             )}
             {hits.map((h) => (
@@ -131,7 +124,7 @@ export function TopBar() {
                 className="w-full text-left px-3 py-2 hover:bg-muted transition-colors flex items-center justify-between gap-3"
               >
                 <span className="text-sm text-foreground truncate">{h.title}</span>
-                <Badge variant="outline" className="text-[10px] shrink-0">{t(h.kind)}</Badge>
+                <Badge variant="outline" className="text-[10px] shrink-0">{t(`km.${h.kind}`)}</Badge>
               </Button>
             ))}
             <Button variant="ghost"
