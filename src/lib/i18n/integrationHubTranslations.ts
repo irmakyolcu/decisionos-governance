@@ -1,5 +1,6 @@
 export const integrationHubTranslations = {
   'ih.title': { en: 'Integration Hub', tr: 'Entegrasyon Merkezi' },
+  'Integration Hub': { en: 'Integration Hub', tr: 'Entegrasyon Merkezi' },
   'ih.subtitle': { en: 'Inbound data, outbound webhooks, Slack review and automation rules. Only real connections are shown as connected.', tr: 'Gelen veri, giden webhook, Slack incelemesi ve otomasyon kuralları. Yalnızca gerçek bağlantılar bağlı görünür.' },
   'ih.adminOnly': { en: 'Only workspace administrators can change integrations. Auditors can view logs.', tr: 'Entegrasyonları yalnızca çalışma alanı yöneticileri değiştirebilir. Denetçiler kayıtları görebilir.' },
   'ih.noAccess': { en: 'You do not have access to the Integration Hub.', tr: 'Entegrasyon Merkezi’ne erişiminiz yok.' },
