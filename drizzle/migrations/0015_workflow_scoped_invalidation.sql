@@ -1,0 +1,9 @@
+CREATE OR REPLACE FUNCTION public.workflow_invalidate(_step uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE project uuid; BEGIN
+ SELECT r.project_id INTO project FROM public.workflow_steps s JOIN public.workflow_runs r ON r.id=s.run_id WHERE s.id=_step;
+ WITH RECURSIVE affected(id) AS(SELECT _step UNION SELECT d.step_id FROM public.workflow_dependencies d JOIN affected a ON d.prerequisite_id=a.id) UPDATE public.workflow_steps SET version=version+1,approval_requested=false,criteria_verified=false,status='pending',completed_at=NULL WHERE id IN(SELECT id FROM affected);
+ UPDATE public.workflow_runs SET status='active',version=version+1 WHERE project_id=project AND id IN(SELECT run_id FROM public.workflow_steps WHERE status<>'completed');
+ END; $$;
+CREATE POLICY process_link_visible_endpoints ON public.process_links AS RESTRICTIVE FOR SELECT TO authenticated USING(public.visible_record(workspace_id,'process',from_process_id) AND public.visible_record(workspace_id,'process',to_process_id));
+CREATE OR REPLACE FUNCTION public.workflow_run_parent_integrity() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN
+ IF NOT EXISTS(SELECT 1 FROM public.projects WHERE id=NEW.project_id AND workspace_id=NEW.workspace_id) OR NOT EXISTS(SELECT 1 FROM public.processes WHERE id=NEW.process_id AND workspace_id=NEW.workspace_id) OR (NEW.phase_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM public.project_phases WHERE id=NEW.phase_id AND project_id=NEW.project_id AND workspace_id=NEW.workspace_id)) THEN RAISE EXCEPTION 'Workflow parents must share a workspace and project'; END IF; RETURN NEW; END; $$;
+CREATE TRIGGER workflow_run_parents BEFORE INSERT OR UPDATE ON public.workflow_runs FOR EACH ROW EXECUTE FUNCTION public.workflow_run_parent_integrity();
