@@ -1,7 +1,8 @@
 # Knowledge, evidence and decision memory
 - [x] Inspect and plan additive document management, persistent lessons, bidirectional links, authorized search and immutable referenced audit history.
-- [ ] Implement the approved scope with persistent storage, permission checks, extraction retry, and localized loading/error states.
-- [ ] Verify upload, manual decision and lesson creation, bidirectional navigation, authorized search and audit history with persistent data.
+- [x] Implement persistent lessons/decision memory, context fields, private uploads/local Office extraction, retries/consent, typed bidirectional links, caller search and trusted audit references.
+- [x] Verify manual decision/lesson creation and reload, bidirectional links, TXT/DOCX/XLSX extraction/download/search, retry deduplication, malformed-file failure, PDF consent, process-step links and immutable audit history with persistent TEST records; 45 regression tests passed.
+- [ ] Complete isolated viewer/auditor and second-company negative end-to-end checks, approved external PDF/image extraction and air-gapped dependency/installer verification: requires disposable multi-role environment and explicit external-processing authorization.
 
 # Product architecture audit
 - [x] Audit current modules, workflows, live schema and permissions without changing application data.
