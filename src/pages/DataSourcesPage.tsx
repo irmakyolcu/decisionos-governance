@@ -191,7 +191,7 @@ export default function DataSourcesPage() {
               <Card key={c.kind} className="p-3 flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium">{translate(c.label)}</div>
-                  <div className="text-[10px] text-muted-foreground">{existing ? existing.status : translate("Not connected")}</div>
+                  <div className="text-[10px] text-muted-foreground">{existing ? translate(existing.status) : translate("Not connected")}</div>
                 </div>
                 {existing ? <Badge variant="secondary" className="text-[10px]">{translate("Soon")}</Badge>
                   : <Button size="sm" variant="outline" onClick={() => addConnector(c.kind, c.label)}>{translate("Add")}</Button>}

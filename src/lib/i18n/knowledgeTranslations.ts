@@ -1,4 +1,5 @@
 export const knowledgeTranslations: Record<string, { en: string; tr: string }> = {
+ "km.extractFailed":{"en":"Content extraction failed. The original is preserved; retry or upload a valid document.","tr":"İçerik çıkarılamadı. Orijinal korunur; tekrar deneyin veya geçerli bir belge yükleyin."},
  "km.deleteDocument":{"en":"Remove this document record? The original file and audit history are preserved.","tr":"Belge kaydı kaldırılsın mı? Orijinal dosya ve denetim geçmişi korunur."},
  "km.knowledge":{"en":"Knowledge","tr":"Bilgi"},
  "Download":{"en":"Download","tr":"İndir"},
